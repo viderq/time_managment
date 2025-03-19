@@ -26,19 +26,45 @@
     font-family: 'Inter', system-ui, sans-serif;
 }
 
-/* ---------------- BODY ---------------- */
+/* Основные настройки для предотвращения горизонтальной прокрутки */
+html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+.display-flex {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 100%;
+}
+
+.display-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    max-width: 100%;
+}
+
+img, iframe {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
 body {
     background: var(--background);
     color: var(--text);
-    margin: 0 auto;
-    padding: 1rem;
     min-height: 100vh;
     position: relative;
-
-    /* Для больших экранов оставляем max-width 800,
-       чтобы макет не растягивался на всю ширину десктопа */
+    margin: 0 auto;
     max-width: 800px;
-    width: 100%;
+    padding: 1.5rem; /* Симметричные отступы для десктопов */
 }
 
 .dashboard {
@@ -47,19 +73,23 @@ body {
     padding-bottom: 4rem;
 }
 
-/* ---------------- ШАПКА И ЧАСЫ ---------------- */
+/* Шапка и часы */
 .header {
     display: flex;
-    justify-content: space-between; /* Часы слева и справа */
+    justify-content: space-between;
     align-items: flex-start;
-    padding: 1rem 0;
+    padding: 1.5rem; /* Внутренние отступы */
     gap: 1rem;
+    width: 100%;
+    /* Убираем фон и тень */
 }
 
+/* Внутренние элементы шапки */
 .time-group {
     display: flex;
     flex-direction: column;
-    min-width: 120px; /* Сохраняем, чтобы не сжималось слишком сильно */
+    min-width: 0;
+    flex-shrink: 1;
 }
 
 .current-time {
@@ -76,24 +106,29 @@ body {
     opacity: 0.9;
 }
 
-/* ---------------- ИНПУТЫ РЕЙСА И АЭРОПОРТЫ ---------------- */
+/* Инпуты рейса и аэропорты */
 .input-group {
     background: var(--surface);
-    padding: 1.5rem;
+    padding: 1.5rem; /* Внутренние отступы */
     border-radius: 1.25rem;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    width: 100%;
 }
 
 .flight-inputs {
     display: flex;
     gap: 0.75rem;
     align-items: center;
-    flex-wrap: nowrap; /* Не уходим в столбик */
+    flex-wrap: nowrap;
     margin-bottom: 1.5rem;
+    min-width: 0;
+    flex-shrink: 1;
 }
 
 .flight-inputs input {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 100%;
     padding: 0.75rem;
     border: 1px solid var(--border);
     border-radius: 0.875rem;
@@ -109,11 +144,11 @@ body {
     border-color: var(--primary);
 }
 
-/* Две колонки аэропортов */
 .airports {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
+    width: 100%;
 }
 
 .airport {
@@ -124,6 +159,8 @@ body {
     padding: 1rem 0;
     border-radius: 1rem;
     transition: transform 0.2s;
+    min-width: 0;
+    flex-shrink: 1;
 }
 
 .airport-icon {
@@ -146,10 +183,10 @@ body {
     color: var(--secondary-text);
 }
 
-/* ---------------- КАРТОЧКА ОБРАТНОГО ОТСЧЁТА ---------------- */
+/* Карточка обратного отсчета */
 .countdown-card {
     background: var(--surface);
-    padding: 1.25rem;
+    padding: 1.5rem; /* Внутренние отступы */
     border-radius: 1.25rem;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
     display: flex;
@@ -158,6 +195,7 @@ body {
     gap: 0.75rem;
     min-height: 80px;
     text-align: center;
+    width: 100%;
 }
 
 .countdown-icon {
@@ -182,7 +220,7 @@ body {
     color: var(--text);
 }
 
-/* ---------------- АНИМАЦИИ ДЛЯ КАРТОЧЕК ---------------- */
+/* Анимации для карточек */
 @keyframes shrinkAndExpand {
     0% { transform: scale(1); opacity: 1; }
     50% { transform: scale(0.8); opacity: 0; }
@@ -190,25 +228,13 @@ body {
 }
 
 @keyframes appear {
-    0% {
-        transform: scale(0.8);
-        opacity: 0;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 @keyframes disappear {
-    0% {
-        transform: scale(1);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(0.8);
-        opacity: 0;
-    }
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0.8); opacity: 0; }
 }
 
 .phase-card.appearing {
@@ -230,12 +256,13 @@ body {
     animation: shrinkAndExpand 0.3s ease-in-out;
 }
 
-/* ---------------- СЕТКА ФАЗ ---------------- */
+/* Сетка фаз */
 .phase-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Три колонки, как на скриншоте */
+    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
     transition: grid-template-columns 0.6s ease-in-out;
+    width: 100%;
 }
 
 .phase-grid.expanded {
@@ -244,11 +271,13 @@ body {
 
 .phase-card {
     background: var(--surface);
-    padding: 1.25rem;
+    padding: 1.5rem; /* Внутренние отступы */
     border-radius: 1rem;
     text-align: center;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     transition: transform 0.6s ease;
+    min-width: 0;
+    flex-shrink: 1;
 }
 
 .phase-icon {
@@ -261,19 +290,23 @@ body {
     display: none;
 }
 
-/* ---------------- УПРАВЛЕНИЕ СНОМ ---------------- */
+/* Управление сном */
 .sleep-control {
     display: flex;
     justify-content: center;
     gap: 1rem;
+    width: 100%;
+    padding: 1.5rem; /* Внутренние отступы */
+    /* Убираем фон и тень */
 }
 
 .sleep-value {
     font-size: 1.5rem;
     font-weight: 700;
-    min-width: 90px;
+    min-width: 0;
     text-align: center;
     color: var(--text);
+    flex-shrink: 1;
 }
 
 .sleep-btn {
@@ -297,16 +330,19 @@ body {
     background: rgba(59, 130, 246, 0.1);
 }
 
-/* ---------------- РЕЖИМЫ (ИЗ ДОМА / ИЗ ОТЕЛЯ) ---------------- */
+/* Режимы (из дома / из отеля) */
 .mode-selector {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
     margin-top: 1.5rem;
+    width: 100%;
+    padding: 1.5rem; /* Внутренние отступы */
+    /* Убираем фон и тень */
 }
 
 .mode-btn {
-    padding: 0.8rem;
+    padding: 0.8rem; /* Отступы для кнопок */
     border: 2px solid var(--border);
     border-radius: 1rem;
     cursor: pointer;
@@ -316,6 +352,8 @@ body {
     background: var(--surface);
     color: var(--text);
     transition: all 0.2s;
+    min-width: 0;
+    flex-shrink: 1;
 }
 
 .mode-btn.active {
@@ -324,16 +362,19 @@ body {
     color: #fff;
 }
 
-/* ---------------- КНОПКА НАСТРОЕК ---------------- */
+/* Кнопка настроек */
 .settings-footer {
-    position: absolute; /* Относительно .dashboard */
+    position: absolute;
     bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 1rem;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    text-align: center;
+    padding: 1.5rem; /* Внутренние отступы */
     display: flex;
     justify-content: center;
     z-index: 500;
+    /* Убираем фон и тень */
 }
 
 .settings-trigger {
@@ -364,7 +405,7 @@ body {
     color: var(--primary);
 }
 
-/* ---------------- МОДАЛЬНОЕ ОКНО НАСТРОЕК ---------------- */
+/* Модальное окно настроек */
 .settings-modal {
     position: fixed;
     top: 0;
@@ -406,117 +447,126 @@ body {
     padding: 0.5rem;
 }
 
-/* ---------------- МЕДИА-ЗАПРОС ДЛЯ МОБИЛЬНЫХ ---------------- */
+/* Медиа-запрос для мобильных устройств (до 480px) */
 @media (max-width: 480px) {
-    /*
-     * Здесь мы не ломаем макет
-     * (не делаем столбики, не меняем колонки),
-     * только слегка уменьшаем шрифты/отступы,
-     * чтобы всё поместилось по ширине смартфона.
-     */
-
-    /* Убираем max-width: 800px, позволяя
-       сжать макет до 100% ширины устройства */
     body {
-        max-width: 100%;
-        padding: 0.75rem; /* чуть меньше общий отступ */
+        padding: 0.75rem; /* Симметричные отступы для мобильных */
     }
 
     .header {
-        padding: 0.75rem 0;
-        gap: 0.75rem;
-    }
-
-    .time-group {
-        min-width: auto; /* разрешаем сжиматься */
-    }
-
-    .current-time {
-        font-size: 1.8rem; /* чуть меньше, чтобы уместилось */
-    }
-
-    .flight-inputs {
+        padding: 0.75rem; /* Уменьшенные внутренние отступы */
         gap: 0.5rem;
     }
 
+    .current-time {
+        font-size: 1.5rem;
+    }
+
+    .destination-label {
+        font-size: 0.8rem;
+    }
+
+    .input-group {
+        padding: 0.75rem; /* Уменьшенные внутренние отступы */
+    }
+
+    .flight-inputs {
+        gap: 0.3rem;
+    }
+
     .flight-inputs input {
-        font-size: 0.85rem;
-        height: 42px;
+        padding: 0.5rem;
+        font-size: 0.75rem;
+        height: 40px;
+        max-width: 100%;
     }
 
     .airports {
-        gap: 1rem;
+        gap: 0.75rem;
     }
 
     .airport {
         padding: 0.5rem 0;
+        gap: 0.5rem;
     }
 
     .airport-icon {
-        font-size: 1.2rem;
-    }
-
-    .airport-code {
         font-size: 1rem;
     }
 
+    .airport-code {
+        font-size: 0.9rem;
+    }
+
     .airport-name {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
     }
 
     .countdown-card {
-        padding: 1rem;
+        padding: 0.75rem; /* Уменьшенные внутренние отступы */
         gap: 0.5rem;
     }
 
     .countdown-icon {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
     }
 
     .countdown-time {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
+    }
+
+    .countdown-title {
+        font-size: 0.85rem;
     }
 
     .phase-grid {
-        /* Сохраняем 3 колонки */
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 0.75rem;
+        gap: 0.5rem;
     }
 
     .phase-card {
-        padding: 1rem;
+        padding: 0.75rem; /* Уменьшенные внутренние отступы */
     }
 
     .phase-icon {
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
+        font-size: 1rem;
+        margin-bottom: 0.3rem;
     }
 
     .sleep-control {
-        gap: 0.75rem;
+        gap: 0.5rem;
+        padding: 0.75rem; /* Уменьшенные внутренние отступы */
     }
 
     .sleep-value {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
+    }
+
+    .sleep-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
     }
 
     .mode-selector {
         gap: 0.5rem;
-        margin-top: 1rem; /* Чуть уменьшаем отступ сверху */
+        margin-top: 1rem;
+        padding: 0.75rem; /* Уменьшенные внутренние отступы */
     }
 
     .mode-btn {
-        font-size: 0.85rem;
-        padding: 0.7rem;
+        padding: 0.6rem; /* Уменьшенные отступы для кнопок */
+        font-size: 0.8rem;
     }
 
     .settings-footer {
-        bottom: 0.75rem;
-        padding: 0.5rem;
+        padding: 0.75rem; /* Уменьшенные внутренние отступы */
     }
 
-    .dashboard {
-        padding-bottom: 3rem;
-        gap: 1rem;
+    .settings-trigger {
+        font-size: 0.85rem;
+    }
+
+    .settings-icon {
+        font-size: 0.8rem;
     }
 }

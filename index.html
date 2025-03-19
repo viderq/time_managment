@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="styles.css">
     <script src="script.js" defer></script>
     <title>Flight Time Planner</title>
@@ -48,44 +48,44 @@
         </div>
 
         <!-- Новая карточка обратного отсчета -->
-       <div class="countdown-card">
-    <div class="countdown-content">
-        <i class="fas fa-hourglass-start countdown-icon"></i>
-        <div class="countdown-text">
-            <div class="countdown-title">До отъезда осталось</div>
-            <div class="countdown-time" id="departure-countdown"></div>
+        <div class="countdown-card">
+            <div class="countdown-content">
+                <i class="fas fa-hourglass-start countdown-icon"></i>
+                <div class="countdown-text">
+                    <div class="countdown-title">До отъезда осталось</div>
+                    <div class="countdown-time" id="departure-countdown"></div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
         <div class="phase-grid">
-    <div class="phase-card">
-        <i class="fas fa-bed phase-icon"></i>
-        <div>Уход ко сну</div>
-        <div id="bedtime"></div>
-    </div>
-    <div class="phase-card">
-        <i class="fas fa-bell phase-icon"></i>
-        <div>Подъём</div>
-        <div id="waketime"></div>
-    </div>
-    <div class="phase-card hidden" id="room-exit">
-        <i class="fas fa-door-open phase-icon"></i>
-        <div>Покинуть номер</div>
-        <div id="roomExitTime"></div>
-    </div>
-    <div class="phase-card">
-        <i class="fas fa-car phase-icon"></i>
-        <div>Выезд</div>
-        <div id="departuretime"></div>
-    </div>
-</div>
+            <div class="phase-card">
+                <i class="fas fa-bed phase-icon"></i>
+                <div>Уход ко сну</div>
+                <div id="bedtime"></div>
+            </div>
+            <div class="phase-card">
+                <i class="fas fa-bell phase-icon"></i>
+                <div>Подъём</div>
+                <div id="waketime"></div>
+            </div>
+            <div class="phase-card hidden" id="room-exit">
+                <i class="fas fa-door-open phase-icon"></i>
+                <div>Покинуть номер</div>
+                <div id="roomExitTime"></div>
+            </div>
+            <div class="phase-card">
+                <i class="fas fa-car phase-icon"></i>
+                <div>Выезд</div>
+                <div id="departuretime"></div>
+            </div>
+        </div>
 
-<div class="sleep-control">
-    <button class="sleep-btn" id="decrease-sleep">−</button>
-    <div class="sleep-value" id="sleep-value">8.0ч</div>
-    <button class="sleep-btn" id="increase-sleep">+</button>
-</div>
+        <div class="sleep-control">
+            <button class="sleep-btn" id="decrease-sleep">−</button>
+            <div class="sleep-value" id="sleep-value">8.0ч</div>
+            <button class="sleep-btn" id="increase-sleep">+</button>
+        </div>
 
         <div class="mode-selector">
             <div class="mode-btn active" id="homeButton">Из дома</div>
