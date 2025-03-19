@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+    <title>Flight Time Planner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <div class="time-group time-group-left">
+                <div class="current-time" id="current-time"></div>
+                <div class="destination-label">Москва (SVO)</div>
+            </div>
+            <div class="time-group time-group-right">
+                <div class="current-time" id="destination-time"></div>
+                <div class="destination-label">Санкт-Петербург (LED)</div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="flight-inputs">
+                <input type="text" placeholder="Номер рейса" maxlength="10">
+                <input type="date">
+                <input type="time">
+            </div>
+
+            <div class="airports">
+                <div class="airport">
+                    <i class="fas fa-plane-departure airport-icon"></i>
+                    <div class="airport-info">
+                        <div class="airport-code">SVO</div>
+                        <div class="airport-name">Шереметьево</div>
+                    </div>
+                </div>
+
+                <div class="airport">
+                    <i class="fas fa-plane-arrival airport-icon"></i>
+                    <div class="airport-info">
+                        <div class="airport-code">LED</div>
+                        <div class="airport-name">Пулково</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Новая карточка обратного отсчета -->
+       <div class="countdown-card">
+    <div class="countdown-content">
+        <i class="fas fa-hourglass-start countdown-icon"></i>
+        <div class="countdown-text">
+            <div class="countdown-title">До отъезда осталось</div>
+            <div class="countdown-time" id="departure-countdown"></div>
+        </div>
+    </div>
+</div>
+
+        <div class="phase-grid">
+    <div class="phase-card">
+        <i class="fas fa-bed phase-icon"></i>
+        <div>Уход ко сну</div>
+        <div id="bedtime"></div>
+    </div>
+    <div class="phase-card">
+        <i class="fas fa-bell phase-icon"></i>
+        <div>Подъём</div>
+        <div id="waketime"></div>
+    </div>
+    <div class="phase-card hidden" id="room-exit">
+        <i class="fas fa-door-open phase-icon"></i>
+        <div>Покинуть номер</div>
+        <div id="roomExitTime"></div>
+    </div>
+    <div class="phase-card">
+        <i class="fas fa-car phase-icon"></i>
+        <div>Выезд</div>
+        <div id="departuretime"></div>
+    </div>
+</div>
+
+<div class="sleep-control">
+    <button class="sleep-btn" id="decrease-sleep">−</button>
+    <div class="sleep-value" id="sleep-value">8.0ч</div>
+    <button class="sleep-btn" id="increase-sleep">+</button>
+</div>
+
+        <div class="mode-selector">
+            <div class="mode-btn active" id="homeButton">Из дома</div>
+            <div class="mode-btn" id="hotelButton">Из отеля</div>
+        </div>
+    </div>
+
+    <div class="settings-footer">
+        <button class="settings-trigger" id="settings-button">
+            <i class="fas fa-gear settings-icon"></i>
+            Настройки
+        </button>
+    </div>
+
+    <div class="settings-modal" id="settings-modal">
+        <div class="modal-content">
+            <button class="close-modal" id="close-modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2>Скоро</h2>
+            <p>Новые функции в разработке</p>
+        </div>
+    </div>
+</body>
+</html>
