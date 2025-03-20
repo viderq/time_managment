@@ -476,7 +476,7 @@ body {
 
     .flight-inputs input {
         padding: 0.5rem;
-        font-size: 0.75rem;
+        font-size: 1.05rem;
         height: 40px;
         max-width: 100%;
     }
