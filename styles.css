@@ -476,7 +476,7 @@ body {
 
     .flight-inputs input {
         padding: 0.5rem;
-        font-size: 1.05rem;
+        font-size: 0.75rem;
         height: 40px;
         max-width: 100%;
     }
@@ -487,19 +487,21 @@ body {
 
     .airport {
         padding: 0.5rem 0;
-        gap: 0.5rem;
+        gap: 1rem;
+        padding-left: 1rem;
     }
 
     .airport-icon {
-        font-size: 1rem;
+        font-size: 1.3rem;
+        font-size: 1.3rem;
     }
 
     .airport-code {
-        font-size: 0.9rem;
+        font-size: 1.05rem;
     }
 
     .airport-name {
-        font-size: 0.75rem;
+        font-size: 1.05rem;
     }
 
     .countdown-card {
@@ -516,7 +518,7 @@ body {
     }
 
     .countdown-title {
-        font-size: 0.85rem;
+        font-size: 1.05rem;
     }
 
     .phase-grid {
@@ -528,7 +530,7 @@ body {
     }
 
     .phase-icon {
-        font-size: 1rem;
+        font-size: 1.3rem;
         margin-bottom: 0.3rem;
     }
 
