@@ -102,7 +102,7 @@ body {
 
 .date-input {
     width: 100%;
-    max-width: 500px;
+    max-width: 510px;
     padding: 0.75rem;
     border: 1px solid var(--border);
     border-radius: 0.875rem;
@@ -335,7 +335,7 @@ body {
 }
 
 .phase-icon {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     margin-bottom: 0.75rem;
     color: var(--icon-color);
 }
@@ -635,6 +635,7 @@ body {
 
     .input-group {
         padding: 0.75rem;
+        margin-top: -1rem;
     }
 
     .flight-inputs {
@@ -681,15 +682,15 @@ body {
     }
 
     .airport-icon {
-        font-size: 1rem;
+        font-size: 1.5rem;
     }
 
     .airport-code {
-        font-size: 0.9rem;
+        font-size: 1rem;
     }
 
     .airport-name {
-        font-size: 0.75rem;
+        font-size: 0.85rem;
     }
 
     .countdown-card {
@@ -718,7 +719,7 @@ body {
     }
 
     .phase-icon {
-        font-size: 1rem;
+        font-size: 1.5rem;
         margin-bottom: 0.3rem;
     }
 
