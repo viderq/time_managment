@@ -1,11 +1,13 @@
 :root {
     --primary: #3B82F6;
+    --primary-light: rgba(59, 130, 246, 0.2);
     --surface: #FFFFFF;
     --background: #F8FAFC;
     --text: #1E293B;
     --border: #E2E8F0;
     --icon-color: #6B7280;
     --secondary-text: #64748B;
+    --warning: #F97316; /* Оранжевый цвет для сообщения "нет данных" */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -16,6 +18,7 @@
         --border: #334155;
         --icon-color: #94A3B8;
         --secondary-text: #94A3B8;
+        --warning: #FB923C; /* Более светлый оранжевый для темной темы */
     }
 }
 
@@ -26,7 +29,6 @@
     font-family: 'Inter', system-ui, sans-serif;
 }
 
-/* Основные настройки для предотвращения горизонтальной прокрутки */
 html, body {
     width: 100%;
     max-width: 100%;
@@ -40,7 +42,7 @@ body {
     position: relative;
     margin: 0 auto;
     max-width: 800px;
-    padding: 1.5rem; /* Симметричные отступы для десктопов */
+    padding: 1.5rem;
 }
 
 .dashboard {
@@ -54,12 +56,12 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding: 1.5rem; /* Внутренние отступы */
-    gap: 1rem;
+    padding: 0.5rem 1rem;
     width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
 }
 
-/* Внутренние элементы шапки */
 .time-group {
     display: flex;
     flex-direction: column;
@@ -77,32 +79,30 @@ body {
 .destination-label {
     font-size: 0.875rem;
     color: var(--secondary-text);
-    margin-top: 0.5rem;
+    margin-top: 0.1rem;
     opacity: 0.9;
 }
 
 /* Инпуты рейса и аэропорты */
 .input-group {
     background: var(--surface);
-    padding: 1.5rem; /* Внутренние отступы */
+    padding: 1.5rem;
     border-radius: 1.25rem;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
     width: 100%;
 }
 
-/* Обновляем .flight-inputs для вертикального расположения и центрирования */
 .flight-inputs {
     display: flex;
-    flex-direction: column; /* Поля располагаются вертикально */
-    align-items: center; /* Центрируем элементы по горизонтали */
-    gap: 0.75rem; /* Отступ между элементами */
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
     margin-bottom: 1.5rem;
 }
 
-/* Стили для поля даты */
 .date-input {
-    width: 100%; /* Растягиваем на всю доступную ширину */
-    max-width: 300px; /* Ограничиваем максимальную ширину */
+    width: 100%;
+    max-width: 500px;
     padding: 0.75rem;
     border: 1px solid var(--border);
     border-radius: 0.875rem;
@@ -111,6 +111,7 @@ body {
     background: var(--surface);
     color: var(--text);
     transition: border-color 0.2s;
+    text-align: center;
 }
 
 .date-input:focus {
@@ -118,34 +119,74 @@ body {
     border-color: var(--primary);
 }
 
-/* Новый контейнер для номера рейса и времени */
 .flight-time-inputs {
     display: flex;
-    gap: 0.75rem; /* Отступ между полями */
+    gap: 0.75rem;
     align-items: center;
-    flex-wrap: nowrap; /* Поля остаются в одной строке */
-    width: 100%; /* Растягиваем на всю ширину */
-    justify-content: center; /* Центрируем поля внутри контейнера */
+    flex-wrap: nowrap;
+    width: 100%;
+    justify-content: center;
 }
 
-/* Стили для полей внутри .flight-time-inputs */
 .flight-time-inputs input {
-    flex: 1 1 0; /* Поля делят пространство поровну */
+    flex: 1 1 0;
     min-width: 0;
     max-width: 100%;
     padding: 0.75rem;
     border: 1px solid var(--border);
     border-radius: 0.875rem;
     height: 46px;
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     background: var(--surface);
     color: var(--text);
     transition: border-color 0.2s;
+    text-align: center;
 }
 
 .flight-time-inputs input:focus {
     outline: none;
     border-color: var(--primary);
+}
+
+/* Стили для отображения времени рейса */
+.flight-time-display {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    height: 46px;
+    font-size: 1.05rem;
+    background: var(--surface);
+    color: var(--text);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Плейсхолдер для flight-time-display с помощью ::before */
+.flight-time-display:empty::before {
+    content: attr(placeholder);
+    color: var(--secondary-text);
+    opacity: 0.7;
+}
+
+/* Стили для сообщения "нет данных" */
+.no-data-message {
+    color: var(--warning);
+    font-size: 0.9rem;
+    text-align: center;
+    margin: 0.5rem 0;
+}
+
+/* Стили для плейсхолдеров */
+.date-input::placeholder,
+.flight-time-inputs input::placeholder {
+    color: var(--secondary-text);
+    opacity: 0.7;
 }
 
 .airports {
@@ -187,10 +228,17 @@ body {
     color: var(--secondary-text);
 }
 
+/* Контейнер для карточек обратного отсчета */
+.countdown-container {
+    display: grid;
+    gap: 1.5rem;
+    width: 100%;
+}
+
 /* Карточка обратного отсчета */
 .countdown-card {
     background: var(--surface);
-    padding: 1.5rem; /* Внутренние отступы */
+    padding: 1.5rem;
     border-radius: 1.25rem;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
     display: flex;
@@ -200,6 +248,7 @@ body {
     min-height: 80px;
     text-align: center;
     width: 100%;
+    border: 1px solid var(--primary-light);
 }
 
 .countdown-icon {
@@ -241,23 +290,24 @@ body {
     100% { transform: scale(0.8); opacity: 0; }
 }
 
-.phase-card.appearing {
+@keyframes modalFadeIn {
+    0% { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.phase-card.appearing,
+.countdown-card.appearing {
     animation: appear 0.3s ease-in-out;
 }
 
-.phase-card.disappearing {
+.phase-card.disappearing,
+.countdown-card.disappearing {
     animation: disappear 0.3s ease-in-out;
 }
 
-.phase-card.hidden {
-    opacity: 0;
-    transform: scale(0.8);
-    pointer-events: none;
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-}
-
-.phase-card.hidden.active {
-    animation: shrinkAndExpand 0.3s ease-in-out;
+.phase-card.hidden,
+.countdown-card.hidden {
+    display: none;
 }
 
 /* Сетка фаз */
@@ -275,7 +325,7 @@ body {
 
 .phase-card {
     background: var(--surface);
-    padding: 1.5rem; /* Внутренние отступы */
+    padding: 1.5rem;
     border-radius: 1rem;
     text-align: center;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -294,17 +344,27 @@ body {
     display: none;
 }
 
+/* Надпись "Время сна" */
+.sleep-label {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.1rem;
+}
+
 /* Управление сном */
 .sleep-control {
     display: flex;
     justify-content: center;
-    gap: 1rem;
+    align-items: center;
+    gap: 1.5rem;
     width: 100%;
-    padding: 1.5rem; /* Внутренние отступы */
+    padding: 1.5rem;
 }
 
 .sleep-value {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: 700;
     min-width: 0;
     text-align: center;
@@ -313,13 +373,13 @@ body {
 }
 
 .sleep-btn {
-    width: 42px;
-    height: 42px;
+    width: 50px;
+    height: 50px;
     border-radius: 12px;
     border: 2px solid var(--border);
     background: transparent;
     color: var(--icon-color);
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -340,11 +400,11 @@ body {
     gap: 0.75rem;
     margin-top: 1.5rem;
     width: 100%;
-    padding: 1.5rem; /* Внутренние отступы */
+    padding: 1.5rem;
 }
 
 .mode-btn {
-    padding: 0.8rem; /* Отступы для кнопок */
+    padding: 0.8rem;
     border: 2px solid var(--border);
     border-radius: 1rem;
     cursor: pointer;
@@ -372,7 +432,7 @@ body {
     right: 0;
     margin: 0 auto;
     text-align: center;
-    padding: 1.5rem; /* Внутренние отступы */
+    padding: 1.5rem;
     display: flex;
     justify-content: center;
     z-index: 500;
@@ -419,44 +479,149 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
 }
 
 .settings-modal.active {
     display: flex;
+    opacity: 1;
 }
 
 .modal-content {
     background: var(--surface);
-    padding: 2rem;
-    border-radius: 1.5rem;
-    max-width: 300px;
+    padding: 1.5rem;
+    border-radius: 1.25rem;
+    max-width: 350px;
     width: 90%;
     position: relative;
+    text-align: left;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    animation: modalFadeIn 0.3s ease-in-out;
+}
+
+.modal-content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 1rem;
     text-align: center;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
 }
 
 .close-modal {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
+    top: 0.75rem;
+    right: 0.75rem;
     background: none;
     border: none;
     color: var(--icon-color);
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     cursor: pointer;
     padding: 0.5rem;
+    transition: color 0.2s;
+}
+
+.close-modal:hover {
+    color: var(--primary);
+}
+
+/* Стили для блока с настройками часового пояса */
+.timezone-mode {
+    margin-bottom: 1.5rem;
+    padding: 0.75rem;
+    border-radius: 0.875rem;
+    background: var(--background);
+    transition: background 0.2s;
+}
+
+.timezone-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.timezone-icon {
+    font-size: 1.2rem;
+    color: var(--icon-color);
+}
+
+.timezone-mode h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.timezone-mode label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.timezone-mode input[type="checkbox"] {
+    width: 1.2rem;
+    height: 1.2rem;
+    accent-color: var(--primary);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.timezone-mode input[type="checkbox"]:hover {
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+/* Стили для выпадающего списка в настройках */
+.modal-content label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.modal-content select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    background: var(--background);
+    color: var(--text);
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%236B7280" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+}
+
+.modal-content select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.modal-content select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* Медиа-запрос для мобильных устройств (до 480px) */
 @media (max-width: 480px) {
     body {
-        padding: 0.75rem; /* Симметричные отступы для мобильных */
+        padding: 0.75rem;
     }
 
     .header {
-        padding: 0.75rem; /* Уменьшенные внутренние отступы */
-        gap: 0.5rem;
+        padding: 0.25rem 0.5rem;
+        max-width: 250px;
+        margin: 0 auto;
     }
 
     .current-time {
@@ -465,36 +630,45 @@ body {
 
     .destination-label {
         font-size: 0.8rem;
+        margin-top: 0.05rem;
     }
 
     .input-group {
-        padding: 0.75rem; /* Уменьшенные внутренние отступы */
+        padding: 0.75rem;
     }
 
-    /* Обновляем стили для .flight-inputs */
     .flight-inputs {
-        gap: 0.5rem; /* Уменьшаем отступ */
+        gap: 0.5rem;
+        width: 100%;
+        max-width: 100%;
+        padding: 0 0.5rem;
+        box-sizing: border-box;
     }
 
-    /* Стили для поля даты на мобильных */
     .date-input {
         padding: 0.5rem;
-        font-size: 0.75rem;
-        height: 40px;
-        max-width: 200px; /* Увеличиваем ширину для мобильных */
-    }
-
-    /* Стили для .flight-time-inputs */
-    .flight-time-inputs {
-        gap: 0.3rem; /* Уменьшаем отступ между полями */
-        width: 100%; /* Растягиваем на всю ширину */
-    }
-
-    .flight-time-inputs input {
-        padding: 0.5rem;
-        font-size: 0.75rem;
+        font-size: 1.05rem;
         height: 40px;
         max-width: 100%;
+        min-width: 310px;
+    }
+
+    .flight-time-inputs {
+        gap: 0.3rem;
+        width: 100%;
+    }
+
+    .flight-time-inputs input,
+    .flight-time-display {
+        padding: 0.5rem;
+        font-size: 1rem;
+        height: 40px;
+        max-width: 100%;
+    }
+
+    .no-data-message {
+        font-size: 0.8rem;
+        margin: 0.3rem 0;
     }
 
     .airports {
@@ -519,7 +693,7 @@ body {
     }
 
     .countdown-card {
-        padding: 0.75rem; /* Уменьшенные внутренние отступы */
+        padding: 0.75rem;
         gap: 0.5rem;
     }
 
@@ -540,7 +714,7 @@ body {
     }
 
     .phase-card {
-        padding: 0.75rem; /* Уменьшенные внутренние отступы */
+        padding: 0.75rem;
     }
 
     .phase-icon {
@@ -548,34 +722,41 @@ body {
         margin-bottom: 0.3rem;
     }
 
+    .sleep-label {
+        font-size: 1rem;
+        margin-bottom: 0.1rem;
+        margin-top: 0.3rem;
+        padding: 0px;
+    }
+
     .sleep-control {
-        gap: 0.5rem;
-        padding: 0.75rem; /* Уменьшенные внутренние отступы */
+        gap: 1rem;
+        padding: 0rem;
     }
 
     .sleep-value {
-        font-size: 1.2rem;
+        font-size: 1.5rem;
     }
 
     .sleep-btn {
-        width: 36px;
-        height: 36px;
-        font-size: 1rem;
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
     }
 
     .mode-selector {
         gap: 0.5rem;
-        margin-top: 1rem;
-        padding: 0.75rem; /* Уменьшенные внутренние отступы */
+        margin-top: 0rem;
+        padding: 0.75rem;
     }
 
     .mode-btn {
-        padding: 0.6rem; /* Уменьшенные отступы для кнопок */
+        padding: 0.6rem;
         font-size: 0.8rem;
     }
 
     .settings-footer {
-        padding: 0.75rem; /* Уменьшенные внутренние отступы */
+        padding: 0.75rem;
     }
 
     .settings-trigger {
@@ -584,5 +765,39 @@ body {
 
     .settings-icon {
         font-size: 0.8rem;
+    }
+
+    .modal-content {
+        padding: 1rem;
+    }
+
+    .modal-content h2 {
+        font-size: 1.3rem;
+    }
+
+    .timezone-mode {
+        padding: 0.5rem;
+    }
+
+    .timezone-header {
+        gap: 0.4rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .timezone-icon {
+        font-size: 1rem;
+    }
+
+    .timezone-mode h3 {
+        font-size: 1rem;
+    }
+
+    .timezone-mode label {
+        font-size: 0.9rem;
+    }
+
+    .modal-content select {
+        padding: 0.5rem;
+        font-size: 0.9rem;
     }
 }
