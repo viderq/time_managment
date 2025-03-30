@@ -2,11 +2,12 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
     <link rel="stylesheet" href="styles.css">
     <script src="script.js" defer></script>
     <title>Flight Time Planner</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 </head>
 <body>
     <div class="dashboard">
@@ -25,13 +26,17 @@
             <div class="flight-inputs">
                 <input type="date" placeholder="Дата рейса" maxlength="10" class="date-input">
                 <div class="flight-time-inputs">
-                    <input type="text" placeholder="Номер рейса" maxlength="10">
-                    <!-- Изменяем flight-time-display: убираем текст и добавляем placeholder -->
+                    <div class="flight-number-wrapper">
+                        <select class="flight-prefix">
+                            <option value="SU">SU</option>
+                            <option value="RA">RA</option>
+                        </select>
+                        <input type="text" placeholder="0000" maxlength="5" class="flight-number" pattern="[0-9]*" inputmode="numeric">
+                    </div>
                     <div class="flight-time-display" id="flight-time-display" placeholder="Время вылета"></div>
                 </div>
             </div>
 
-            <!-- Контейнер для сообщения "нет данных" -->
             <div class="no-data-message" id="no-data-message" style="display: none;">
                 Нет данных
             </div>
@@ -40,16 +45,16 @@
                 <div class="airport">
                     <i class="fas fa-plane-departure airport-icon"></i>
                     <div class="airport-info">
-                        <div class="airport-code">SVO</div>
-                        <div class="airport-name">Шереметьево</div>
+                        <div class="airport-code">---</div>
+                        <div class="airport-name">-----</div>
                     </div>
                 </div>
 
                 <div class="airport">
                     <i class="fas fa-plane-arrival airport-icon"></i>
                     <div class="airport-info">
-                        <div class="airport-code">LED</div>
-                        <div class="airport-name">Пулково</div>
+                        <div class="airport-code">---</div>
+                        <div class="airport-name">-----</div>
                     </div>
                 </div>
             </div>
@@ -141,29 +146,29 @@
     </div>
 
     <div class="settings-modal" id="settings-modal">
-    <div class="modal-content">
-        <button class="close-modal" id="close-modal">
-            <i class="fas fa-times"></i>
-        </button>
-        <h2>Настройки</h2>
-        <div class="timezone-mode">
-            <div class="timezone-header">
-                <i class="fas fa-clock timezone-icon"></i>
-                <h3>Часовой пояс</h3>
+        <div class="modal-content">
+            <button class="close-modal" id="close-modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2>Настройки</h2>
+            <div class="timezone-mode">
+                <div class="timezone-header">
+                    <i class="fas fa-clock timezone-icon"></i>
+                    <h3>Часовой пояс</h3>
+                </div>
+                <label for="auto-timezone">
+                    <input type="checkbox" id="auto-timezone" name="timezone-mode">
+                    Авто (использовать часовой пояс устройства)
+                </label>
+                <label for="timezone-select">Выберите часовой пояс:</label>
+                <select id="timezone-select">
+                    <option value="Europe/Moscow">Москва (UTC+3)</option>
+                    <option value="Asia/Vladivostok">Владивосток (UTC+10)</option>
+                    <option value="Europe/Kaliningrad">Калининград (UTC+2)</option>
+                    <option value="Asia/Yekaterinburg">Екатеринбург (UTC+5)</option>
+                </select>
             </div>
-            <label for="auto-timezone">
-                <input type="checkbox" id="auto-timezone" name="timezone-mode">
-                Авто (использовать часовой пояс устройства)
-            </label>
-            <label for="timezone-select">Выберите часовой пояс:</label>
-            <select id="timezone-select">
-                <option value="Europe/Moscow">Москва (UTC+3)</option>
-                <option value="Asia/Vladivostok">Владивосток (UTC+10)</option>
-                <option value="Europe/Kaliningrad">Калининград (UTC+2)</option>
-                <option value="Asia/Yekaterinburg">Екатеринбург (UTC+5)</option>
-            </select>
         </div>
     </div>
-</div>
 </body>
 </html>
