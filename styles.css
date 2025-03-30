@@ -7,7 +7,7 @@
     --border: #E2E8F0;
     --icon-color: #6B7280;
     --secondary-text: #64748B;
-    --warning: #F97316; /* Оранжевый цвет для сообщения "нет данных" */
+    --warning: #F97316;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,7 +18,10 @@
         --border: #334155;
         --icon-color: #94A3B8;
         --secondary-text: #94A3B8;
-        --warning: #FB923C; /* Более светлый оранжевый для темной темы */
+        .hidden {
+            display: none;
+        }
+        --warning: #FB923C;
     }
 }
 
@@ -51,7 +54,6 @@ body {
     padding-bottom: 4rem;
 }
 
-/* Шапка и часы */
 .header {
     display: flex;
     justify-content: space-between;
@@ -83,7 +85,6 @@ body {
     opacity: 0.9;
 }
 
-/* Инпуты рейса и аэропорты */
 .input-group {
     background: var(--surface);
     padding: 1.5rem;
@@ -102,8 +103,8 @@ body {
 
 .date-input {
     width: 100%;
-    max-width: 510px;
-    padding: 0.75rem;
+    max-width: 520px;
+    padding: 0.65rem;
     border: 1px solid var(--border);
     border-radius: 0.875rem;
     height: 46px;
@@ -128,27 +129,6 @@ body {
     justify-content: center;
 }
 
-.flight-time-inputs input {
-    flex: 1 1 0;
-    min-width: 0;
-    max-width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 0.875rem;
-    height: 46px;
-    font-size: 1.05rem;
-    background: var(--surface);
-    color: var(--text);
-    transition: border-color 0.2s;
-    text-align: center;
-}
-
-.flight-time-inputs input:focus {
-    outline: none;
-    border-color: var(--primary);
-}
-
-/* Стили для отображения времени рейса */
 .flight-time-display {
     flex: 1 1 0;
     min-width: 0;
@@ -167,14 +147,12 @@ body {
     position: relative;
 }
 
-/* Плейсхолдер для flight-time-display с помощью ::before */
 .flight-time-display:empty::before {
     content: attr(placeholder);
     color: var(--secondary-text);
     opacity: 0.7;
 }
 
-/* Стили для сообщения "нет данных" */
 .no-data-message {
     color: var(--warning);
     font-size: 0.9rem;
@@ -182,9 +160,7 @@ body {
     margin: 0.5rem 0;
 }
 
-/* Стили для плейсхолдеров */
-.date-input::placeholder,
-.flight-time-inputs input::placeholder {
+.date-input::placeholder {
     color: var(--secondary-text);
     opacity: 0.7;
 }
@@ -228,14 +204,12 @@ body {
     color: var(--secondary-text);
 }
 
-/* Контейнер для карточек обратного отсчета */
 .countdown-container {
     display: grid;
     gap: 1.5rem;
     width: 100%;
 }
 
-/* Карточка обратного отсчета */
 .countdown-card {
     background: var(--surface);
     padding: 1.5rem;
@@ -273,7 +247,6 @@ body {
     color: var(--text);
 }
 
-/* Анимации для карточек */
 @keyframes shrinkAndExpand {
     0% { transform: scale(1); opacity: 1; }
     50% { transform: scale(0.8); opacity: 0; }
@@ -310,7 +283,6 @@ body {
     display: none;
 }
 
-/* Сетка фаз */
 .phase-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -344,7 +316,6 @@ body {
     display: none;
 }
 
-/* Надпись "Время сна" */
 .sleep-label {
     text-align: center;
     font-size: 1.2rem;
@@ -353,7 +324,6 @@ body {
     margin-bottom: 0.1rem;
 }
 
-/* Управление сном */
 .sleep-control {
     display: flex;
     justify-content: center;
@@ -387,13 +357,12 @@ body {
     transition: all 0.2s;
 }
 
-.sleep-btn:hover {
+.sleep-btn:active {
     border-color: var(--primary);
     color: var(--primary);
     background: rgba(59, 130, 246, 0.1);
 }
 
-/* Режимы (из дома / из отеля) */
 .mode-selector {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -424,7 +393,6 @@ body {
     color: #fff;
 }
 
-/* Кнопка настроек */
 .settings-footer {
     position: absolute;
     bottom: 1rem;
@@ -466,7 +434,6 @@ body {
     color: var(--primary);
 }
 
-/* Модальное окно настроек */
 .settings-modal {
     position: fixed;
     top: 0;
@@ -525,7 +492,6 @@ body {
     color: var(--primary);
 }
 
-/* Стили для блока с настройками часового пояса */
 .timezone-mode {
     margin-bottom: 1.5rem;
     padding: 0.75rem;
@@ -574,7 +540,6 @@ body {
     box-shadow: 0 0 0 2px var(--primary-light);
 }
 
-/* Стили для выпадающего списка в настройках */
 .modal-content label {
     display: block;
     margin-bottom: 0.5rem;
@@ -612,7 +577,6 @@ body {
     cursor: not-allowed;
 }
 
-/* Медиа-запрос для мобильных устройств (до 480px) */
 @media (max-width: 480px) {
     body {
         padding: 0.75rem;
@@ -622,10 +586,11 @@ body {
         padding: 0.25rem 0.5rem;
         max-width: 250px;
         margin: 0 auto;
+        margin-bottom: 0.7rem;
     }
 
     .current-time {
-        font-size: 1.5rem;
+        font-size: 2rem;
     }
 
     .destination-label {
@@ -659,7 +624,6 @@ body {
         width: 100%;
     }
 
-    .flight-time-inputs input,
     .flight-time-display {
         padding: 0.5rem;
         font-size: 1rem;
@@ -800,5 +764,85 @@ body {
     .modal-content select {
         padding: 0.5rem;
         font-size: 0.9rem;
+    }
+}
+
+@keyframes fade {
+    0% { opacity: 0; transform: translateY(5px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.airport-code, .airport-name {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.airport-code.fade, .airport-name.fade {
+    animation: fade 0.3s ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+.flight-number-wrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    height: 46px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    width: 50%; /* Уменьшил ширину, так как теперь только два элемента */
+    max-width: 180px; /* Уменьшил максимальную ширину */
+}
+
+.flight-number-wrapper:focus-within {
+    border-color: var(--primary);
+}
+
+.flight-prefix {
+    padding: 0.5rem 0.3rem;
+    border: none;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 1.05rem;
+    cursor: pointer;
+    outline: none;
+    border-right: 1px solid var(--border);
+    flex: 0 0 50px; /* Фиксированная ширина для префикса */
+}
+
+.flight-number {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0;
+    height: 100%;
+    font-size: 1.05rem;
+    background: var(--surface);
+    color: var(--text);
+    text-align: center;
+    outline: none;
+    min-width: 0; /* Позволяет сжиматься */
+}
+
+.flight-number::placeholder {
+    color: var(--secondary-text);
+    opacity: 0.7;
+}
+
+@media (max-width: 480px) {
+    .flight-number-wrapper {
+        height: 40px;
+        width: 50%; /* Сохранение ширины */
+        max-width: 150px; /* Уменьшил для мобильных */
+    }
+
+    .flight-prefix {
+        padding: 0.3rem 0.2rem;
+        font-size: 1rem;
+        flex: 0 0 40px; /* Уменьшил ширину */
+    }
+
+    .flight-number {
+        padding: 0.3rem;
+        font-size: 1rem;
     }
 }
