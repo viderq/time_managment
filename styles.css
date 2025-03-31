@@ -7,7 +7,7 @@
     --border: #E2E8F0;
     --icon-color: #6B7280;
     --secondary-text: #64748B;
-    --warning: #F97316;
+    --warning: #F97316; /* Оранжевый цвет для "нет данных" */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,13 +18,30 @@
         --border: #334155;
         --icon-color: #94A3B8;
         --secondary-text: #94A3B8;
-        .hidden {
-            display: none;
-        }
-        --warning: #FB923C;
+        --warning: #FB923C; /* Светлее оранжевый для темной темы */
     }
 }
 
+/* Стили для flight-time-display при "нет данных" */
+.flight-time-display.no-data {
+    color: var(--warning);
+}
+
+/* Анимация тряски */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+.airport-code.shake,
+.airport-name.shake {
+    animation: shake 0.3s ease-in-out;
+}
+
+/* Остальные стили */
 * {
     margin: 0;
     padding: 0;
@@ -151,13 +168,6 @@ body {
     content: attr(placeholder);
     color: var(--secondary-text);
     opacity: 0.7;
-}
-
-.no-data-message {
-    color: var(--warning);
-    font-size: 0.9rem;
-    text-align: center;
-    margin: 0.5rem 0;
 }
 
 .date-input::placeholder {
@@ -334,7 +344,7 @@ body {
 }
 
 .sleep-value {
-    font-size: 1.8rem;
+    font-size: 1.4rem; /* Уменьшено с 1.8rem */
     font-weight: 700;
     min-width: 0;
     text-align: center;
@@ -631,11 +641,6 @@ body {
         max-width: 100%;
     }
 
-    .no-data-message {
-        font-size: 0.8rem;
-        margin: 0.3rem 0;
-    }
-
     .airports {
         gap: 0.75rem;
     }
@@ -700,7 +705,7 @@ body {
     }
 
     .sleep-value {
-        font-size: 1.5rem;
+        font-size: 1.2rem; /* Уменьшено с 1.5rem */
     }
 
     .sleep-btn {
@@ -789,8 +794,8 @@ body {
     height: 46px;
     overflow: hidden;
     transition: border-color 0.2s;
-    width: 50%; /* Уменьшил ширину, так как теперь только два элемента */
-    max-width: 180px; /* Уменьшил максимальную ширину */
+    width: 50%;
+    max-width: 180px;
 }
 
 .flight-number-wrapper:focus-within {
@@ -806,7 +811,7 @@ body {
     cursor: pointer;
     outline: none;
     border-right: 1px solid var(--border);
-    flex: 0 0 50px; /* Фиксированная ширина для префикса */
+    flex: 0 0 50px;
 }
 
 .flight-number {
@@ -820,7 +825,7 @@ body {
     color: var(--text);
     text-align: center;
     outline: none;
-    min-width: 0; /* Позволяет сжиматься */
+    min-width: 0;
 }
 
 .flight-number::placeholder {
@@ -831,14 +836,14 @@ body {
 @media (max-width: 480px) {
     .flight-number-wrapper {
         height: 40px;
-        width: 50%; /* Сохранение ширины */
-        max-width: 150px; /* Уменьшил для мобильных */
+        width: 50%;
+        max-width: 150px;
     }
 
     .flight-prefix {
         padding: 0.3rem 0.2rem;
         font-size: 1rem;
-        flex: 0 0 40px; /* Уменьшил ширину */
+        flex: 0 0 40px;
     }
 
     .flight-number {
