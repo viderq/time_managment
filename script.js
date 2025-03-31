@@ -457,4 +457,18 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem('selectedTimezone', e.target.value);
         updateTime();
     });
+
+    // Динамическая подстройка ширины date-input под flight-time-inputs
+    function adjustDateInputWidth() {
+        const flightTimeInputs = document.querySelector('.flight-time-inputs');
+        const dateInput = document.querySelector('.date-input');
+        if (flightTimeInputs && dateInput) {
+            const flightTimeInputsWidth = flightTimeInputs.getBoundingClientRect().width;
+            dateInput.style.width = `${flightTimeInputsWidth}px`;
+        }
+    }
+
+    // Вызываем при загрузке и при изменении размера окна
+    window.addEventListener('resize', adjustDateInputWidth);
+    adjustDateInputWidth();
 });
