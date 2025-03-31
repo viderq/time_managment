@@ -15,12 +15,74 @@ document.addEventListener("DOMContentLoaded", function () {
     const arrivalAirportCode = document.querySelector('.airport:nth-child(2) .airport-code');
     const arrivalAirportName = document.querySelector('.airport:nth-child(2) .airport-name');
 
-    // Элемент для сообщения "нет данных"
-    const noDataMessage = document.getElementById('no-data-message');
-
     // Элементы настроек
     const autoTimezoneCheckbox = document.getElementById('auto-timezone');
     const timezoneSelect = document.getElementById('timezone-select');
+
+    // Установка значений по умолчанию из localStorage или инициализация
+    function loadSavedData() {
+        const savedDate = localStorage.getItem('flightDate');
+        const savedPrefix = localStorage.getItem('flightPrefix');
+        const savedNumber = localStorage.getItem('flightNumber');
+
+        if (savedDate) {
+            dateInput.value = savedDate;
+        } else {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const formattedDate = tomorrow.toISOString().split('T')[0]; // Формат YYYY-MM-DD
+            dateInput.value = formattedDate;
+            localStorage.setItem('flightDate', formattedDate);
+        }
+
+        if (savedPrefix) {
+            flightPrefixSelect.value = savedPrefix;
+        } else {
+            localStorage.setItem('flightPrefix', flightPrefixSelect.value); // Сохраняем значение по умолчанию (SU)
+        }
+
+        if (savedNumber) {
+            flightNumberInput.value = savedNumber;
+        }
+
+        // Если есть все данные, сразу обновляем информацию о рейсе
+        if (savedDate && savedNumber) {
+            handleFlightInfoUpdate();
+        }
+    }
+
+    // Вызываем функцию при загрузке
+    loadSavedData();
+
+    // Сохранение данных в localStorage при изменении
+    dateInput.addEventListener('change', () => {
+        localStorage.setItem('flightDate', dateInput.value);
+        if (flightNumberInput.value) {
+            handleFlightInfoUpdate();
+        }
+    });
+
+    flightPrefixSelect.addEventListener('change', () => {
+        localStorage.setItem('flightPrefix', flightPrefixSelect.value);
+        if (dateInput.value && flightNumberInput.value) {
+            handleFlightInfoUpdate();
+        }
+    });
+
+    flightNumberInput.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value.length > 5) {
+            this.value = this.value.slice(0, 5);
+        }
+        localStorage.setItem('flightNumber', this.value);
+        managePlaceholders();
+    });
+
+    flightNumberInput.addEventListener('blur', () => {
+        if (dateInput.value) {
+            handleFlightInfoUpdate();
+        }
+    });
 
     // Функция для управления плейсхолдерами
     function managePlaceholders() {
@@ -38,15 +100,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     managePlaceholders();
-
-    dateInput.addEventListener("input", managePlaceholders);
-    flightNumberInput.addEventListener("input", function(e) {
-        this.value = this.value.replace(/[^0-9]/g, '');
-        if (this.value.length > 5) {
-            this.value = this.value.slice(0, 5);
-        }
-        managePlaceholders();
-    });
 
     // Функция для получения информации о рейсе
     function fetchFlightInfo(flightNumber, date) {
@@ -74,21 +127,32 @@ document.addEventListener("DOMContentLoaded", function () {
                 })
                 .catch(error => {
                     console.error("Ошибка при запросе:", error);
-                    if (noDataMessage) {
-                        noDataMessage.textContent = 'Ошибка при загрузке данных';
-                        noDataMessage.style.display = 'block';
-                    }
+                    flightTimeDisplay.textContent = 'нет данных';
+                    flightTimeDisplay.classList.add('no-data');
+                    triggerShakeAndVibrate();
                     resolve(null);
                 });
         });
     }
 
+    // Функция для активации анимации тряски и вибрации
+    function triggerShakeAndVibrate() {
+        const elementsToShake = [departureAirportCode, departureAirportName, arrivalAirportCode, arrivalAirportName];
+        elementsToShake.forEach(element => {
+            element.classList.add('shake');
+            setTimeout(() => element.classList.remove('shake'), 300); // Убираем класс после анимации
+        });
+
+        // Виброотклик (если поддерживается)
+        if ('vibrate' in navigator) {
+            navigator.vibrate([100, 50, 100]); // Паттерн вибрации: 100мс вкл, 50мс выкл, 100мс вкл
+        }
+    }
+
     // Функция для отображения информации о рейсе
     function displayFlightInfo(flightData) {
-        if (noDataMessage) {
-            noDataMessage.style.display = 'none';
-        }
-        flightTimeDisplay.textContent = '';
+        flightTimeDisplay.textContent = 'нет данных';
+        flightTimeDisplay.classList.add('no-data');
 
         const applyFadeAnimation = (element, newText) => {
             element.classList.remove('fade');
@@ -98,16 +162,13 @@ document.addEventListener("DOMContentLoaded", function () {
             }, 0);
         };
 
-        applyFadeAnimation(departureAirportCode, 'SVO');
-        applyFadeAnimation(departureAirportName, 'Шереметьево');
-        applyFadeAnimation(arrivalAirportCode, 'LED');
-        applyFadeAnimation(arrivalAirportName, 'Пулково');
-
         if (!flightData || !flightData.data || !flightData.data.routes || flightData.data.routes.length === 0) {
-            if (noDataMessage) {
-                noDataMessage.style.display = 'block';
-            }
-            console.log("Аэропорт прилета: LED");
+            departureAirportCode.textContent = '---';
+            departureAirportName.textContent = '-----';
+            arrivalAirportCode.textContent = '---';
+            arrivalAirportName.textContent = '-----';
+            triggerShakeAndVibrate();
+            console.log("Аэропорт прилета: ---");
             console.log("Время вылета: Не указано");
             return;
         }
@@ -123,6 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         flightTimeDisplay.textContent = formattedTime;
+        flightTimeDisplay.classList.remove('no-data');
         applyFadeAnimation(departureAirportCode, flight.leg.departure.scheduled.airportCode || 'N/A');
         applyFadeAnimation(departureAirportName, flight.leg.departure.scheduled.airport || 'Неизвестно');
         applyFadeAnimation(arrivalAirportCode, flight.leg.arrival.scheduled.airportCode || 'N/A');
@@ -140,15 +202,14 @@ document.addEventListener("DOMContentLoaded", function () {
         const date = dateInput.value;
 
         if (!number || !date || !number.match(/^\d{1,5}$/)) {
-            if (noDataMessage) {
-                noDataMessage.style.display = 'none';
-            }
-            flightTimeDisplay.textContent = '';
-            departureAirportCode.textContent = 'SVO';
-            departureAirportName.textContent = 'Шереметьево';
-            arrivalAirportCode.textContent = 'LED';
-            arrivalAirportName.textContent = 'Пулково';
-            console.log("Аэропорт прилета: LED");
+            flightTimeDisplay.textContent = 'нет данных';
+            flightTimeDisplay.classList.add('no-data');
+            departureAirportCode.textContent = '---';
+            departureAirportName.textContent = '-----';
+            arrivalAirportCode.textContent = '---';
+            arrivalAirportName.textContent = '-----';
+            triggerShakeAndVibrate();
+            console.log("Аэропорт прилета: ---");
             console.log("Время вылета: Не указано");
             return;
         }
@@ -158,26 +219,15 @@ document.addEventListener("DOMContentLoaded", function () {
             displayFlightInfo(flightData);
         } catch (error) {
             console.error("Ошибка в handleFlightInfoUpdate:", error);
+            flightTimeDisplay.textContent = 'нет данных';
+            flightTimeDisplay.classList.add('no-data');
+            departureAirportCode.textContent = '---';
+            departureAirportName.textContent = '-----';
+            arrivalAirportCode.textContent = '---';
+            arrivalAirportName.textContent = '-----';
+            triggerShakeAndVibrate();
         }
     }
-
-    flightNumberInput.addEventListener('blur', () => {
-        if (dateInput.value) {
-            handleFlightInfoUpdate();
-        }
-    });
-
-    flightPrefixSelect.addEventListener('change', () => {
-        if (dateInput.value && flightNumberInput.value) {
-            handleFlightInfoUpdate();
-        }
-    });
-
-    dateInput.addEventListener('change', () => {
-        if (flightNumberInput.value) {
-            handleFlightInfoUpdate();
-        }
-    });
 
     function toggleRoomExitCard(show) {
         if (show) {
@@ -349,16 +399,28 @@ document.addEventListener("DOMContentLoaded", function () {
     setInterval(updateTime, 1000);
     updateTime();
 
+    // Обновление отображения времени сна
     const updateSleep = () => {
-        document.getElementById('sleep-value').textContent = `${sleepHours.toFixed(1)}ч`;
+        const hours = Math.floor(sleepHours);
+        const minutes = Math.round((sleepHours - hours) * 60); // Преобразуем дробную часть в минуты
+        document.getElementById('sleep-value').textContent = `${hours} часов ${minutes} минут`;
     };
 
+    // Инициализация значения при загрузке
+    updateSleep();
+
     document.getElementById('increase-sleep').addEventListener('click', () => {
-        if (sleepHours < 10) sleepHours += 0.5, updateSleep();
+        if (sleepHours < 10) {
+            sleepHours += 0.5;
+            updateSleep();
+        }
     });
 
     document.getElementById('decrease-sleep').addEventListener('click', () => {
-        if (sleepHours > 0) sleepHours -= 0.5, updateSleep();
+        if (sleepHours > 0) {
+            sleepHours -= 0.5;
+            updateSleep();
+        }
     });
 
     const settingsButton = document.getElementById('settings-button');
