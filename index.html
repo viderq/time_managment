@@ -7,7 +7,6 @@
     <script src="script.js" defer></script>
     <title>Flight Time Planner</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
 </head>
 <body>
     <div class="dashboard">
@@ -35,10 +34,6 @@
                     </div>
                     <div class="flight-time-display" id="flight-time-display" placeholder="Время вылета"></div>
                 </div>
-            </div>
-
-            <div class="no-data-message" id="no-data-message" style="display: none;">
-                Нет данных
             </div>
 
             <div class="airports">
@@ -105,7 +100,7 @@
         <div class="phase-grid">
             <div class="phase-card">
                 <i class="fas fa-bed phase-icon"></i>
-                <div>Уход ко сну</div>
+                <div>Отбой</div>
                 <div id="bedtime"></div>
             </div>
             <div class="phase-card">
@@ -115,7 +110,7 @@
             </div>
             <div class="phase-card hidden" id="room-exit">
                 <i class="fas fa-door-open phase-icon"></i>
-                <div>Покинуть номер</div>
+                <div>Выход</div>
                 <div id="roomExitTime"></div>
             </div>
             <div class="phase-card">
