@@ -3,7 +3,6 @@
   "short_name": "CabinTime",
   "start_url": "/time_managment/index.html",
   "display": "standalone",
-  "theme_color": "#007BFF",
   "icons": [
     {
       "src": "/logo_64.png",
