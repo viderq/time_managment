@@ -45,16 +45,13 @@ document.addEventListener("DOMContentLoaded", function () {
             flightNumberInput.value = savedNumber;
         }
 
-        // Если есть все данные, сразу обновляем информацию о рейсе
         if (savedDate && savedNumber) {
             handleFlightInfoUpdate();
         }
     }
 
-    // Вызываем функцию при загрузке
     loadSavedData();
 
-    // Сохранение данных в localStorage при изменении
     dateInput.addEventListener('change', () => {
         localStorage.setItem('flightDate', dateInput.value);
         if (flightNumberInput.value) {
@@ -84,7 +81,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Функция для управления плейсхолдерами
     function managePlaceholders() {
         if (!dateInput.value) {
             dateInput.classList.add("placeholder");
@@ -101,7 +97,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     managePlaceholders();
 
-    // Функция для получения информации о рейсе
     function fetchFlightInfo(flightNumber, date) {
         return new Promise((resolve, reject) => {
             console.log("Дата:", date);
@@ -135,21 +130,18 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Функция для активации анимации тряски и вибрации
     function triggerShakeAndVibrate() {
         const elementsToShake = [departureAirportCode, departureAirportName, arrivalAirportCode, arrivalAirportName];
         elementsToShake.forEach(element => {
             element.classList.add('shake');
-            setTimeout(() => element.classList.remove('shake'), 300); // Убираем класс после анимации
+            setTimeout(() => element.classList.remove('shake'), 300);
         });
 
-        // Виброотклик (если поддерживается)
         if ('vibrate' in navigator) {
-            navigator.vibrate([100, 50, 100]); // Паттерн вибрации: 100мс вкл, 50мс выкл, 100мс вкл
+            navigator.vibrate([100, 50, 100]);
         }
     }
 
-    // Функция для отображения информации о рейсе
     function displayFlightInfo(flightData) {
         flightTimeDisplay.textContent = 'нет данных';
         flightTimeDisplay.classList.add('no-data');
@@ -194,7 +186,6 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("Время вылета:", formattedTime);
     }
 
-    // Обработчик для получения информации о рейсе
     async function handleFlightInfoUpdate() {
         const prefix = flightPrefixSelect.value;
         const number = flightNumberInput.value.trim();
@@ -249,18 +240,16 @@ document.addEventListener("DOMContentLoaded", function () {
     function adjustPhaseCardSizes(expanded) {
         phaseGrid.classList.toggle("expanded", expanded);
         phaseCards.forEach(card => {
-            card.style.transition = "width 1s ease, height 1s ease, transform 2s ease";
+            // Устанавливаем плавный переход только для transform с длительностью 0.6s
+            card.style.transition = "transform 0.6s ease-in-out";
             requestAnimationFrame(() => {
                 card.style.transform = expanded ? "scale(0.9)" : "scale(1)";
             });
         });
-        setTimeout(() => {
-            phaseCards.forEach(card => {
-                card.style.transform = "scale(1)";
-            });
-        }, 100);
+        // Убираем дополнительный setTimeout, так как переход теперь управляется CSS
     }
 
+    // Обработчик переключения режимов с заменой иконки
     document.querySelectorAll('.mode-btn').forEach(btn => {
         btn.addEventListener('click', function () {
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -268,6 +257,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const phaseGrid = document.querySelector('.phase-grid');
             const roomExitCard = document.getElementById('room-exit');
+            const departureIcon = document.querySelector('#departuretime').parentElement.querySelector('.phase-icon');
 
             if (this.textContent.trim() === "Из отеля") {
                 phaseGrid.classList.add('expanded');
@@ -276,12 +266,36 @@ document.addEventListener("DOMContentLoaded", function () {
                 setTimeout(() => {
                     roomExitCard.classList.remove('appearing');
                 }, 300);
+
+                // Анимация замены иконки на шаттл
+                departureIcon.classList.add('icon-disappear');
+                setTimeout(() => {
+                    departureIcon.classList.remove('fas', 'fa-car');
+                    departureIcon.classList.add('fa-solid', 'fa-van-shuttle');
+                    departureIcon.classList.remove('icon-disappear');
+                    departureIcon.classList.add('icon-appear');
+                    setTimeout(() => {
+                        departureIcon.classList.remove('icon-appear');
+                    }, 300);
+                }, 300);
             } else {
                 roomExitCard.classList.add('disappearing');
                 setTimeout(() => {
                     phaseGrid.classList.remove('expanded');
                     roomExitCard.classList.add('hidden');
                     roomExitCard.classList.remove('disappearing');
+                }, 300);
+
+                // Анимация замены иконки на машину
+                departureIcon.classList.add('icon-disappear');
+                setTimeout(() => {
+                    departureIcon.classList.remove('fa-solid', 'fa-van-shuttle');
+                    departureIcon.classList.add('fas', 'fa-car');
+                    departureIcon.classList.remove('icon-disappear');
+                    departureIcon.classList.add('icon-appear');
+                    setTimeout(() => {
+                        departureIcon.classList.remove('icon-appear');
+                    }, 300);
                 }, 300);
             }
 
@@ -399,14 +413,12 @@ document.addEventListener("DOMContentLoaded", function () {
     setInterval(updateTime, 1000);
     updateTime();
 
-    // Обновление отображения времени сна
     const updateSleep = () => {
         const hours = Math.floor(sleepHours);
-        const minutes = Math.round((sleepHours - hours) * 60); // Преобразуем дробную часть в минуты
+        const minutes = Math.round((sleepHours - hours) * 60);
         document.getElementById('sleep-value').textContent = `${hours} часов ${minutes} минут`;
     };
 
-    // Инициализация значения при загрузке
     updateSleep();
 
     document.getElementById('increase-sleep').addEventListener('click', () => {
@@ -458,7 +470,6 @@ document.addEventListener("DOMContentLoaded", function () {
         updateTime();
     });
 
-    // Динамическая подстройка ширины date-input под flight-time-inputs
     function adjustDateInputWidth() {
         const flightTimeInputs = document.querySelector('.flight-time-inputs');
         const dateInput = document.querySelector('.date-input');
@@ -468,9 +479,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Вызываем после полной загрузки DOM и стилей
     window.addEventListener('load', () => {
-        setTimeout(adjustDateInputWidth, 100); // Небольшая задержка для полной отрисовки
+        setTimeout(adjustDateInputWidth, 100);
     });
     window.addEventListener('resize', adjustDateInputWidth);
 });
