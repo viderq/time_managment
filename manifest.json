@@ -1,0 +1,25 @@
+{
+  "name": "CabinTime",
+  "short_name": "CabinTime",
+  "start_url": "/time_managment/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007BFF",
+  "icons": [
+    {
+      "src": "/logo_64.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo_128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo_256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ]
+}
