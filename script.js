@@ -1,3 +1,12 @@
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('Service Worker зарегистрирован:', reg))
+      .catch(err => console.error('Ошибка регистрации Service Worker:', err));
+  });
+}
+
+
 document.addEventListener("DOMContentLoaded", function () {
     const roomExitCard = document.getElementById("room-exit");
     const phaseGrid = document.querySelector(".phase-grid");
