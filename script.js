@@ -468,7 +468,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Вызываем при загрузке и при изменении размера окна
+    // Вызываем после полной загрузки DOM и стилей
+    window.addEventListener('load', () => {
+        setTimeout(adjustDateInputWidth, 100); // Небольшая задержка для полной отрисовки
+    });
     window.addEventListener('resize', adjustDateInputWidth);
-    adjustDateInputWidth();
 });
