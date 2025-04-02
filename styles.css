@@ -52,7 +52,8 @@
 html, body {
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
+    overflow-x: hidden; /* Отключаем только горизонтальную прокрутку */
+    touch-action: pan-x pan-y; /* Отключаем зум через жесты */
 }
 
 body {
@@ -63,12 +64,16 @@ body {
     margin: 0 auto;
     max-width: 800px;
     padding: 1.5rem;
+    box-sizing: border-box;
 }
 
 .dashboard {
     display: grid;
     gap: 1.5rem;
     padding-bottom: 4rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .header {
@@ -117,12 +122,12 @@ body {
     gap: 0.75rem;
     margin-bottom: 1.5rem;
     width: 100%;
-    max-width: 520px;
+    max-width: 100%; /* Устанавливаем максимальную ширину 100% */
 }
 
 .date-input {
     width: 100%;
-    max-width: 520px;
+    max-width: 100%; /* Устанавливаем максимальную ширину 100% */
     padding: 0.65rem;
     border: 1px solid var(--border);
     border-radius: 0.875rem;
@@ -130,7 +135,7 @@ body {
     font-size: 0.9rem;
     background: var(--surface);
     color: var(--text);
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, width 0.3s ease, max-width 0.3s ease;
     text-align: center;
     box-sizing: border-box;
 }
@@ -146,15 +151,16 @@ body {
     align-items: center;
     flex-wrap: nowrap;
     width: 100%;
-    max-width: 520px;
+    max-width: 100%; /* Устанавливаем максимальную ширину 100% */
     justify-content: center;
     box-sizing: border-box;
+    transition: width 0.3s ease, max-width 0.3s ease;
 }
 
 .flight-time-display {
     flex: 1 1 0;
     min-width: 0;
-    max-width: 100%;
+    max-width: 100%; /* Убедимся, что элемент не выходит за пределы контейнера */
     padding: 0.75rem;
     border: 1px solid var(--border);
     border-radius: 0.875rem;
@@ -168,6 +174,7 @@ body {
     justify-content: center;
     position: relative;
     box-sizing: border-box;
+    transition: width 0.3s ease, max-width 0.3s ease;
 }
 
 .flight-time-display:empty::before {
@@ -464,6 +471,7 @@ body {
     z-index: 1000;
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
+    overflow: hidden; /* Отключаем прокрутку в модальном окне */
 }
 
 .settings-modal.active {
@@ -481,6 +489,7 @@ body {
     text-align: left;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     animation: modalFadeIn 0.3s ease-in-out;
+    overflow: hidden; /* Убедимся, что контент модального окна не вызывает прокрутку */
 }
 
 .modal-content h2 {
@@ -651,6 +660,7 @@ body {
         width: 50%;
         max-width: 100%;
         box-sizing: border-box;
+        flex-shrink: 1; /* Позволяем элементу сжиматься */
     }
 
     .airports {
@@ -805,10 +815,11 @@ body {
     border-radius: 0.875rem;
     height: 46px;
     overflow: hidden;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, width 0.3s ease, max-width 0.3s ease;
     width: 50%;
     max-width: 180px;
     box-sizing: border-box;
+    flex-shrink: 1; /* Позволяем элементу сжиматься */
 }
 
 .flight-number-wrapper:focus-within {
@@ -851,6 +862,7 @@ body {
         height: 40px;
         width: 50%;
         max-width: 150px;
+        flex-shrink: 1; /* Позволяем элементу сжиматься */
     }
 
     .flight-prefix {
