@@ -41,6 +41,25 @@
     animation: shake 0.3s ease-in-out;
 }
 
+/* Анимации для смены иконок */
+@keyframes appear {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes disappear {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0.8); opacity: 0; }
+}
+
+.icon-appear {
+    animation: appear 0.3s ease-in-out;
+}
+
+.icon-disappear {
+    animation: disappear 0.3s ease-in-out;
+}
+
 /* Остальные стили */
 * {
     margin: 0;
@@ -52,8 +71,8 @@
 html, body {
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden; /* Отключаем только горизонтальную прокрутку */
-    touch-action: pan-x pan-y; /* Отключаем зум через жесты */
+    overflow-x: hidden;
+    touch-action: pan-x pan-y;
 }
 
 body {
@@ -122,12 +141,12 @@ body {
     gap: 0.75rem;
     margin-bottom: 1.5rem;
     width: 100%;
-    max-width: 100%; /* Устанавливаем максимальную ширину 100% */
+    max-width: 100%;
 }
 
 .date-input {
     width: 100%;
-    max-width: 100%; /* Устанавливаем максимальную ширину 100% */
+    max-width: 100%;
     padding: 0.65rem;
     border: 1px solid var(--border);
     border-radius: 0.875rem;
@@ -151,7 +170,7 @@ body {
     align-items: center;
     flex-wrap: nowrap;
     width: 100%;
-    max-width: 100%; /* Устанавливаем максимальную ширину 100% */
+    max-width: 100%;
     justify-content: center;
     box-sizing: border-box;
     transition: width 0.3s ease, max-width 0.3s ease;
@@ -160,7 +179,7 @@ body {
 .flight-time-display {
     flex: 1 1 0;
     min-width: 0;
-    max-width: 100%; /* Убедимся, что элемент не выходит за пределы контейнера */
+    max-width: 100%;
     padding: 0.75rem;
     border: 1px solid var(--border);
     border-radius: 0.875rem;
@@ -276,21 +295,6 @@ body {
     100% { transform: scale(1); opacity: 1; }
 }
 
-@keyframes appear {
-    0% { transform: scale(0.8); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-@keyframes disappear {
-    0% { transform: scale(1); opacity: 1; }
-    100% { transform: scale(0.8); opacity: 0; }
-}
-
-@keyframes modalFadeIn {
-    0% { opacity: 0; transform: scale(0.95); }
-    100% { opacity: 1; transform: scale(1); }
-}
-
 .phase-card.appearing,
 .countdown-card.appearing {
     animation: appear 0.3s ease-in-out;
@@ -324,9 +328,17 @@ body {
     border-radius: 1rem;
     text-align: center;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    transition: transform 0.6s ease;
+    transition: transform 0.6s ease-in-out; /* Устанавливаем плавный переход по умолчанию */
     min-width: 0;
     flex-shrink: 1;
+}
+
+.phase-card > div:nth-child(2) {
+    margin-bottom: 0.5rem;
+}
+
+.phase-card > div:nth-child(3) {
+    margin-top: 0.5rem;
 }
 
 .phase-icon {
@@ -357,7 +369,7 @@ body {
 }
 
 .sleep-value {
-    font-size: 1.4rem; /* Уменьшено с 1.8rem */
+    font-size: 1.4rem;
     font-weight: 700;
     min-width: 0;
     text-align: center;
@@ -471,7 +483,7 @@ body {
     z-index: 1000;
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
-    overflow: hidden; /* Отключаем прокрутку в модальном окне */
+    overflow: hidden;
 }
 
 .settings-modal.active {
@@ -489,7 +501,12 @@ body {
     text-align: left;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     animation: modalFadeIn 0.3s ease-in-out;
-    overflow: hidden; /* Убедимся, что контент модального окна не вызывает прокрутку */
+    overflow: hidden;
+}
+
+@keyframes modalFadeIn {
+    0% { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
 }
 
 .modal-content h2 {
@@ -660,7 +677,7 @@ body {
         width: 50%;
         max-width: 100%;
         box-sizing: border-box;
-        flex-shrink: 1; /* Позволяем элементу сжиматься */
+        flex-shrink: 1;
     }
 
     .airports {
@@ -709,6 +726,14 @@ body {
         padding: 0.75rem;
     }
 
+    .phase-card > div:nth-child(2) {
+        margin-bottom: 0.3rem;
+    }
+
+    .phase-card > div:nth-child(3) {
+        margin-top: 0.3rem;
+    }
+
     .phase-icon {
         font-size: 1.5rem;
         margin-bottom: 0.3rem;
@@ -727,7 +752,7 @@ body {
     }
 
     .sleep-value {
-        font-size: 1.2rem; /* Уменьшено с 1.5rem */
+        font-size: 1.2rem;
     }
 
     .sleep-btn {
@@ -819,7 +844,7 @@ body {
     width: 50%;
     max-width: 180px;
     box-sizing: border-box;
-    flex-shrink: 1; /* Позволяем элементу сжиматься */
+    flex-shrink: 1;
 }
 
 .flight-number-wrapper:focus-within {
@@ -862,7 +887,7 @@ body {
         height: 40px;
         width: 50%;
         max-width: 150px;
-        flex-shrink: 1; /* Позволяем элементу сжиматься */
+        flex-shrink: 1;
     }
 
     .flight-prefix {
