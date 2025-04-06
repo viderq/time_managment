@@ -4,7 +4,7 @@
   "start_url": "/time_managment/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#007BFF",
+  "theme_color": "#4169E1",
   "icons": [
     {
       "src": "/logo_64.png",
