@@ -6,55 +6,55 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-
 document.addEventListener("DOMContentLoaded", function () {
     const roomExitCard = document.getElementById("room-exit");
     const phaseGrid = document.querySelector(".phase-grid");
     const phaseCards = document.querySelectorAll(".phase-card:not(#room-exit)");
-
-    // Получаем поля ввода
     const dateInput = document.querySelector(".date-input");
     const flightNumberInput = document.querySelector('.flight-number');
     const flightPrefixSelect = document.querySelector('.flight-prefix');
     const flightTimeDisplay = document.getElementById('flight-time-display');
-
-    // Элементы для отображения аэропортов
     const departureAirportCode = document.querySelector('.airport:nth-child(1) .airport-code');
     const departureAirportName = document.querySelector('.airport:nth-child(1) .airport-name');
     const arrivalAirportCode = document.querySelector('.airport:nth-child(2) .airport-code');
     const arrivalAirportName = document.querySelector('.airport:nth-child(2) .airport-name');
-
-    // Элементы настроек
     const autoTimezoneCheckbox = document.getElementById('auto-timezone');
     const timezoneSelect = document.getElementById('timezone-select');
 
-    // Установка значений по умолчанию из localStorage или инициализация
     function loadSavedData() {
         const savedDate = localStorage.getItem('flightDate');
-        const savedPrefix = localStorage.getItem('flightPrefix');
+        const savedPrefix = localStorage.getItem('flightPrefix') || 'SU';
         const savedNumber = localStorage.getItem('flightNumber');
+        const savedEventTime = localStorage.getItem('eventTime');
 
         if (savedDate) {
             dateInput.value = savedDate;
         } else {
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
-            const formattedDate = tomorrow.toISOString().split('T')[0]; // Формат YYYY-MM-DD
+            const formattedDate = tomorrow.toISOString().split('T')[0];
             dateInput.value = formattedDate;
             localStorage.setItem('flightDate', formattedDate);
         }
 
-        if (savedPrefix) {
-            flightPrefixSelect.value = savedPrefix;
-        } else {
-            localStorage.setItem('flightPrefix', flightPrefixSelect.value); // Сохраняем значение по умолчанию (SU)
-        }
+        flightPrefixSelect.value = savedPrefix;
+        toggleEventMode(savedPrefix === 'EVENT');
 
         if (savedNumber) {
             flightNumberInput.value = savedNumber;
         }
 
-        if (savedDate && savedNumber) {
+        if (savedEventTime && savedPrefix === 'EVENT') {
+            toggleEventMode(true);
+            const timeInput = document.createElement('input');
+            timeInput.type = 'time';
+            timeInput.className = 'flight-time-display input-mode';
+            timeInput.value = savedEventTime;
+            flightTimeDisplay.replaceWith(timeInput);
+            timeInput.addEventListener('change', updateFlightTimeFromEvent);
+        }
+
+        if (savedDate && savedNumber && savedPrefix !== 'EVENT') {
             handleFlightInfoUpdate();
         }
     }
@@ -63,14 +63,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
     dateInput.addEventListener('change', () => {
         localStorage.setItem('flightDate', dateInput.value);
-        if (flightNumberInput.value) {
+        if (flightPrefixSelect.value === 'EVENT') {
+            updateFlightTimeFromEvent();
+        } else if (flightNumberInput.value) {
             handleFlightInfoUpdate();
         }
     });
 
     flightPrefixSelect.addEventListener('change', () => {
         localStorage.setItem('flightPrefix', flightPrefixSelect.value);
-        if (dateInput.value && flightNumberInput.value) {
+        const isEvent = flightPrefixSelect.value === 'EVENT';
+        toggleEventMode(isEvent);
+
+        if (isEvent) {
+            const savedEventTime = localStorage.getItem('eventTime');
+            const timeInput = document.createElement('input');
+            timeInput.type = 'time';
+            timeInput.className = 'flight-time-display input-mode';
+            if (savedEventTime) {
+                timeInput.value = savedEventTime;
+            }
+            flightTimeDisplay.replaceWith(timeInput);
+            timeInput.addEventListener('change', updateFlightTimeFromEvent);
+        } else if (dateInput.value && flightNumberInput.value) {
             handleFlightInfoUpdate();
         }
     });
@@ -85,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     flightNumberInput.addEventListener('blur', () => {
-        if (dateInput.value) {
+        if (dateInput.value && flightPrefixSelect.value !== 'EVENT') {
             handleFlightInfoUpdate();
         }
     });
@@ -131,8 +146,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 })
                 .catch(error => {
                     console.error("Ошибка при запросе:", error);
-                    flightTimeDisplay.textContent = 'нет данных';
-                    flightTimeDisplay.classList.add('no-data');
+                    const newFlightTimeDisplay = document.createElement('div');
+                    newFlightTimeDisplay.className = 'flight-time-display';
+                    newFlightTimeDisplay.id = 'flight-time-display';
+                    newFlightTimeDisplay.textContent = 'нет данных';
+                    newFlightTimeDisplay.classList.add('no-data');
+                    document.querySelector('.flight-time-inputs').replaceChild(newFlightTimeDisplay, document.querySelector('.flight-time-display'));
                     triggerShakeAndVibrate();
                     resolve(null);
                 });
@@ -152,16 +171,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function displayFlightInfo(flightData) {
-        flightTimeDisplay.textContent = 'нет данных';
-        flightTimeDisplay.classList.add('no-data');
-
-        const applyFadeAnimation = (element, newText) => {
-            element.classList.remove('fade');
-            setTimeout(() => {
-                element.textContent = newText;
-                element.classList.add('fade');
-            }, 0);
-        };
+        const currentElement = document.querySelector('.flight-time-display');
+        const newFlightTimeDisplay = document.createElement('div');
+        newFlightTimeDisplay.className = 'flight-time-display';
+        newFlightTimeDisplay.id = 'flight-time-display';
+        newFlightTimeDisplay.textContent = 'нет данных';
+        newFlightTimeDisplay.classList.add('no-data');
 
         if (!flightData || !flightData.data || !flightData.data.routes || flightData.data.routes.length === 0) {
             departureAirportCode.textContent = '---';
@@ -171,6 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
             triggerShakeAndVibrate();
             console.log("Аэропорт прилета: ---");
             console.log("Время вылета: Не указано");
+            currentElement.replaceWith(newFlightTimeDisplay);
             return;
         }
 
@@ -184,8 +200,18 @@ document.addEventListener("DOMContentLoaded", function () {
             hour12: false
         });
 
-        flightTimeDisplay.textContent = formattedTime;
-        flightTimeDisplay.classList.remove('no-data');
+        newFlightTimeDisplay.textContent = formattedTime;
+        newFlightTimeDisplay.classList.remove('no-data');
+        currentElement.replaceWith(newFlightTimeDisplay);
+
+        const applyFadeAnimation = (element, newText) => {
+            element.classList.remove('fade');
+            setTimeout(() => {
+                element.textContent = newText;
+                element.classList.add('fade');
+            }, 0);
+        };
+
         applyFadeAnimation(departureAirportCode, flight.leg.departure.scheduled.airportCode || 'N/A');
         applyFadeAnimation(departureAirportName, flight.leg.departure.scheduled.airport || 'Неизвестно');
         applyFadeAnimation(arrivalAirportCode, flight.leg.arrival.scheduled.airportCode || 'N/A');
@@ -202,8 +228,14 @@ document.addEventListener("DOMContentLoaded", function () {
         const date = dateInput.value;
 
         if (!number || !date || !number.match(/^\d{1,5}$/)) {
-            flightTimeDisplay.textContent = 'нет данных';
-            flightTimeDisplay.classList.add('no-data');
+            const currentElement = document.querySelector('.flight-time-display');
+            const newFlightTimeDisplay = document.createElement('div');
+            newFlightTimeDisplay.className = 'flight-time-display';
+            newFlightTimeDisplay.id = 'flight-time-display';
+            newFlightTimeDisplay.textContent = 'нет данных';
+            newFlightTimeDisplay.classList.add('no-data');
+            currentElement.replaceWith(newFlightTimeDisplay);
+
             departureAirportCode.textContent = '---';
             departureAirportName.textContent = '-----';
             arrivalAirportCode.textContent = '---';
@@ -219,13 +251,51 @@ document.addEventListener("DOMContentLoaded", function () {
             displayFlightInfo(flightData);
         } catch (error) {
             console.error("Ошибка в handleFlightInfoUpdate:", error);
-            flightTimeDisplay.textContent = 'нет данных';
-            flightTimeDisplay.classList.add('no-data');
+            const currentElement = document.querySelector('.flight-time-display');
+            const newFlightTimeDisplay = document.createElement('div');
+            newFlightTimeDisplay.className = 'flight-time-display';
+            newFlightTimeDisplay.id = 'flight-time-display';
+            newFlightTimeDisplay.textContent = 'нет данных';
+            newFlightTimeDisplay.classList.add('no-data');
+            currentElement.replaceWith(newFlightTimeDisplay);
+
             departureAirportCode.textContent = '---';
             departureAirportName.textContent = '-----';
             arrivalAirportCode.textContent = '---';
             arrivalAirportName.textContent = '-----';
             triggerShakeAndVibrate();
+        }
+    }
+
+    function toggleEventMode(isEvent) {
+        if (isEvent) {
+            flightNumberInput.style.display = 'none';
+            flightPrefixSelect.classList.add('expanded'); // Увеличиваем ширину для "событие"
+        } else {
+            flightNumberInput.style.display = 'block';
+            flightPrefixSelect.classList.remove('expanded'); // Возвращаем базовую ширину для "SU" и "RA"
+            const currentElement = document.querySelector('.flight-time-display');
+            const newFlightTimeDisplay = document.createElement('div');
+            newFlightTimeDisplay.className = 'flight-time-display';
+            newFlightTimeDisplay.id = 'flight-time-display';
+            newFlightTimeDisplay.textContent = 'нет данных';
+            newFlightTimeDisplay.classList.add('no-data');
+            currentElement.replaceWith(newFlightTimeDisplay);
+        }
+    }
+
+    function updateFlightTimeFromEvent() {
+        const timeInput = document.querySelector('.flight-time-display.input-mode');
+        if (timeInput && timeInput.value) {
+            const timeValue = timeInput.value;
+            localStorage.setItem('eventTime', timeValue);
+            const [hours, minutes] = timeValue.split(':');
+            const formattedTime = `${hours}:${minutes}`;
+
+            departureAirportCode.textContent = '---';
+            departureAirportName.textContent = '-----';
+            arrivalAirportCode.textContent = '---';
+            arrivalAirportName.textContent = '-----';
         }
     }
 
@@ -249,16 +319,13 @@ document.addEventListener("DOMContentLoaded", function () {
     function adjustPhaseCardSizes(expanded) {
         phaseGrid.classList.toggle("expanded", expanded);
         phaseCards.forEach(card => {
-            // Устанавливаем плавный переход только для transform с длительностью 0.6s
             card.style.transition = "transform 0.6s ease-in-out";
             requestAnimationFrame(() => {
                 card.style.transform = expanded ? "scale(0.9)" : "scale(1)";
             });
         });
-        // Убираем дополнительный setTimeout, так как переход теперь управляется CSS
     }
 
-    // Обработчик переключения режимов с заменой иконки
     document.querySelectorAll('.mode-btn').forEach(btn => {
         btn.addEventListener('click', function () {
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -276,7 +343,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     roomExitCard.classList.remove('appearing');
                 }, 300);
 
-                // Анимация замены иконки на шаттл
                 departureIcon.classList.add('icon-disappear');
                 setTimeout(() => {
                     departureIcon.classList.remove('fas', 'fa-car');
@@ -295,7 +361,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     roomExitCard.classList.remove('disappearing');
                 }, 300);
 
-                // Анимация замены иконки на машину
                 departureIcon.classList.add('icon-disappear');
                 setTimeout(() => {
                     departureIcon.classList.remove('fa-solid', 'fa-van-shuttle');
@@ -425,7 +490,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const updateSleep = () => {
         const hours = Math.floor(sleepHours);
         const minutes = Math.round((sleepHours - hours) * 60);
-        document.getElementById('sleep-value').textContent = `${hours} часов ${minutes} минут`;
+        document.getElementById('sleep-value').textContent = `${hours} ч ${minutes} мин`;
     };
 
     updateSleep();
