@@ -476,7 +476,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    padding: 1.5rem;
+    padding: 2rem;
     color: var(--secondary-text);
     cursor: pointer;
     background: none;
