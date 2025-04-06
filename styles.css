@@ -1,13 +1,13 @@
 :root {
     --primary: #3B82F6;
-    --primary-light: rgba(59, 130, 246, 0.2);
+    --primary-light: RGBA(59, 130, 246, 0.2);
     --surface: #FFFFFF;
     --background: #F8FAFC;
     --text: #1E293B;
     --border: #E2E8F0;
     --icon-color: #6B7280;
     --secondary-text: #64748B;
-    --warning: #F97316; /* Оранжевый цвет для "нет данных" */
+    --warning: #F97316;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,16 +18,14 @@
         --border: #334155;
         --icon-color: #94A3B8;
         --secondary-text: #94A3B8;
-        --warning: #FB923C; /* Светлее оранжевый для темной темы */
+        --warning: #FB923C;
     }
 }
 
-/* Стили для flight-time-display при "нет данных" */
 .flight-time-display.no-data {
     color: var(--warning);
 }
 
-/* Анимация тряски */
 @keyframes shake {
     0% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
@@ -41,7 +39,6 @@
     animation: shake 0.3s ease-in-out;
 }
 
-/* Анимации для смены иконок */
 @keyframes appear {
     0% { transform: scale(0.8); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
@@ -60,7 +57,6 @@
     animation: disappear 0.3s ease-in-out;
 }
 
-/* Остальные стили */
 * {
     margin: 0;
     padding: 0;
@@ -73,6 +69,14 @@ html, body {
     max-width: 100%;
     overflow-x: hidden;
     touch-action: pan-x pan-y;
+    /* Скрытие скроллбара для Webkit-браузеров (Chrome, Safari) */
+    scrollbar-width: none; /* Для Firefox */
+    -ms-overflow-style: none; /* Для Internet Explorer и Edge */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    display: none; /* Скрытие скроллбара для Webkit-браузеров */
 }
 
 body {
@@ -93,6 +97,13 @@ body {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    /* Скрытие скроллбара для .dashboard, если он появляется */
+    scrollbar-width: none; /* Для Firefox */
+    -ms-overflow-style: none; /* Для Internet Explorer и Edge */
+}
+
+.dashboard::-webkit-scrollbar {
+    display: none; /* Скрытие скроллбара для Webkit-браузеров */
 }
 
 .header {
@@ -200,6 +211,26 @@ body {
     content: attr(placeholder);
     color: var(--secondary-text);
     opacity: 0.7;
+}
+
+.flight-time-display.input-mode {
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    height: 46px;
+    font-size: 1.05rem;
+    background: var(--surface);
+    color: var(--text);
+    text-align: center;
+    outline: none;
+    width: 50%;
+    max-width: 180px;
+    box-sizing: border-box;
+    flex-shrink: 1;
+}
+
+.flight-time-display.input-mode:focus {
+    border-color: var(--primary);
 }
 
 .date-input::placeholder {
@@ -328,7 +359,7 @@ body {
     border-radius: 1rem;
     text-align: center;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    transition: transform 0.6s ease-in-out; /* Устанавливаем плавный переход по умолчанию */
+    transition: transform 0.6s ease;
     min-width: 0;
     flex-shrink: 1;
 }
@@ -365,7 +396,7 @@ body {
     align-items: center;
     gap: 1.5rem;
     width: 100%;
-    padding: 1.5rem;
+    padding: 0rem;
 }
 
 .sleep-value {
@@ -435,7 +466,7 @@ body {
     right: 0;
     margin: 0 auto;
     text-align: center;
-    padding: 1.5rem;
+    padding: 0rem;
     display: flex;
     justify-content: center;
     z-index: 500;
@@ -445,7 +476,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    padding: 0.5rem;
+    padding: 1.5rem;
     color: var(--secondary-text);
     cursor: pointer;
     background: none;
@@ -625,7 +656,7 @@ body {
     }
 
     .header {
-        padding: 0.25rem 0.5rem;
+        padding: 0.5rem 0.1rem;
         max-width: 250px;
         margin: 0 auto;
         margin-bottom: 0.7rem;
@@ -678,6 +709,14 @@ body {
         max-width: 100%;
         box-sizing: border-box;
         flex-shrink: 1;
+    }
+
+    .flight-time-display.input-mode {
+        padding: 0;
+        font-size: 1rem;
+        height: 40px;
+        width: 50%;
+        max-width: 150px;
     }
 
     .airports {
@@ -747,8 +786,8 @@ body {
     }
 
     .sleep-control {
-        gap: 1rem;
-        padding: 0rem;
+        gap: 2.5rem;
+        padding: 0.5rem;
     }
 
     .sleep-value {
@@ -756,7 +795,7 @@ body {
     }
 
     .sleep-btn {
-        width: 40px;
+        width: 80px;
         height: 40px;
         font-size: 1.2rem;
     }
@@ -769,19 +808,19 @@ body {
 
     .mode-btn {
         padding: 0.6rem;
-        font-size: 0.8rem;
+        font-size: 1rem;
     }
 
     .settings-footer {
-        padding: 0.75rem;
+        padding: 0rem;
     }
 
     .settings-trigger {
-        font-size: 0.85rem;
+        font-size: 1rem;
     }
 
     .settings-icon {
-        font-size: 0.8rem;
+        font-size: 1rem;
     }
 
     .modal-content {
@@ -840,7 +879,7 @@ body {
     border-radius: 0.875rem;
     height: 46px;
     overflow: hidden;
-    transition: border-color 0.2s, width 0.3s ease, max-width 0.3s ease;
+    transition: border-color 0.2s;
     width: 50%;
     max-width: 180px;
     box-sizing: border-box;
@@ -860,7 +899,14 @@ body {
     cursor: pointer;
     outline: none;
     border-right: 1px solid var(--border);
-    flex: 0 0 50px;
+    width: 65px; /* Увеличенная базовая ширина для двух символов */
+    text-align: center;
+    transition: width 0.3s ease; /* Анимация для изменения ширины */
+}
+
+.flight-prefix.expanded {
+    width: 100%; /* Как в оригинале — занимает всю доступную ширину контейнера */
+    border-right: none; /* Убираем границу, когда поле номера скрыто */
 }
 
 .flight-number {
@@ -893,11 +939,55 @@ body {
     .flight-prefix {
         padding: 0.3rem 0.2rem;
         font-size: 1rem;
-        flex: 0 0 40px;
+        width: 60px; /* Увеличенная базовая ширина для мобильных */
+    }
+
+    .flight-prefix.expanded {
+        width: 100%; /* Как в оригинале для мобильных */
     }
 
     .flight-number {
         padding: 0.3rem;
         font-size: 1rem;
     }
+}
+
+#room-exit-countdown,
+#departure-countdown-card,
+#flight-countdown {
+    background: rgba(59, 130, 246, 0.1);
+    border: 2px solid var(--primary);
+}
+
+#room-exit-countdown .countdown-title,
+#departure-countdown-card .countdown-title,
+#flight-countdown .countdown-title {
+    color: var(--secondary-text);
+}
+
+#room-exit-countdown .countdown-time,
+#departure-countdown-card .countdown-time,
+#flight-countdown .countdown-time {
+    color: var(--text);
+}
+
+#room-exit-countdown .countdown-icon,
+#departure-countdown-card .countdown-icon,
+#flight-countdown .countdown-icon {
+    color: var(--icon-color);
+}
+
+@media (prefers-color-scheme: dark) {
+    #room-exit-countdown,
+    #departure-countdown-card,
+    #flight-countdown {
+        background: rgba(59, 130, 246, 0.2);
+    }
+}
+.settings-group {
+    background: var(--surface);
+    padding: 1rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    width: 100%;
 }
