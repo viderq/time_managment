@@ -61,12 +61,12 @@
         </div>
 
         <div class="countdown-container">
-            <div class="countdown-card">
+            <div class="countdown-card hidden" id="departure-countdown">
                 <div class="countdown-content">
                     <i class="fas fa-car countdown-icon"></i>
                     <div class="countdown-text">
                         <div class="countdown-title">До выезда осталось</div>
-                        <div class="countdown-time" id="departure-countdown"></div>
+                        <div class="countdown-time" id="departure-countdown-time-departure"></div>
                     </div>
                 </div>
             </div>
@@ -100,6 +100,16 @@
                     </div>
                 </div>
             </div>
+
+            <div class="countdown-card hidden" id="bedtime-countdown">
+                <div class="countdown-content">
+                    <i class="fas fa-moon countdown-icon"></i>
+                    <div class="countdown-text">
+                        <div class="countdown-title">До ухода ко сну</div>
+                        <div class="countdown-time" id="bedtime-countdown-time"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="phase-grid">
@@ -125,7 +135,7 @@
             </div>
         </div>
 
-            <div class="settings-group">
+        <div class="settings-group">
             <div class="sleep-label">Время сна</div>
             <div class="sleep-control">
                 <button class="sleep-btn" id="decrease-sleep">−</button>
@@ -138,7 +148,7 @@
                 <div class="mode-btn" id="hotelButton">Из отеля</div>
             </div>
         </div>
-        </div>
+    </div>
 
     <div class="settings-footer">
         <button class="settings-trigger" id="settings-button">
@@ -169,6 +179,14 @@
                     <option value="Europe/Kaliningrad">Калининград (UTC+2)</option>
                     <option value="Asia/Yekaterinburg">Екатеринбург (UTC+5)</option>
                 </select>
+            </div>
+            <div class="travel-time-mode">
+                <div class="travel-time-header">
+                    <i class="fas fa-road timezone-icon"></i>
+                    <h3>Время в дороге</h3>
+                </div>
+                <label for="travel-time-input">Минуты:</label>
+                <input type="number" id="travel-time-input" min="10" max="180" value="40">
             </div>
         </div>
     </div>
