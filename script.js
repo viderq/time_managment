@@ -779,157 +779,147 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    const departureCard = document.querySelector('#departuretime').parentElement;
-    departureCard.addEventListener('click', () => {
-        if (!flightDepartureTime) return;
-        const departureModal = document.getElementById('departure-time-modal');
-        const departureInput = document.getElementById('departure-time-input');
+    // Модальное окно для времени выезда
+const departureCard = document.querySelector('#departuretime').parentElement;
+departureCard.addEventListener('click', () => {
+    if (!flightDepartureTime) return;
+    const departureModal = document.getElementById('departure-time-modal');
+    const departureInput = document.getElementById('departure-time-input');
 
-        const currentDepartureTime = customDepartureTime || defaultDepartureTime;
-        if (currentDepartureTime) {
-            const hours = currentDepartureTime.getHours().toString().padStart(2, '0');
-            const minutes = currentDepartureTime.getMinutes().toString().padStart(2, '0');
-            departureInput.value = `${hours}:${minutes}`;
-        }
+    const currentDepartureTime = customDepartureTime || defaultDepartureTime;
+    if (currentDepartureTime) {
+        const hours = currentDepartureTime.getHours().toString().padStart(2, '0');
+        const minutes = currentDepartureTime.getMinutes().toString().padStart(2, '0');
+        departureInput.value = `${hours}:${minutes}`;
+    }
 
-        departureModal.classList.add('active');
-    });
+    departureModal.classList.add('active');
+});
 
     const departureModal = document.getElementById('departure-time-modal');
-    const closeDepartureModal = document.getElementById('close-departure-modal');
     const departureInput = document.getElementById('departure-time-input');
     const increaseDepartureBtn = document.getElementById('increase-departure-time');
     const decreaseDepartureBtn = document.getElementById('decrease-departure-time');
     const resetDepartureBtn = document.getElementById('reset-departure-time');
-
-    closeDepartureModal.addEventListener('click', () => {
-        departureModal.classList.remove('active');
-    });
-
-    departureModal.addEventListener('click', (e) => {
-        if (e.target === departureModal) {
-            departureModal.classList.remove('active');
-        }
-    });
+    const doneDepartureBtn = document.getElementById('done-departure-time');
 
     departureInput.addEventListener('change', () => {
-        const [hours, minutes] = departureInput.value.split(':');
-        const newTime = new Date(dateInput.value);
-        newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-        customDepartureTime = newTime;
-        localStorage.setItem('customDepartureTime', customDepartureTime.toISOString());
-        updateTime();
-    });
+    const [hours, minutes] = departureInput.value.split(':');
+    const newTime = new Date(dateInput.value);
+    newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    customDepartureTime = newTime;
+    localStorage.setItem('customDepartureTime', customDepartureTime.toISOString());
+    updateTime();
+});
 
     increaseDepartureBtn.addEventListener('click', () => {
-        let currentTime = departureInput.value ? new Date(`${dateInput.value}T${departureInput.value}:00`) : new Date(defaultDepartureTime);
-        currentTime.setMinutes(currentTime.getMinutes() + 5);
-        customDepartureTime = currentTime;
-        localStorage.setItem('customDepartureTime', customDepartureTime.toISOString());
-        const hours = currentTime.getHours().toString().padStart(2, '0');
-        const minutes = currentTime.getMinutes().toString().padStart(2, '0');
-        departureInput.value = `${hours}:${minutes}`;
-        updateTime();
-    });
+    let currentTime = departureInput.value ? new Date(`${dateInput.value}T${departureInput.value}:00`) : new Date(defaultDepartureTime);
+    currentTime.setMinutes(currentTime.getMinutes() + 5);
+    customDepartureTime = currentTime;
+    localStorage.setItem('customDepartureTime', customDepartureTime.toISOString());
+    const hours = currentTime.getHours().toString().padStart(2, '0');
+    const minutes = currentTime.getMinutes().toString().padStart(2, '0');
+    departureInput.value = `${hours}:${minutes}`;
+    updateTime();
+});
 
     decreaseDepartureBtn.addEventListener('click', () => {
-        let currentTime = departureInput.value ? new Date(`${dateInput.value}T${departureInput.value}:00`) : new Date(defaultDepartureTime);
-        currentTime.setMinutes(currentTime.getMinutes() - 5);
-        customDepartureTime = currentTime;
-        localStorage.setItem('customDepartureTime', customDepartureTime.toISOString());
-        const hours = currentTime.getHours().toString().padStart(2, '0');
-        const minutes = currentTime.getMinutes().toString().padStart(2, '0');
-        departureInput.value = `${hours}:${minutes}`;
-        updateTime();
-    });
+    let currentTime = departureInput.value ? new Date(`${dateInput.value}T${departureInput.value}:00`) : new Date(defaultDepartureTime);
+    currentTime.setMinutes(currentTime.getMinutes() - 5);
+    customDepartureTime = currentTime;
+    localStorage.setItem('customDepartureTime', customDepartureTime.toISOString());
+    const hours = currentTime.getHours().toString().padStart(2, '0');
+    const minutes = currentTime.getMinutes().toString().padStart(2, '0');
+    departureInput.value = `${hours}:${minutes}`;
+    updateTime();
+});
 
     resetDepartureBtn.addEventListener('click', () => {
-        customDepartureTime = null;
-        localStorage.removeItem('customDepartureTime');
-        if (defaultDepartureTime) {
-            const hours = defaultDepartureTime.getHours().toString().padStart(2, '0');
-            const minutes = defaultDepartureTime.getMinutes().toString().padStart(2, '0');
-            departureInput.value = `${hours}:${minutes}`;
-        }
-        updateTime();
-        departureModal.classList.remove('active');
-    });
+    customDepartureTime = null;
+    localStorage.removeItem('customDepartureTime');
+    if (defaultDepartureTime) {
+        const hours = defaultDepartureTime.getHours().toString().padStart(2, '0');
+        const minutes = defaultDepartureTime.getMinutes().toString().padStart(2, '0');
+        departureInput.value = `${hours}:${minutes}`;
+    }
+    updateTime();
+    departureModal.classList.remove('active');
+});
 
-    const wakeCard = document.querySelector('#waketime').parentElement;
-    wakeCard.addEventListener('click', () => {
-        if (!flightDepartureTime) return;
-        const wakeModal = document.getElementById('wake-time-modal');
-        const wakeInput = document.getElementById('wake-time-input');
+doneDepartureBtn.addEventListener('click', () => {
+    departureModal.classList.remove('active');
+});
 
-        const currentWakeTime = customWakeTime || defaultWakeTime;
-        if (currentWakeTime) {
-            const hours = currentWakeTime.getHours().toString().padStart(2, '0');
-            const minutes = currentWakeTime.getMinutes().toString().padStart(2, '0');
-            wakeInput.value = `${hours}:${minutes}`;
-        }
+    // Модальное окно для времени подъема
+const wakeCard = document.querySelector('#waketime').parentElement;
+wakeCard.addEventListener('click', () => {
+    if (!flightDepartureTime) return;
+    const wakeModal = document.getElementById('wake-time-modal');
+    const wakeInput = document.getElementById('wake-time-input');
 
-        wakeModal.classList.add('active');
-    });
+    const currentWakeTime = customWakeTime || defaultWakeTime;
+    if (currentWakeTime) {
+        const hours = currentWakeTime.getHours().toString().padStart(2, '0');
+        const minutes = currentWakeTime.getMinutes().toString().padStart(2, '0');
+        wakeInput.value = `${hours}:${minutes}`;
+    }
+
+    wakeModal.classList.add('active');
+});
 
     const wakeModal = document.getElementById('wake-time-modal');
-    const closeWakeModal = document.getElementById('close-wake-modal');
-    const wakeInput = document.getElementById('wake-time-input');
-    const increaseWakeBtn = document.getElementById('increase-wake-time');
-    const decreaseWakeBtn = document.getElementById('decrease-wake-time');
-    const resetWakeBtn = document.getElementById('reset-wake-time');
-
-    closeWakeModal.addEventListener('click', () => {
-        wakeModal.classList.remove('active');
-    });
-
-    wakeModal.addEventListener('click', (e) => {
-        if (e.target === wakeModal) {
-            wakeModal.classList.remove('active');
-        }
-    });
+const wakeInput = document.getElementById('wake-time-input');
+const increaseWakeBtn = document.getElementById('increase-wake-time');
+const decreaseWakeBtn = document.getElementById('decrease-wake-time');
+const resetWakeBtn = document.getElementById('reset-wake-time');
+const doneWakeBtn = document.getElementById('done-wake-time');
 
     wakeInput.addEventListener('change', () => {
-        const [hours, minutes] = wakeInput.value.split(':');
-        const newTime = new Date(dateInput.value);
-        newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-        customWakeTime = newTime;
-        localStorage.setItem('customWakeTime', customWakeTime.toISOString());
-        updateTime();
-    });
+    const [hours, minutes] = wakeInput.value.split(':');
+    const newTime = new Date(dateInput.value);
+    newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    customWakeTime = newTime;
+    localStorage.setItem('customWakeTime', customWakeTime.toISOString());
+    updateTime();
+});
 
     increaseWakeBtn.addEventListener('click', () => {
-        let currentTime = wakeInput.value ? new Date(`${dateInput.value}T${wakeInput.value}:00`) : new Date(defaultWakeTime);
-        currentTime.setMinutes(currentTime.getMinutes() + 5);
-        customWakeTime = currentTime;
-        localStorage.setItem('customWakeTime', customWakeTime.toISOString());
-        const hours = currentTime.getHours().toString().padStart(2, '0');
-        const minutes = currentTime.getMinutes().toString().padStart(2, '0');
-        wakeInput.value = `${hours}:${minutes}`;
-        updateTime();
-    });
+    let currentTime = wakeInput.value ? new Date(`${dateInput.value}T${wakeInput.value}:00`) : new Date(defaultWakeTime);
+    currentTime.setMinutes(currentTime.getMinutes() + 5);
+    customWakeTime = currentTime;
+    localStorage.setItem('customWakeTime', customWakeTime.toISOString());
+    const hours = currentTime.getHours().toString().padStart(2, '0');
+    const minutes = currentTime.getMinutes().toString().padStart(2, '0');
+    wakeInput.value = `${hours}:${minutes}`;
+    updateTime();
+});
 
     decreaseWakeBtn.addEventListener('click', () => {
-        let currentTime = wakeInput.value ? new Date(`${dateInput.value}T${wakeInput.value}:00`) : new Date(defaultWakeTime);
-        currentTime.setMinutes(currentTime.getMinutes() - 5);
-        customWakeTime = currentTime;
-        localStorage.setItem('customWakeTime', customWakeTime.toISOString());
-        const hours = currentTime.getHours().toString().padStart(2, '0');
-        const minutes = currentTime.getMinutes().toString().padStart(2, '0');
-        wakeInput.value = `${hours}:${minutes}`;
-        updateTime();
-    });
+    let currentTime = wakeInput.value ? new Date(`${dateInput.value}T${wakeInput.value}:00`) : new Date(defaultWakeTime);
+    currentTime.setMinutes(currentTime.getMinutes() - 5);
+    customWakeTime = currentTime;
+    localStorage.setItem('customWakeTime', customWakeTime.toISOString());
+    const hours = currentTime.getHours().toString().padStart(2, '0');
+    const minutes = currentTime.getMinutes().toString().padStart(2, '0');
+    wakeInput.value = `${hours}:${minutes}`;
+    updateTime();
+});
 
     resetWakeBtn.addEventListener('click', () => {
-        customWakeTime = null;
-        localStorage.removeItem('customWakeTime');
-        if (defaultWakeTime) {
-            const hours = defaultWakeTime.getHours().toString().padStart(2, '0');
-            const minutes = defaultWakeTime.getMinutes().toString().padStart(2, '0');
-            wakeInput.value = `${hours}:${minutes}`;
-        }
-        updateTime();
-        wakeModal.classList.remove('active');
-    });
+    customWakeTime = null;
+    localStorage.removeItem('customWakeTime');
+    if (defaultWakeTime) {
+        const hours = defaultWakeTime.getHours().toString().padStart(2, '0');
+        const minutes = defaultWakeTime.getMinutes().toString().padStart(2, '0');
+        wakeInput.value = `${hours}:${minutes}`;
+    }
+    updateTime();
+    wakeModal.classList.remove('active');
+});
+
+doneWakeBtn.addEventListener('click', () => {
+    wakeModal.classList.remove('active');
+});
 
     function adjustDateInputWidth() {
         const flightTimeInputs = document.querySelector('.flight-time-inputs');
@@ -945,3 +935,4 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     window.addEventListener('resize', adjustDateInputWidth);
 });
+
