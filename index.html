@@ -194,32 +194,32 @@
     <!-- Модальное окно для редактирования времени выезда -->
     <div class="modal" id="departure-time-modal">
         <div class="modal-content">
-            <button class="close-modal" id="close-departure-modal">
-                <i class="fas fa-times"></i>
-            </button>
             <h2>Время выезда</h2>
             <div class="time-edit-control">
                 <button class="time-btn" id="decrease-departure-time">−</button>
                 <input type="time" id="departure-time-input" step="300">
                 <button class="time-btn" id="increase-departure-time">+</button>
             </div>
-            <button class="reset-btn" id="reset-departure-time">Сброс</button>
+            <div class="modal-buttons">
+                <button class="reset-btn" id="reset-departure-time">Сброс</button>
+                <button class="done-btn" id="done-departure-time">Готово</button>
+            </div>
         </div>
     </div>
 
     <!-- Модальное окно для редактирования времени подъема -->
     <div class="modal" id="wake-time-modal">
         <div class="modal-content">
-            <button class="close-modal" id="close-wake-modal">
-                <i class="fas fa-times"></i>
-            </button>
             <h2>Время подъёма</h2>
             <div class="time-edit-control">
                 <button class="time-btn" id="decrease-wake-time">−</button>
                 <input type="time" id="wake-time-input" step="300">
                 <button class="time-btn" id="increase-wake-time">+</button>
             </div>
-            <button class="reset-btn" id="reset-wake-time">Сброс</button>
+            <div class="modal-buttons">
+                <button class="reset-btn" id="reset-wake-time">Сброс</button>
+                <button class="done-btn" id="done-wake-time">Готово</button>
+            </div>
         </div>
     </div>
 </body>
