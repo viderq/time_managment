@@ -22,8 +22,34 @@
     }
 }
 
+.flight-time-display {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    height: 46px;
+    font-size: 1.05rem;
+    background: var(--surface);
+    color: #000000; /* Черный цвет для времени в светлой теме */
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-sizing: border-box;
+    transition: width 0.3s ease, max-width 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+    .flight-time-display {
+        color: #FFFFFF; /* Белый цвет для времени в темной теме */
+    }
+}
+
 .flight-time-display.no-data {
-    color: var(--warning);
+    color: var(--warning); /* Оранжевый цвет для "нет данных" */
 }
 
 @keyframes shake {
@@ -185,26 +211,6 @@ body {
     transition: width 0.3s ease, max-width 0.3s ease;
 }
 
-.flight-time-display {
-    flex: 1 1 0;
-    min-width: 0;
-    max-width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 0.875rem;
-    height: 46px;
-    font-size: 1.05rem;
-    background: var(--surface);
-    color: var(--text);
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    box-sizing: border-box;
-    transition: width 0.3s ease, max-width 0.3s ease;
-}
-
 .flight-time-display:empty::before {
     content: attr(placeholder);
     color: var(--secondary-text);
@@ -282,7 +288,7 @@ body {
 }
 
 .countdown-card {
-    background: var(--surface);
+    background: rgba(59, 130, 246, 0.1);
     padding: 1.5rem;
     border-radius: 1.25rem;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
@@ -293,7 +299,7 @@ body {
     min-height: 80px;
     text-align: center;
     width: 100%;
-    border: 1px solid var(--primary-light);
+    border: 2px solid var(--primary);
 }
 
 .countdown-icon {
@@ -987,35 +993,8 @@ body {
     }
 }
 
-#room-exit-countdown,
-#departure-countdown-card,
-#flight-countdown {
-    background: rgba(59, 130, 246, 0.1);
-    border: 2px solid var(--primary);
-}
-
-#room-exit-countdown .countdown-title,
-#departure-countdown-card .countdown-title,
-#flight-countdown .countdown-title {
-    color: var(--secondary-text);
-}
-
-#room-exit-countdown .countdown-time,
-#departure-countdown-card .countdown-time,
-#flight-countdown .countdown-time {
-    color: var(--text);
-}
-
-#room-exit-countdown .countdown-icon,
-#departure-countdown-card .countdown-icon,
-#flight-countdown .countdown-icon {
-    color: var(--icon-color);
-}
-
 @media (prefers-color-scheme: dark) {
-    #room-exit-countdown,
-    #departure-countdown-card,
-    #flight-countdown {
+    .countdown-card {
         background: rgba(59, 130, 246, 0.2);
     }
 }
@@ -1029,7 +1008,7 @@ body {
 }
 
 .travel-time-mode {
-    margin-bottom: 1.5rem;
+    margin footsteps: 1.5rem;
     padding: 0.75rem;
     border-radius: 0.875rem;
     background: var(--background);
@@ -1053,6 +1032,7 @@ body {
     display: block;
     margin-bottom: 0.5rem;
     font-size: 0.95rem;
+    position: relative;
     color: var(--text);
 }
 
@@ -1071,4 +1051,137 @@ body {
     outline: none;
     border-color: var(--primary);
     box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+/* Стили для модального окна времени выезда и времени подъема */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+.time-edit-control {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+    width: 100%;
+}
+
+.time-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: transparent;
+    color: var(--icon-color);
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.time-btn:active {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(59, 130, 246, 0.1);
+}
+
+/* Общий стиль для полей ввода времени в модальных окнах */
+.modal-content input[type="time"] {
+    width: 120px;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 1.2rem;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.modal-content input[type="time"]:focus {
+    border-color: var(--primary);
+}
+
+.reset-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--border);
+    border-radius: 0.875rem;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.reset-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(59, 130, 246, 0.1);
+}
+
+@media (max-width: 480px) {
+    .time-edit-control {
+        gap: 0.3rem;
+    }
+
+    .time-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+
+    .modal-content input[type="time"] {
+        width: 100px;
+        font-size: 1.1rem;
+    }
+
+    .reset-btn {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Стили для индикатора загрузки */
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3; /* Исправлено */
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
