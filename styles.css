@@ -12,13 +12,17 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --surface: #1E293B;
-        --background: #0F172A;
-        --text: #F8FAFC;
-        --border: #334155;
-        --icon-color: #94A3B8;
-        --secondary-text: #94A3B8;
+        --surface: #1C1C1C;
+        --background: #000000;
+        --text: #EDEDED;
+        --border: #333333;
+        --icon-color: #999999;
+        --secondary-text: #999999;
         --warning: #FB923C;
+        --primary: #808080;
+        --primary-light: rgba(128, 128, 128, 0.2);
+        --accent: #D4AF37;
+        --accent-light: rgba(212, 175, 55, 0.2);
     }
 }
 
@@ -32,7 +36,7 @@
     height: 46px;
     font-size: 1.05rem;
     background: var(--surface);
-    color: #000000; /* Черный цвет для времени в светлой теме */
+    color: #000000;
     text-align: center;
     display: flex;
     align-items: center;
@@ -44,12 +48,12 @@
 
 @media (prefers-color-scheme: dark) {
     .flight-time-display {
-        color: #FFFFFF; /* Белый цвет для времени в темной теме */
+        color: #EDEDED;
     }
 }
 
 .flight-time-display.no-data {
-    color: var(--warning); /* Оранжевый цвет для "нет данных" */
+    color: var(--warning);
 }
 
 @keyframes shake {
@@ -302,6 +306,14 @@ body {
     border: 2px solid var(--primary);
 }
 
+@media (prefers-color-scheme: dark) {
+    .countdown-card {
+        background: var(--accent-light);
+        border: 2px solid var(--accent);
+        box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+    }
+}
+
 .countdown-icon {
     font-size: 1.8rem;
     color: var(--icon-color);
@@ -434,7 +446,7 @@ body {
 .sleep-btn:active {
     border-color: var(--primary);
     color: var(--primary);
-    background: rgba(59, 130, 246, 0.1);
+    background: var(--primary-light);
 }
 
 .mode-selector {
@@ -647,7 +659,7 @@ body {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    background-image: url('data:image/svg+xml;utf8,<svg fill="%236B7280" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23999999" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
     background-repeat: no-repeat;
     background-position: right 0.75rem center;
     background-size: 1rem;
@@ -993,12 +1005,6 @@ body {
     }
 }
 
-@media (prefers-color-scheme: dark) {
-    .countdown-card {
-        background: rgba(59, 130, 246, 0.2);
-    }
-}
-
 .settings-group {
     background: var(--surface);
     padding: 1rem;
@@ -1008,7 +1014,7 @@ body {
 }
 
 .travel-time-mode {
-    margin footsteps: 1.5rem;
+    margin-bottom: 1.5rem;
     padding: 0.75rem;
     border-radius: 0.875rem;
     background: var(--background);
@@ -1087,7 +1093,7 @@ body {
 .time-btn {
     width: 50px;
     height: 50px;
-    border-radius: 12px;
+    border-radius: 0.875rem;
     border: 2px solid var(--border);
     background: transparent;
     color: var(--icon-color);
@@ -1102,13 +1108,13 @@ body {
 .time-btn:active {
     border-color: var(--primary);
     color: var(--primary);
-    background: rgba(59, 130, 246, 0.1);
+    background: var(--primary-light);
 }
 
 /* Общий стиль для полей ввода времени в модальных окнах */
 .modal-content input[type="time"] {
     width: 120px;
-    padding: 0.75rem;
+    padding: 0 0.75rem;
     border: 1px solid var(--border);
     border-radius: 0.875rem;
     background: var(--surface);
@@ -1117,10 +1123,28 @@ body {
     text-align: center;
     outline: none;
     transition: border-color 0.2s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    height: 50px;
+    line-height: 50px;
+    box-sizing: border-box;
 }
 
 .modal-content input[type="time"]:focus {
     border-color: var(--primary);
+}
+
+/* Удаляем встроенные элементы управления времени (стрелки) в WebKit */
+.modal-content input[type="time"]::-webkit-inner-spin-button,
+.modal-content input[type="time"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Удаляем встроенные элементы управления времени в Firefox */
+.modal-content input[type="time"] {
+    -moz-appearance: textfield;
 }
 
 .reset-btn {
@@ -1139,7 +1163,34 @@ body {
 .reset-btn:hover {
     border-color: var(--primary);
     color: var(--primary);
-    background: rgba(59, 130, 246, 0.1);
+    background: var(--primary-light);
+}
+
+/* Контейнер для кнопок в модальном окне */
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+/* Стили для кнопки "Готово" */
+.done-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--primary);
+    border-radius: 0.875rem;
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.done-btn:hover {
+    background: rgba(128, 128, 128, 0.9);
+    border-color: rgba(128, 128, 128, 0.9);
 }
 
 @media (max-width: 480px) {
@@ -1151,16 +1202,46 @@ body {
         width: 40px;
         height: 40px;
         font-size: 1.2rem;
+        border-radius: 0.875rem;
     }
 
     .modal-content input[type="time"] {
         width: 100px;
         font-size: 1.1rem;
+        border-radius: 0.875rem;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        height: 40px;
+        line-height: 40px;
+        padding: 0 0.75rem;
+        box-sizing: border-box;
+    }
+
+    .modal-content input[type="time"]::-webkit-inner-spin-button,
+    .modal-content input[type="time"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .modal-content input[type="time"] {
+        -moz-appearance: textfield;
     }
 
     .reset-btn {
         padding: 0.6rem;
         font-size: 0.9rem;
+        border-radius: 0.875rem;
+    }
+
+    .modal-buttons {
+        gap: 0.5rem;
+    }
+
+    .done-btn {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+        border-radius: 0.875rem;
     }
 }
 
@@ -1175,8 +1256,8 @@ body {
 .spinner {
     width: 20px;
     height: 20px;
-    border: 3px solid #f3f3f3; /* Исправлено */
-    border-top: 3px solid #3498db;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--primary);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
