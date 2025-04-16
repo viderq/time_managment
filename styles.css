@@ -1266,3 +1266,52 @@ body {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* Стили для контейнера времени в карточках */
+.time-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Стили для текущего времени */
+#waketime,
+#departuretime {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* Стили для старого времени */
+.old-time {
+    font-size: 0.85rem;
+    color: var(--secondary-text);
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+/* Скрытие старого времени, если оно не отображается */
+.old-time.hidden {
+    display: none;
+}
+
+/* Адаптация для темной темы */
+@media (prefers-color-scheme: dark) {
+    .old-time {
+        color: var(--secondary-text);
+        opacity: 0.7;
+    }
+}
+
+/* Адаптация для маленьких экранов */
+@media (max-width: 480px) {
+    #waketime,
+    #departuretime {
+        font-size: 0.9rem;
+    }
+
+    .old-time {
+        font-size: 0.75rem;
+    }
+}
