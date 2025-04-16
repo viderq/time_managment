@@ -238,173 +238,195 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function showLoadingSpinner() {
-    const currentElement = document.querySelector('.flight-time-display');
-    if (!currentElement) return; // Защита от отсутствия элемента
+        const currentElement = document.querySelector('.flight-time-display');
+        if (!currentElement) return; // Защита от отсутствия элемента
 
-    // Удаляем старый спиннер, если он есть
-    if (currentElement.classList.contains('loading-spinner')) {
-        currentElement.remove();
+        // Удаляем старый спиннер, если он есть
+        if (currentElement.classList.contains('loading-spinner')) {
+            currentElement.remove();
+        }
+
+        const spinner = document.createElement('div');
+        spinner.className = 'flight-time-display loading-spinner';
+        spinner.id = 'flight-time-display';
+        spinner.innerHTML = '<div class="spinner"></div>';
+        currentElement.replaceWith(spinner);
     }
-
-    const spinner = document.createElement('div');
-    spinner.className = 'flight-time-display loading-spinner';
-    spinner.id = 'flight-time-display';
-    spinner.innerHTML = '<div class="spinner"></div>';
-    currentElement.replaceWith(spinner);
-}
 
     function displayFlightInfo(flightData) {
-    const currentElement = document.querySelector('.flight-time-display');
-    const newFlightTimeDisplay = document.createElement('div');
-    newFlightTimeDisplay.className = 'flight-time-display';
-    newFlightTimeDisplay.id = 'flight-time-display';
-    newFlightTimeDisplay.textContent = 'нет данных';
-    newFlightTimeDisplay.classList.add('no-data');
-
-    const flightDate = new Date(dateInput.value);
-    const now = new Date();
-    const moscowTime = new Date(now.getTime() + (now.getTimezoneOffset() * 60 * 1000) + MOSCOW_OFFSET);
-    const flightDateMoscow = new Date(flightDate.getTime() + MOSCOW_OFFSET);
-
-    if (flightDateMoscow < moscowTime) {
-        console.log("Дата рейса уже прошла:", flightDateMoscow, "<", moscowTime);
-        departureAirportCode.textContent = '---';
-        departureAirportName.textContent = '-----';
-        arrivalAirportCode.textContent = '---';
-        arrivalAirportName.textContent = '-----';
-        flightDepartureTime = null;
-        currentElement.replaceWith(newFlightTimeDisplay);
-        updateTime();
-        return;
-    }
-
-    if (!flightData || !flightData.data || !flightData.data.routes || flightData.data.routes.length === 0) {
-        departureAirportCode.textContent = '---';
-        departureAirportName.textContent = '-----';
-        arrivalAirportCode.textContent = '---';
-        arrivalAirportName.textContent = '-----';
-        flightDepartureTime = null;
-        newFlightTimeDisplay.textContent = 'нет данных';
-        triggerShakeAndVibrate();
-        console.log("Аэропорт прилета: ---");
-        console.log("Время вылета: Не указано");
-        currentElement.replaceWith(newFlightTimeDisplay);
-        updateTime();
-        return;
-    }
-
-    const flight = flightData.data.routes[0];
-    const departureTimeStr = flight.leg.departure.times.estimatedBlockOff?.local ||
-                            flight.leg.departure.times.scheduledDeparture.local;
-    flightDepartureTime = new Date(departureTimeStr);
-
-    if (isNaN(flightDepartureTime)) {
-        console.error("Некорректное время вылета:", departureTimeStr);
-        flightDepartureTime = null;
-        newFlightTimeDisplay.textContent = 'Ошибка времени';
-        currentElement.replaceWith(newFlightTimeDisplay);
-        departureAirportCode.textContent = '---';
-        departureAirportName.textContent = '-----';
-        arrivalAirportCode.textContent = '---';
-        arrivalAirportName.textContent = '-----';
-        triggerShakeAndVibrate();
-        updateTime();
-        return;
-    }
-
-    if (flightDepartureTime < moscowTime) {
-        console.log("Время вылета рейса уже прошло:", flightDepartureTime, "<", moscowTime);
-        flightDepartureTime = null;
-        newFlightTimeDisplay.textContent = 'Рейс уже прошел';
-        currentElement.replaceWith(newFlightTimeDisplay);
-        departureAirportCode.textContent = '---';
-        departureAirportName.textContent = '-----';
-        arrivalAirportCode.textContent = '---';
-        arrivalAirportName.textContent = '-----';
-        updateTime();
-        return;
-    }
-
-    const formattedTime = flightDepartureTime.toLocaleTimeString('ru-RU', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-    });
-
-    newFlightTimeDisplay.textContent = formattedTime;
-    newFlightTimeDisplay.classList.remove('no-data');
-    currentElement.replaceWith(newFlightTimeDisplay);
-
-    const applyFadeAnimation = (element, newText) => {
-        element.classList.remove('fade');
-        setTimeout(() => {
-            element.textContent = newText;
-            element.classList.add('fade');
-        }, 0);
-    };
-
-    applyFadeAnimation(departureAirportCode, flight.leg.departure.scheduled.airportCode || 'N/A');
-    applyFadeAnimation(departureAirportName, flight.leg.departure.scheduled.airport || 'Неизвестно');
-    applyFadeAnimation(arrivalAirportCode, flight.leg.arrival.scheduled.airportCode || 'N/A');
-    applyFadeAnimation(arrivalAirportName, flight.leg.arrival.scheduled.airport || 'Неизвестно');
-
-    console.log("Аэропорт прилета:", flight.leg.arrival.scheduled.airportCode || 'N/A');
-    console.log("Время вылета:", formattedTime);
-    updateTime();
-}
-
-    async function handleFlightInfoUpdate() {
-    const prefix = flightPrefixSelect.value;
-    const number = flightNumberInput.value.trim();
-    const flightNumber = `${prefix}${number}`.toUpperCase();
-    const date = dateInput.value;
-
-    if (!number || !date || !number.match(/^\d{1,5}$/)) {
         const currentElement = document.querySelector('.flight-time-display');
         const newFlightTimeDisplay = document.createElement('div');
         newFlightTimeDisplay.className = 'flight-time-display';
         newFlightTimeDisplay.id = 'flight-time-display';
         newFlightTimeDisplay.textContent = 'нет данных';
         newFlightTimeDisplay.classList.add('no-data');
+
+        const now = new Date();
+        const moscowTime = new Date(now.getTime() + (now.getTimezoneOffset() * 60 * 1000) + MOSCOW_OFFSET);
+
+        if (!flightData || !flightData.data || !flightData.data.routes || flightData.data.routes.length === 0) {
+            departureAirportCode.textContent = '---';
+            departureAirportName.textContent = '-----';
+            arrivalAirportCode.textContent = '---';
+            arrivalAirportName.textContent = '-----';
+            flightDepartureTime = null;
+            newFlightTimeDisplay.textContent = 'нет данных';
+            triggerShakeAndVibrate();
+            console.log("Аэропорт прилета: ---");
+            console.log("Время вылета: Не указано");
+            currentElement.replaceWith(newFlightTimeDisplay);
+            updateTime();
+            return;
+        }
+
+        const flight = flightData.data.routes[0];
+        const departureTimeStr = flight.leg.departure.times.estimatedBlockOff?.local ||
+                                flight.leg.departure.times.scheduledDeparture.local;
+
+        // Логируем время вылета из API
+        console.log("Время вылета из API (departureTimeStr):", departureTimeStr);
+
+        // Получаем дату рейса из dateInput
+        const flightDate = new Date(dateInput.value);
+        let departureDateTime;
+
+        // Парсим departureTimeStr
+        if (departureTimeStr.includes('T')) {
+            // Формат ISO 8601, например "2025-04-16T23:55:00+03:00"
+            departureDateTime = new Date(departureTimeStr);
+        } else if (departureTimeStr.includes(' ')) {
+            // Формат "YYYY-MM-DD HH:mm"
+            departureDateTime = new Date(departureTimeStr);
+        } else {
+            // Формат "HH:mm", комбинируем с датой из dateInput
+            const [hours, minutes] = departureTimeStr.split(':').map(Number);
+            departureDateTime = new Date(flightDate);
+            departureDateTime.setHours(hours, minutes, 0, 0);
+        }
+
+        if (isNaN(departureDateTime.getTime())) { // Проверяем валидность даты
+            console.error("Некорректное время вылета:", departureTimeStr);
+            flightDepartureTime = null;
+            newFlightTimeDisplay.textContent = 'Ошибка времени';
+            currentElement.replaceWith(newFlightTimeDisplay);
+            departureAirportCode.textContent = '---';
+            departureAirportName.textContent = '-----';
+            arrivalAirportCode.textContent = '---';
+            arrivalAirportName.textContent = '-----';
+            triggerShakeAndVibrate();
+            updateTime();
+            return;
+        }
+
+        // Устанавливаем flightDepartureTime
+        flightDepartureTime = departureDateTime;
+        // Логируем итоговое время вылета после преобразования
+        console.log("Итоговое время вылета (flightDepartureTime):", flightDepartureTime);
+
+        // Проверяем, не прошел ли рейс
+        if (flightDepartureTime < moscowTime) {
+            console.log("Время вылета рейса уже прошло:", flightDepartureTime, "<", moscowTime);
+            flightDepartureTime = null;
+            newFlightTimeDisplay.textContent = 'Рейс уже прошел';
+            currentElement.replaceWith(newFlightTimeDisplay);
+            departureAirportCode.textContent = '---';
+            departureAirportName.textContent = '-----';
+            arrivalAirportCode.textContent = '---';
+            arrivalAirportName.textContent = '-----';
+            updateTime();
+            return;
+        }
+
+        const formattedTime = flightDepartureTime.toLocaleTimeString('ru-RU', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        });
+
+        newFlightTimeDisplay.textContent = formattedTime;
+        newFlightTimeDisplay.classList.remove('no-data');
         currentElement.replaceWith(newFlightTimeDisplay);
 
-        departureAirportCode.textContent = '---';
-        departureAirportName.textContent = '-----';
-        arrivalAirportCode.textContent = '---';
-        arrivalAirportName.textContent = '-----';
-        flightDepartureTime = null;
+        const applyFadeAnimation = (element, newText) => {
+            element.classList.remove('fade');
+            setTimeout(() => {
+                element.textContent = newText;
+                element.classList.add('fade');
+            }, 0);
+        };
+
+        applyFadeAnimation(departureAirportCode, flight.leg.departure.scheduled.airportCode || 'N/A');
+        applyFadeAnimation(departureAirportName, flight.leg.departure.scheduled.airport || 'Неизвестно');
+        applyFadeAnimation(arrivalAirportCode, flight.leg.arrival.scheduled.airportCode || 'N/A');
+        applyFadeAnimation(arrivalAirportName, flight.leg.arrival.scheduled.airport || 'Неизвестно');
+
+        console.log("Аэропорт прилета:", flight.leg.arrival.scheduled.airportCode || 'N/A');
+        console.log("Время вылета:", formattedTime);
         updateTime();
-        return;
     }
 
-    showLoadingSpinner();
+    async function handleFlightInfoUpdate() {
+        try {
+            const prefix = flightPrefixSelect.value;
+            const number = flightNumberInput.value.trim();
+            const flightNumber = `${prefix}${number}`.toUpperCase();
+            const date = dateInput.value;
 
-    const cacheKey = `flightData_${flightNumber}_${date}`;
-    const cachedData = localStorage.getItem(cacheKey);
-    let flightData = null;
+            if (!number || !date || !number.match(/^\d{1,5}$/)) {
+                const currentElement = document.querySelector('.flight-time-display');
+                const newFlightTimeDisplay = document.createElement('div');
+                newFlightTimeDisplay.className = 'flight-time-display';
+                newFlightTimeDisplay.id = 'flight-time-display';
+                newFlightTimeDisplay.textContent = 'нет данных';
+                newFlightTimeDisplay.classList.add('no-data');
+                currentElement.replaceWith(newFlightTimeDisplay);
 
-    if (cachedData) {
-        const parsedData = JSON.parse(cachedData);
-        const currentTime = Date.now();
-        const timeSinceLastFetch = currentTime - parsedData.timestamp;
+                departureAirportCode.textContent = '---';
+                departureAirportName.textContent = '-----';
+                arrivalAirportCode.textContent = '---';
+                arrivalAirportName.textContent = '-----';
+                flightDepartureTime = null;
+                updateTime();
+                return;
+            }
 
-        if (timeSinceLastFetch < CACHE_DURATION) {
-            console.log("Используем кэшированные данные для", flightNumber, date);
-            flightData = parsedData.data;
-        } else {
-            console.log("Кэш устарел, делаем новый запрос для", flightNumber, date);
-            flightData = await fetchFlightInfo(flightNumber, date);
+            showLoadingSpinner();
+
+            const cacheKey = `flightData_${flightNumber}_${date}`;
+            const cachedData = localStorage.getItem(cacheKey);
+            let flightData = null;
+
+            if (cachedData) {
+                const parsedData = JSON.parse(cachedData);
+                const currentTime = Date.now();
+                const timeSinceLastFetch = currentTime - parsedData.timestamp;
+
+                if (timeSinceLastFetch < CACHE_DURATION) {
+                    console.log("Используем кэшированные данные для", flightNumber, date);
+                    flightData = parsedData.data;
+                } else {
+                    console.log("Кэш устарел, делаем новый запрос для", flightNumber, date);
+                    flightData = await fetchFlightInfo(flightNumber, date);
+                }
+            } else {
+                console.log("Данные отсутствуют в кэше, делаем новый запрос для", flightNumber, date);
+                flightData = await fetchFlightInfo(flightNumber, date);
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+            displayFlightInfo(flightData);
+        } catch (error) {
+            console.error("Ошибка в handleFlightInfoUpdate:", error);
+            const currentElement = document.querySelector('.flight-time-display');
+            const newFlightTimeDisplay = document.createElement('div');
+            newFlightTimeDisplay.className = 'flight-time-display';
+            newFlightTimeDisplay.id = 'flight-time-display';
+            newFlightTimeDisplay.textContent = 'Ошибка загрузки';
+            newFlightTimeDisplay.classList.add('no-data');
+            currentElement.replaceWith(newFlightTimeDisplay);
+            updateTime();
         }
-    } else {
-        console.log("Данные отсутствуют в кэше, делаем новый запрос для", flightNumber, date);
-        flightData = await fetchFlightInfo(flightNumber, date);
     }
-
-    // Минимальная задержка для отображения спиннера (например, 500 мс)
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    displayFlightInfo(flightData);
-}
 
     function toggleEventMode(isEvent) {
         if (isEvent) {
@@ -455,7 +477,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             newFlightTimeDisplay.textContent = timeValue;
-            newFlightTimeDisplay.classList.remove('no-data'); // Удаляем no-data для времени
+            newFlightTimeDisplay.classList.remove('no-data');
             currentElement.replaceWith(newFlightTimeDisplay);
 
             departureAirportCode.textContent = '---';
@@ -629,8 +651,14 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('bedtime-countdown-time').textContent = "00:00";
             document.getElementById('bedtime').textContent = "--:--";
             document.getElementById('waketime').textContent = "--:--";
+            document.getElementById('old-waketime').textContent = "";
+            document.getElementById('old-waketime').classList.add('hidden');
             document.getElementById('departuretime').textContent = "--:--";
+            document.getElementById('old-departuretime').textContent = "";
+            document.getElementById('old-departuretime').classList.add('hidden');
             document.getElementById('roomExitTime').textContent = "--:--";
+            // Убираем класс time-shifted, если нет данных о времени
+            document.querySelectorAll('.phase-card').forEach(card => card.classList.remove('time-shifted'));
             return;
         }
 
@@ -665,8 +693,42 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         document.getElementById('bedtime').textContent = bedTime.toLocaleTimeString('ru-RU', options);
-        document.getElementById('waketime').textContent = wakeTime.toLocaleTimeString('ru-RU', options);
-        document.getElementById('departuretime').textContent = departureTime.toLocaleTimeString('ru-RU', options);
+
+        // Обновление времени подъема
+        const waketimeElement = document.getElementById('waketime');
+        const oldWaketimeElement = document.getElementById('old-waketime');
+        waketimeElement.textContent = wakeTime.toLocaleTimeString('ru-RU', options);
+        if (customWakeTime && defaultWakeTime && customWakeTime.getTime() !== defaultWakeTime.getTime()) {
+            oldWaketimeElement.textContent = defaultWakeTime.toLocaleTimeString('ru-RU', options);
+            oldWaketimeElement.classList.remove('hidden');
+        } else {
+            oldWaketimeElement.textContent = "";
+            oldWaketimeElement.classList.add('hidden');
+        }
+
+        // Обновление времени выезда
+        const departuretimeElement = document.getElementById('departuretime');
+        const oldDeparturetimeElement = document.getElementById('old-departuretime');
+        departuretimeElement.textContent = departureTime.toLocaleTimeString('ru-RU', options);
+        if (customDepartureTime && defaultDepartureTime && customDepartureTime.getTime() !== defaultDepartureTime.getTime()) {
+            oldDeparturetimeElement.textContent = defaultDepartureTime.toLocaleTimeString('ru-RU', options);
+            oldDeparturetimeElement.classList.remove('hidden');
+        } else {
+            oldDeparturetimeElement.textContent = "";
+            oldDeparturetimeElement.classList.add('hidden');
+        }
+
+        // Управление классом time-shifted для выравнивания времени
+        const hasOldTime = !oldWaketimeElement.classList.contains('hidden') || !oldDeparturetimeElement.classList.contains('hidden');
+        const wakeCard = document.querySelector('#waketime').parentElement;
+        const departureCard = document.querySelector('#departuretime').parentElement;
+        if (hasOldTime) {
+            wakeCard.classList.add('time-shifted');
+            departureCard.classList.add('time-shifted');
+        } else {
+            wakeCard.classList.remove('time-shifted');
+            departureCard.classList.remove('time-shifted');
+        }
 
         const phases = [
             { id: 'bedtime', time: bedTime, diff: bedTimeDiff, card: bedtimeCountdownCard },
@@ -780,21 +842,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Модальное окно для времени выезда
-const departureCard = document.querySelector('#departuretime').parentElement;
-departureCard.addEventListener('click', () => {
-    if (!flightDepartureTime) return;
-    const departureModal = document.getElementById('departure-time-modal');
-    const departureInput = document.getElementById('departure-time-input');
+    const departureCard = document.querySelector('#departuretime').parentElement;
+    departureCard.addEventListener('click', () => {
+        if (!flightDepartureTime) return;
+        const departureModal = document.getElementById('departure-time-modal');
+        const departureInput = document.getElementById('departure-time-input');
 
-    const currentDepartureTime = customDepartureTime || defaultDepartureTime;
-    if (currentDepartureTime) {
-        const hours = currentDepartureTime.getHours().toString().padStart(2, '0');
-        const minutes = currentDepartureTime.getMinutes().toString().padStart(2, '0');
-        departureInput.value = `${hours}:${minutes}`;
-    }
+        const currentDepartureTime = customDepartureTime || defaultDepartureTime;
+        if (currentDepartureTime) {
+            const hours = currentDepartureTime.getHours().toString().padStart(2, '0');
+            const minutes = currentDepartureTime.getMinutes().toString().padStart(2, '0');
+            departureInput.value = `${hours}:${minutes}`;
+        }
 
-    departureModal.classList.add('active');
-});
+        departureModal.classList.add('active');
+    });
 
     const departureModal = document.getElementById('departure-time-modal');
     const departureInput = document.getElementById('departure-time-input');
@@ -804,122 +866,126 @@ departureCard.addEventListener('click', () => {
     const doneDepartureBtn = document.getElementById('done-departure-time');
 
     departureInput.addEventListener('change', () => {
-    const [hours, minutes] = departureInput.value.split(':');
-    const newTime = new Date(dateInput.value);
-    newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-    customDepartureTime = newTime;
-    localStorage.setItem('customDepartureTime', customDepartureTime.toISOString());
-    updateTime();
-});
+        const [hours, minutes] = departureInput.value.split(':');
+        const newTime = new Date(dateInput.value);
+        newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        customDepartureTime = newTime;
+        localStorage.setItem('customDepartureTime', customDepartureTime.toISOString());
+        updateTime();
+    });
 
     increaseDepartureBtn.addEventListener('click', () => {
-    let currentTime = departureInput.value ? new Date(`${dateInput.value}T${departureInput.value}:00`) : new Date(defaultDepartureTime);
-    currentTime.setMinutes(currentTime.getMinutes() + 5);
-    customDepartureTime = currentTime;
-    localStorage.setItem('customDepartureTime', customDepartureTime.toISOString());
-    const hours = currentTime.getHours().toString().padStart(2, '0');
-    const minutes = currentTime.getMinutes().toString().padStart(2, '0');
-    departureInput.value = `${hours}:${minutes}`;
-    updateTime();
-});
+        let currentTime = departureInput.value ? new Date(`${dateInput.value}T${departureInput.value}:00`) : new Date(defaultDepartureTime);
+        currentTime.setMinutes(currentTime.getMinutes() + 5);
+        customDepartureTime = currentTime;
+        localStorage.setItem('customDepartureTime', customDepartureTime.toISOString());
+        const hours = currentTime.getHours().toString().padStart(2, '0');
+        const minutes = currentTime.getMinutes().toString().padStart(2, '0');
+        departureInput.value = `${hours}:${minutes}`;
+        updateTime();
+    });
 
     decreaseDepartureBtn.addEventListener('click', () => {
-    let currentTime = departureInput.value ? new Date(`${dateInput.value}T${departureInput.value}:00`) : new Date(defaultDepartureTime);
-    currentTime.setMinutes(currentTime.getMinutes() - 5);
-    customDepartureTime = currentTime;
-    localStorage.setItem('customDepartureTime', customDepartureTime.toISOString());
-    const hours = currentTime.getHours().toString().padStart(2, '0');
-    const minutes = currentTime.getMinutes().toString().padStart(2, '0');
-    departureInput.value = `${hours}:${minutes}`;
-    updateTime();
-});
+        let currentTime = departureInput.value ? new Date(`${dateInput.value}T${departureInput.value}:00`) : new Date(defaultDepartureTime);
+        currentTime.setMinutes(currentTime.getMinutes() - 5);
+        customDepartureTime = currentTime;
+        localStorage.setItem('customDepartureTime', customDepartureTime.toISOString());
+        const hours = currentTime.getHours().toString().padStart(2, '0');
+        const minutes = currentTime.getMinutes().toString().padStart(2, '0');
+        departureInput.value = `${hours}:${minutes}`;
+        updateTime();
+    });
 
     resetDepartureBtn.addEventListener('click', () => {
-    customDepartureTime = null;
-    localStorage.removeItem('customDepartureTime');
-    if (defaultDepartureTime) {
-        const hours = defaultDepartureTime.getHours().toString().padStart(2, '0');
-        const minutes = defaultDepartureTime.getMinutes().toString().padStart(2, '0');
-        departureInput.value = `${hours}:${minutes}`;
-    }
-    updateTime();
-    departureModal.classList.remove('active');
-});
+        customDepartureTime = null;
+        localStorage.removeItem('customDepartureTime');
+        if (defaultDepartureTime) {
+            const hours = defaultDepartureTime.getHours().toString().padStart(2, '0');
+            const minutes = defaultDepartureTime.getMinutes().toString().padStart(2, '0');
+            departureInput.value = `${hours}:${minutes}`;
+        }
+        document.getElementById('old-departuretime').textContent = "";
+        document.getElementById('old-departuretime').classList.add('hidden');
+        updateTime();
+        departureModal.classList.remove('active');
+    });
 
-doneDepartureBtn.addEventListener('click', () => {
-    departureModal.classList.remove('active');
-});
+    doneDepartureBtn.addEventListener('click', () => {
+        departureModal.classList.remove('active');
+    });
 
     // Модальное окно для времени подъема
-const wakeCard = document.querySelector('#waketime').parentElement;
-wakeCard.addEventListener('click', () => {
-    if (!flightDepartureTime) return;
+    const wakeCard = document.querySelector('#waketime').parentElement;
+    wakeCard.addEventListener('click', () => {
+        if (!flightDepartureTime) return;
+        const wakeModal = document.getElementById('wake-time-modal');
+        const wakeInput = document.getElementById('wake-time-input');
+
+        const currentWakeTime = customWakeTime || defaultWakeTime;
+        if (currentWakeTime) {
+            const hours = currentWakeTime.getHours().toString().padStart(2, '0');
+            const minutes = currentWakeTime.getMinutes().toString().padStart(2, '0');
+            wakeInput.value = `${hours}:${minutes}`;
+        }
+
+        wakeModal.classList.add('active');
+    });
+
     const wakeModal = document.getElementById('wake-time-modal');
     const wakeInput = document.getElementById('wake-time-input');
-
-    const currentWakeTime = customWakeTime || defaultWakeTime;
-    if (currentWakeTime) {
-        const hours = currentWakeTime.getHours().toString().padStart(2, '0');
-        const minutes = currentWakeTime.getMinutes().toString().padStart(2, '0');
-        wakeInput.value = `${hours}:${minutes}`;
-    }
-
-    wakeModal.classList.add('active');
-});
-
-    const wakeModal = document.getElementById('wake-time-modal');
-const wakeInput = document.getElementById('wake-time-input');
-const increaseWakeBtn = document.getElementById('increase-wake-time');
-const decreaseWakeBtn = document.getElementById('decrease-wake-time');
-const resetWakeBtn = document.getElementById('reset-wake-time');
-const doneWakeBtn = document.getElementById('done-wake-time');
+    const increaseWakeBtn = document.getElementById('increase-wake-time');
+    const decreaseWakeBtn = document.getElementById('decrease-wake-time');
+    const resetWakeBtn = document.getElementById('reset-wake-time');
+    const doneWakeBtn = document.getElementById('done-wake-time');
 
     wakeInput.addEventListener('change', () => {
-    const [hours, minutes] = wakeInput.value.split(':');
-    const newTime = new Date(dateInput.value);
-    newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-    customWakeTime = newTime;
-    localStorage.setItem('customWakeTime', customWakeTime.toISOString());
-    updateTime();
-});
+        const [hours, minutes] = wakeInput.value.split(':');
+        const newTime = new Date(dateInput.value);
+        newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        customWakeTime = newTime;
+        localStorage.setItem('customWakeTime', customWakeTime.toISOString());
+        updateTime();
+    });
 
     increaseWakeBtn.addEventListener('click', () => {
-    let currentTime = wakeInput.value ? new Date(`${dateInput.value}T${wakeInput.value}:00`) : new Date(defaultWakeTime);
-    currentTime.setMinutes(currentTime.getMinutes() + 5);
-    customWakeTime = currentTime;
-    localStorage.setItem('customWakeTime', customWakeTime.toISOString());
-    const hours = currentTime.getHours().toString().padStart(2, '0');
-    const minutes = currentTime.getMinutes().toString().padStart(2, '0');
-    wakeInput.value = `${hours}:${minutes}`;
-    updateTime();
-});
+        let currentTime = wakeInput.value ? new Date(`${dateInput.value}T${wakeInput.value}:00`) : new Date(defaultWakeTime);
+        currentTime.setMinutes(currentTime.getMinutes() + 5);
+        customWakeTime = currentTime;
+        localStorage.setItem('customWakeTime', customWakeTime.toISOString());
+        const hours = currentTime.getHours().toString().padStart(2, '0');
+        const minutes = currentTime.getMinutes().toString().padStart(2, '0');
+        wakeInput.value = `${hours}:${minutes}`;
+        updateTime();
+    });
 
     decreaseWakeBtn.addEventListener('click', () => {
-    let currentTime = wakeInput.value ? new Date(`${dateInput.value}T${wakeInput.value}:00`) : new Date(defaultWakeTime);
-    currentTime.setMinutes(currentTime.getMinutes() - 5);
-    customWakeTime = currentTime;
-    localStorage.setItem('customWakeTime', customWakeTime.toISOString());
-    const hours = currentTime.getHours().toString().padStart(2, '0');
-    const minutes = currentTime.getMinutes().toString().padStart(2, '0');
-    wakeInput.value = `${hours}:${minutes}`;
-    updateTime();
-});
+        let currentTime = wakeInput.value ? new Date(`${dateInput.value}T${wakeInput.value}:00`) : new Date(defaultWakeTime);
+        currentTime.setMinutes(currentTime.getMinutes() - 5);
+        customWakeTime = currentTime;
+        localStorage.setItem('customWakeTime', customWakeTime.toISOString());
+        const hours = currentTime.getHours().toString().padStart(2, '0');
+        const minutes = currentTime.getMinutes().toString().padStart(2, '0');
+        wakeInput.value = `${hours}:${minutes}`;
+        updateTime();
+    });
 
     resetWakeBtn.addEventListener('click', () => {
-    customWakeTime = null;
-    localStorage.removeItem('customWakeTime');
-    if (defaultWakeTime) {
-        const hours = defaultWakeTime.getHours().toString().padStart(2, '0');
-        const minutes = defaultWakeTime.getMinutes().toString().padStart(2, '0');
-        wakeInput.value = `${hours}:${minutes}`;
-    }
-    updateTime();
-    wakeModal.classList.remove('active');
-});
+        customWakeTime = null;
+        localStorage.removeItem('customWakeTime');
+        if (defaultWakeTime) {
+            const hours = defaultWakeTime.getHours().toString().padStart(2, '0');
+            const minutes = defaultWakeTime.getMinutes().toString().padStart(2, '0');
+            wakeInput.value = `${hours}:${minutes}`;
+        }
+        document.getElementById('old-waketime').textContent = "";
+        document.getElementById('old-waketime').classList.add('hidden');
+        updateTime();
+        wakeModal.classList.remove('active');
+    });
 
-doneWakeBtn.addEventListener('click', () => {
-    wakeModal.classList.remove('active');
-});
+    doneWakeBtn.addEventListener('click', () => {
+        wakeModal.classList.remove('active');
+    });
 
     function adjustDateInputWidth() {
         const flightTimeInputs = document.querySelector('.flight-time-inputs');
@@ -935,4 +1001,3 @@ doneWakeBtn.addEventListener('click', () => {
     });
     window.addEventListener('resize', adjustDateInputWidth);
 });
-
