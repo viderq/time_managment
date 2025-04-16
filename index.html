@@ -118,10 +118,14 @@
                 <div>Отбой</div>
                 <div id="bedtime"></div>
             </div>
+            <!-- Карточка "Подъём" -->
             <div class="phase-card">
                 <i class="fas fa-bell phase-icon"></i>
                 <div>Подъём</div>
-                <div id="waketime"></div>
+                <div class="time-container">
+                    <div class="old-time hidden" id="old-waketime"></div>
+                    <div id="waketime"></div>
+                </div>
             </div>
             <div class="phase-card hidden" id="room-exit">
                 <i class="fas fa-door-open phase-icon"></i>
@@ -131,7 +135,10 @@
             <div class="phase-card">
                 <i class="fas fa-car phase-icon"></i>
                 <div>Выезд</div>
-                <div id="departuretime"></div>
+                <div class="time-container">
+                <div class="old-time hidden" id="old-departuretime"></div>
+                    <div id="departuretime"></div>
+                </div>
             </div>
         </div>
 
