@@ -368,7 +368,9 @@ document.addEventListener("DOMContentLoaded", function () {
     async function handleFlightInfoUpdate() {
         try {
             const prefix = flightPrefixSelect.value;
-            const number = flightNumberInput.value.trim();
+            let number = flightNumberInput.value.trim();
+            // Дополняем номер рейса до 4 символов, добавляя 0 в начало, если нужно
+            number = number.padStart(4, '0');
             const flightNumber = `${prefix}${number}`.toUpperCase();
             const date = dateInput.value;
 
@@ -529,7 +531,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const phaseGrid = document.querySelector('.phase-grid');
             const roomExitCard = document.getElementById('room-exit');
-            const departureIcon = document.querySelector('#departuretime').parentElement.querySelector('.phase-icon');
+            const departureTimeElement = document.getElementById('departuretime');
+            const departureIcon = departureTimeElement ? departureTimeElement.parentElement.querySelector('.phase-icon') : null;
 
             if (this.textContent.trim() === "Из отеля") {
                 phaseGrid.classList.add('expanded');
@@ -539,16 +542,18 @@ document.addEventListener("DOMContentLoaded", function () {
                     roomExitCard.classList.remove('appearing');
                 }, 300);
 
-                departureIcon.classList.add('icon-disappear');
-                setTimeout(() => {
-                    departureIcon.classList.remove('fas', 'fa-car');
-                    departureIcon.classList.add('fa-solid', 'fa-van-shuttle');
-                    departureIcon.classList.remove('icon-disappear');
-                    departureIcon.classList.add('icon-appear');
+                if (departureIcon) {
+                    departureIcon.classList.add('icon-disappear');
                     setTimeout(() => {
-                        departureIcon.classList.remove('icon-appear');
+                        departureIcon.classList.remove('fas', 'fa-car');
+                        departureIcon.classList.add('fa-solid', 'fa-van-shuttle');
+                        departureIcon.classList.remove('icon-disappear');
+                        departureIcon.classList.add('icon-appear');
+                        setTimeout(() => {
+                            departureIcon.classList.remove('icon-appear');
+                        }, 300);
                     }, 300);
-                }, 300);
+                }
             } else {
                 roomExitCard.classList.add('disappearing');
                 setTimeout(() => {
@@ -557,16 +562,18 @@ document.addEventListener("DOMContentLoaded", function () {
                     roomExitCard.classList.remove('disappearing');
                 }, 300);
 
-                departureIcon.classList.add('icon-disappear');
-                setTimeout(() => {
-                    departureIcon.classList.remove('fa-solid', 'fa-van-shuttle');
-                    departureIcon.classList.add('fas', 'fa-car');
-                    departureIcon.classList.remove('icon-disappear');
-                    departureIcon.classList.add('icon-appear');
+                if (departureIcon) {
+                    departureIcon.classList.add('icon-disappear');
                     setTimeout(() => {
-                        departureIcon.classList.remove('icon-appear');
+                        departureIcon.classList.remove('fa-solid', 'fa-van-shuttle');
+                        departureIcon.classList.add('fas', 'fa-car');
+                        departureIcon.classList.remove('icon-disappear');
+                        departureIcon.classList.add('icon-appear');
+                        setTimeout(() => {
+                            departureIcon.classList.remove('icon-appear');
+                        }, 300);
                     }, 300);
-                }, 300);
+                }
             }
             updateTime();
         });
