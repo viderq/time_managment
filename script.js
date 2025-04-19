@@ -41,6 +41,34 @@ document.addEventListener("DOMContentLoaded", function () {
         const savedEventTime = localStorage.getItem('eventTime');
         const savedDepartureTime = localStorage.getItem('customDepartureTime');
         const savedWakeTime = localStorage.getItem('customWakeTime');
+        const savedMode = localStorage.getItem('travelMode') || 'home'; // Восстановление режима
+
+        // Восстановление режима
+        const homeButton = document.getElementById('homeButton');
+        const hotelButton = document.getElementById('hotelButton');
+        const roomExitCard = document.getElementById('room-exit');
+        const phaseGrid = document.querySelector('.phase-grid');
+        const departureIcon = document.querySelector('#departuretime').parentElement.querySelector('.phase-icon');
+
+        if (savedMode === 'hotel') {
+            hotelButton.classList.add('active');
+            homeButton.classList.remove('active');
+            phaseGrid.classList.add('expanded');
+            roomExitCard.classList.remove('hidden');
+            if (departureIcon) {
+                departureIcon.classList.remove('fas', 'fa-car');
+                departureIcon.classList.add('fa-solid', 'fa-van-shuttle');
+            }
+        } else {
+            homeButton.classList.add('active');
+            hotelButton.classList.remove('active');
+            phaseGrid.classList.remove('expanded');
+            roomExitCard.classList.add('hidden');
+            if (departureIcon) {
+                departureIcon.classList.remove('fa-solid', 'fa-van-shuttle');
+                departureIcon.classList.add('fas', 'fa-car');
+            }
+        }
 
         if (savedDate) {
             dateInput.value = savedDate;
@@ -534,7 +562,11 @@ document.addEventListener("DOMContentLoaded", function () {
             const departureTimeElement = document.getElementById('departuretime');
             const departureIcon = departureTimeElement ? departureTimeElement.parentElement.querySelector('.phase-icon') : null;
 
-            if (this.textContent.trim() === "Из отеля") {
+            // Сохраняем режим в localStorage
+            const mode = this.textContent.trim() === 'Из отеля' ? 'hotel' : 'home';
+            localStorage.setItem('travelMode', mode);
+
+            if (this.textContent.trim() === 'Из отеля') {
                 phaseGrid.classList.add('expanded');
                 roomExitCard.classList.remove('hidden');
                 roomExitCard.classList.add('appearing');
