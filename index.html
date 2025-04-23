@@ -93,7 +93,7 @@
 
             <div class="countdown-card hidden" id="flight-countdown">
                 <div class="countdown-content">
-                    <i class="fas fa-hourglass-start countdown-icon"></i>
+                    <i class="fas fa-plane-departure countdown-icon"></i>
                     <div class="countdown-text">
                         <div class="countdown-title">До вылета</div>
                         <div class="countdown-time" id="flight-countdown-time"></div>
@@ -115,33 +115,40 @@
         <div class="phase-grid">
             <div class="phase-card">
                 <i class="fas fa-bed phase-icon"></i>
-                <div>Отбой</div>
-                <div id="bedtime"></div>
+                <span class="phase-label">Отбой</span>
+                <div class="time-container">
+                    <span class="pseudo-old-time"></span>
+                    <span class="phase-time" id="bedtime">--:--</span>
+                </div>
             </div>
-            <!-- Карточка "Подъём" -->
             <div class="phase-card">
                 <i class="fas fa-bell phase-icon"></i>
-                <div>Подъём</div>
+                <span class="phase-label">Подъём</span>
                 <div class="time-container">
-                    <div class="old-time hidden" id="old-waketime"></div>
-                    <div id="waketime"></div>
+                    <span class="old-time hidden" id="old-waketime"></span>
+                    <span class="pseudo-old-time"></span>
+                    <span class="phase-time" id="waketime">--:--</span>
                 </div>
             </div>
             <div class="phase-card hidden" id="room-exit">
                 <i class="fas fa-door-open phase-icon"></i>
-                <div>Выход</div>
-                <div id="roomExitTime"></div>
+                <span class="phase-label">Выход</span>
+                <div class="time-container">
+                    <span class="old-time hidden" id="old-roomExitTime"></span>
+                    <span class="pseudo-old-time"></span>
+                    <span class="phase-time" id="roomExitTime">--:--</span>
+                </div>
             </div>
             <div class="phase-card">
                 <i class="fas fa-car phase-icon"></i>
-                <div>Выезд</div>
+                <span class="phase-label">Выезд</span>
                 <div class="time-container">
-                <div class="old-time hidden" id="old-departuretime"></div>
-                    <div id="departuretime"></div>
+                    <span class="old-time hidden" id="old-departuretime"></span>
+                    <span class="pseudo-old-time"></span>
+                    <span class="phase-time" id="departuretime">--:--</span>
                 </div>
             </div>
         </div>
-
         <div class="settings-group">
             <div class="sleep-label">Время сна</div>
             <div class="sleep-control">
@@ -226,6 +233,22 @@
             <div class="modal-buttons">
                 <button class="reset-btn" id="reset-wake-time">Сброс</button>
                 <button class="done-btn" id="done-wake-time">Готово</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для редактирования времени выхода из номера -->
+    <div class="modal" id="room-exit-time-modal">
+        <div class="modal-content">
+            <h2>Время выхода из номера</h2>
+            <div class="time-edit-control">
+                <button class="time-btn" id="decrease-room-exit-time">−</button>
+                <input type="time" id="room-exit-time-input" step="300">
+                <button class="time-btn" id="increase-room-exit-time">+</button>
+            </div>
+            <div class="modal-buttons">
+                <button class="reset-btn" id="reset-room-exit-time">Сброс</button>
+                <button class="done-btn" id="done-room-exit-time">Готово</button>
             </div>
         </div>
     </div>
