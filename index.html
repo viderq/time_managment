@@ -177,23 +177,6 @@
                 <i class="fas fa-times"></i>
             </button>
             <h2>Настройки</h2>
-            <div class="timezone-mode">
-                <div class="timezone-header">
-                    <i class="fas fa-clock timezone-icon"></i>
-                    <h3>Часовой пояс</h3>
-                </div>
-                <label for="auto-timezone">
-                    <input type="checkbox" id="auto-timezone" name="timezone-mode">
-                    Авто
-                </label>
-                <label for="timezone-select">Выберите часовой пояс:</label>
-                <select id="timezone-select">
-                    <option value="Europe/Moscow">Москва (UTC+3)</option>
-                    <option value="Asia/Vladivostok">Владивосток (UTC+10)</option>
-                    <option value="Europe/Kaliningrad">Калининград (UTC+2)</option>
-                    <option value="Asia/Yekaterinburg">Екатеринбург (UTC+5)</option>
-                </select>
-            </div>
             <div class="travel-time-mode">
                 <div class="travel-time-header">
                     <i class="fas fa-road timezone-icon"></i>
@@ -234,7 +217,9 @@
         <div class="modal-content">
             <h2>Время подъёма</h2>
             <div class="time-edit-control">
-                <button class="time-btn" id="decrease-wake-time">−</button>
+                <button class="time-btn"
+
+ id="decrease-wake-time">−</button>
                 <input type="time" id="wake-time-input" step="300">
                 <button class="time-btn" id="increase-wake-time">+</button>
             </div>
