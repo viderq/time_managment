@@ -17,8 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const departureAirportName = document.querySelector('.airport:nth-child(1) .airport-name');
     const arrivalAirportCode = document.querySelector('.airport:nth-child(2) .airport-code');
     const arrivalAirportName = document.querySelector('.airport:nth-child(2) .airport-name');
-    const autoTimezoneCheckbox = document.getElementById('auto-timezone');
-    const timezoneSelect = document.getElementById('timezone-select');
 
     let sleepHours = parseFloat(localStorage.getItem('sleepHours')) || 8.0;
     let travelTimeMinutes = parseInt(localStorage.getItem('travelTime')) || 40;
@@ -55,6 +53,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function loadSavedData() {
+        // Очистка старых данных часового пояса
+        localStorage.removeItem('autoTimezone');
+        localStorage.removeItem('selectedTimezone');
+
         const savedDate = localStorage.getItem('flightDate');
         const savedPrefix = localStorage.getItem('flightPrefix') || 'SU';
         const savedNumber = localStorage.getItem('flightNumber');
@@ -625,14 +627,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    const isAutoTimezone = localStorage.getItem('autoTimezone') === 'true';
-    if (autoTimezoneCheckbox) {
-        autoTimezoneCheckbox.checked = isAutoTimezone;
-    }
-    if (timezoneSelect) {
-        timezoneSelect.disabled = isAutoTimezone;
-    }
-
     function formatTimeDiff(timeDiff) {
         if (timeDiff <= 0) return "00:00";
         const hours = Math.floor(timeDiff / (1000 * 60 * 60));
@@ -648,30 +642,9 @@ document.addEventListener("DOMContentLoaded", function () {
         };
 
         let localTime = new Date();
-        let moscowTime;
-        let localTimezoneOffset = localTime.getTimezoneOffset();
-
-        const isAutoTimezone = localStorage.getItem('autoTimezone') === 'true';
-        if (!isAutoTimezone) {
-            const selectedTimezone = localStorage.getItem('selectedTimezone');
-            const deviceTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-            if (selectedTimezone && selectedTimezone !== deviceTimezone) {
-                const timezoneOffsets = {
-                    "Europe/Moscow": 3,
-                    "Asia/Vladivostok": 10,
-                    "Europe/Kaliningrad": 2,
-                    "Asia/Yekaterinburg": 5
-                };
-                const currentOffset = localTime.getTimezoneOffset() / 60;
-                const targetOffset = timezoneOffsets[selectedTimezone] || 3;
-                localTime = new Date(localTime.getTime() + (targetOffset - (-currentOffset)) * 60 * 60 * 1000);
-                localTimezoneOffset = -targetOffset * 60;
-            }
-        }
-
+        const localTimezoneOffset = localTime.getTimezoneOffset();
         const utcTime = localTime.getTime() + (localTimezoneOffset * 60 * 1000);
-        moscowTime = new Date(utcTime + MOSCOW_OFFSET);
+        const moscowTime = new Date(utcTime + MOSCOW_OFFSET);
 
         document.getElementById('current-time').textContent = localTime.toLocaleTimeString('ru-RU', options);
         document.getElementById('destination-time').textContent = moscowTime.toLocaleTimeString('ru-RU', options);
@@ -921,23 +894,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    autoTimezoneCheckbox.addEventListener('change', (e) => {
-        const isAuto = e.target.checked;
-        localStorage.setItem('autoTimezone', isAuto);
-        if (timezoneSelect) {
-            timezoneSelect.disabled = isAuto;
-        }
-        if (isAuto) {
-            localStorage.removeItem('selectedTimezone');
-        }
-        updateTime();
-    });
-
-    timezoneSelect.addEventListener('change', (e) => {
-        localStorage.setItem('selectedTimezone', e.target.value);
-        updateTime();
-    });
-
     const travelTimeInput = document.getElementById('travel-time-input');
     if (travelTimeInput) {
         travelTimeInput.value = travelTimeMinutes;
@@ -974,7 +930,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    const departureCard = document.querySelector('#departuretime').parentElement;
+    const departureCard = document.querySelector('.phase-card:has(#departuretime)');
     departureCard.addEventListener('click', () => {
         if (!flightDepartureTime) return;
         const departureModal = document.getElementById('departure-time-modal');
@@ -996,6 +952,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const decreaseDepartureBtn = document.getElementById('decrease-departure-time');
     const resetDepartureBtn = document.getElementById('reset-departure-time');
     const doneDepartureBtn = document.getElementById('done-departure-time');
+
+    departureModal.addEventListener('click', (e) => {
+        if (e.target === departureModal) {
+            departureModal.classList.remove('active');
+        }
+    });
 
     function recalculatePhaseTimes(changedPhase, newTime) {
         const isHotelMode = document.getElementById('hotelButton').classList.contains('active');
@@ -1116,7 +1078,7 @@ document.addEventListener("DOMContentLoaded", function () {
         departureModal.classList.remove('active');
     });
 
-    const wakeCard = document.querySelector('#waketime').parentElement;
+    const wakeCard = document.querySelector('.phase-card:has(#waketime)');
     wakeCard.addEventListener('click', () => {
         if (!flightDepartureTime) return;
         const wakeModal = document.getElementById('wake-time-modal');
@@ -1138,6 +1100,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const decreaseWakeBtn = document.getElementById('decrease-wake-time');
     const resetWakeBtn = document.getElementById('reset-wake-time');
     const doneWakeBtn = document.getElementById('done-wake-time');
+
+    wakeModal.addEventListener('click', (e) => {
+        if (e.target === wakeModal) {
+            wakeModal.classList.remove('active');
+        }
+    });
 
     wakeInput.addEventListener('change', () => {
         const [hours, minutes] = wakeInput.value.split(':');
@@ -1180,13 +1148,12 @@ document.addEventListener("DOMContentLoaded", function () {
         wakeModal.classList.remove('active');
     });
 
-    const roomExitCard = document.querySelector('#roomExitTime').parentElement;
+    const roomExitCard = document.querySelector('.phase-card:has(#roomExitTime)');
     roomExitCard.addEventListener('click', () => {
         if (!flightDepartureTime || !document.getElementById('hotelButton').classList.contains('active')) return;
         const roomExitModal = document.getElementById('room-exit-time-modal');
         const roomExitInput = document.getElementById('room-exit-time-input');
 
-        const禁止: true
         const currentRoomExitTime = customRoomExitTime || defaultRoomExitTime;
         if (currentRoomExitTime) {
             const hours = currentRoomExitTime.getHours().toString().padStart(2, '0');
@@ -1203,6 +1170,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const decreaseRoomExitBtn = document.getElementById('decrease-room-exit-time');
     const resetRoomExitBtn = document.getElementById('reset-room-exit-time');
     const doneRoomExitBtn = document.getElementById('done-room-exit-time');
+
+    roomExitModal.addEventListener('click', (e) => {
+        if (e.target === roomExitModal) {
+            roomExitModal.classList.remove('active');
+        }
+    });
 
     roomExitInput.addEventListener('change', () => {
         const [hours, minutes] = roomExitInput.value.split(':');
@@ -1245,7 +1218,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const minutes = currentTime.getMinutes().toString().padStart(2, '0');
         roomExitInput.value = `${hours}:${minutes}`;
 
-        recalculatePhaseTimes('room-exit', currentTime);
+        recalculatePhaseTimes('room-exit', newTime);
     });
 
     resetRoomExitBtn.addEventListener('click', () => {
