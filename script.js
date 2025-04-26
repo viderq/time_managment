@@ -52,8 +52,18 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    function calculateDefaultTimes() {
+        if (!flightDepartureTime) return;
+        const arrivalTime = new Date(flightDepartureTime.getTime() - checkInTimeMinutes * 60 * 1000);
+        defaultDepartureTime = new Date(arrivalTime.getTime() - travelTimeMinutes * 60 * 1000);
+        const isHotelMode = document.getElementById('hotelButton').classList.contains('active');
+        defaultRoomExitTime = isHotelMode ? new Date(defaultDepartureTime.getTime() - HOTEL_EXIT_OFFSET) : null;
+        defaultWakeTime = isHotelMode
+            ? new Date(defaultRoomExitTime.getTime() - PREPARATION_TIME)
+            : new Date(defaultDepartureTime.getTime() - PREPARATION_TIME);
+    }
+
     function loadSavedData() {
-        // Очистка старых данных часового пояса
         localStorage.removeItem('autoTimezone');
         localStorage.removeItem('selectedTimezone');
 
@@ -145,8 +155,10 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem('flightDate', dateInput.value);
         customDepartureTime = null;
         customWakeTime = null;
+        customRoomExitTime = null;
         localStorage.removeItem('customDepartureTime');
         localStorage.removeItem('customWakeTime');
+        localStorage.removeItem('customRoomExitTime');
         if (flightPrefixSelect.value === 'EVENT') {
             updateFlightTimeFromEvent();
         } else if (flightNumberInput.value) {
@@ -169,8 +181,10 @@ document.addEventListener("DOMContentLoaded", function () {
         flightDepartureTime = null;
         customDepartureTime = null;
         customWakeTime = null;
+        customRoomExitTime = null;
         localStorage.removeItem('customDepartureTime');
         localStorage.removeItem('customWakeTime');
+        localStorage.removeItem('customRoomExitTime');
         updateTime();
 
         if (isEvent) {
@@ -211,8 +225,10 @@ document.addEventListener("DOMContentLoaded", function () {
     flightNumberInput.addEventListener('blur', () => {
         customDepartureTime = null;
         customWakeTime = null;
+        customRoomExitTime = null;
         localStorage.removeItem('customDepartureTime');
         localStorage.removeItem('customWakeTime');
+        localStorage.removeItem('customRoomExitTime');
         if (dateInput.value && flightPrefixSelect.value !== 'EVENT' && flightNumberInput.value) {
             handleFlightInfoUpdate();
         } else {
@@ -407,6 +423,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         console.log("Аэропорт прилета:", flight.leg.arrival.scheduled.airportCode || 'N/A');
         console.log("Время вылета:", formattedTime);
+        calculateDefaultTimes();
         updateTime();
     }
 
@@ -530,6 +547,7 @@ document.addEventListener("DOMContentLoaded", function () {
             departureAirportName.textContent = '-----';
             arrivalAirportCode.textContent = '---';
             arrivalAirportName.textContent = '-----';
+            calculateDefaultTimes();
             updateTime();
         } else {
             flightDepartureTime = null;
@@ -623,6 +641,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }, 300);
                 }
             }
+            calculateDefaultTimes();
             updateTime();
         });
     });
@@ -695,16 +714,9 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        const arrivalTime = new Date(flightDepartureTime.getTime() - checkInTimeMinutes * 60 * 1000);
-        defaultDepartureTime = new Date(arrivalTime.getTime() - travelTimeMinutes * 60 * 1000);
         const departureTime = customDepartureTime ? new Date(customDepartureTime) : defaultDepartureTime;
         const isHotelMode = document.getElementById('hotelButton').classList.contains('active');
-        defaultRoomExitTime = isHotelMode ? new Date(departureTime.getTime() - HOTEL_EXIT_OFFSET) : null;
         const roomExitTime = isHotelMode ? (customRoomExitTime ? new Date(customRoomExitTime) : defaultRoomExitTime) : null;
-
-        defaultWakeTime = isHotelMode
-            ? new Date(roomExitTime.getTime() - PREPARATION_TIME)
-            : new Date(departureTime.getTime() - PREPARATION_TIME);
         const wakeTime = customWakeTime ? new Date(customWakeTime) : defaultWakeTime;
         const bedTime = new Date(wakeTime.getTime() - sleepHours * 60 * 60 * 1000);
 
@@ -902,8 +914,11 @@ document.addEventListener("DOMContentLoaded", function () {
             localStorage.setItem('travelTime', travelTimeMinutes);
             customDepartureTime = null;
             customWakeTime = null;
+            customRoomExitTime = null;
             localStorage.removeItem('customDepartureTime');
             localStorage.removeItem('customWakeTime');
+            localStorage.removeItem('customRoomExitTime');
+            calculateDefaultTimes();
             updateTime();
         });
     }
@@ -926,6 +941,7 @@ document.addEventListener("DOMContentLoaded", function () {
             localStorage.removeItem('customDepartureTime');
             localStorage.removeItem('customWakeTime');
             localStorage.removeItem('customRoomExitTime');
+            calculateDefaultTimes();
             resetAllPhases();
         });
     }
@@ -960,26 +976,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function recalculatePhaseTimes(changedPhase, newTime) {
-        const isHotelMode = document.getElementById('hotelButton').classList.contains('active');
-
         if (changedPhase === 'wake') {
             customWakeTime = new Date(newTime);
             localStorage.setItem('customWakeTime', customWakeTime.toISOString());
         } else if (changedPhase === 'departure') {
             customDepartureTime = new Date(newTime);
             localStorage.setItem('customDepartureTime', customDepartureTime.toISOString());
-            customRoomExitTime = null;
-            localStorage.removeItem('customRoomExitTime');
         } else if (changedPhase === 'room-exit') {
             customRoomExitTime = new Date(newTime);
             localStorage.setItem('customRoomExitTime', customRoomExitTime.toISOString());
-            defaultWakeTime = new Date(newTime.getTime() - PREPARATION_TIME);
-            if (!customWakeTime || customWakeTime.getTime() > defaultWakeTime.getTime()) {
-                customWakeTime = defaultWakeTime;
-                localStorage.setItem('customWakeTime', customWakeTime.toISOString());
-            }
         }
-
         updateTime();
     }
 
@@ -1003,23 +1009,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function resetAllPhases() {
         if (!flightDepartureTime) return;
-        const arrivalTime = new Date(flightDepartureTime.getTime() - checkInTimeMinutes * 60 * 1000);
-        defaultDepartureTime = new Date(arrivalTime.getTime() - travelTimeMinutes * 60 * 1000);
         customDepartureTime = null;
-        localStorage.removeItem('customDepartureTime');
-
-        const isHotelMode = document.getElementById('hotelButton').classList.contains('active');
-        const departureTime = defaultDepartureTime;
-        defaultRoomExitTime = isHotelMode ? new Date(departureTime.getTime() - HOTEL_EXIT_OFFSET) : null;
-        customRoomExitTime = null;
-        localStorage.removeItem('customRoomExitTime');
-
-        defaultWakeTime = isHotelMode
-            ? new Date(defaultRoomExitTime.getTime() - PREPARATION_TIME)
-            : new Date(departureTime.getTime() - PREPARATION_TIME);
         customWakeTime = null;
+        customRoomExitTime = null;
+        localStorage.removeItem('customDepartureTime');
         localStorage.removeItem('customWakeTime');
-
+        localStorage.removeItem('customRoomExitTime');
+        calculateDefaultTimes();
         updateTime();
     }
 
@@ -1027,43 +1023,24 @@ document.addEventListener("DOMContentLoaded", function () {
         const [hours, minutes] = departureInput.value.split(':');
         const newTime = new Date(dateInput.value);
         newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-
-        const arrivalTime = new Date(flightDepartureTime.getTime() - checkInTimeMinutes * 60 * 1000);
-        if (newTime > arrivalTime) {
-            alert('Время выезда не может быть позже, чем время прибытия в аэропорт.');
-            const hours = arrivalTime.getHours().toString().padStart(2, '0');
-            const minutes = arrivalTime.getMinutes().toString().padStart(2, '0');
-            departureInput.value = `${hours}:${minutes}`;
-            newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-        }
-
         recalculatePhaseTimes('departure', newTime);
     });
 
     increaseDepartureBtn.addEventListener('click', () => {
         let currentTime = departureInput.value ? new Date(`${dateInput.value}T${departureInput.value}:00`) : new Date(defaultDepartureTime);
         currentTime.setMinutes(currentTime.getMinutes() + 5);
-
-        const arrivalTime = new Date(flightDepartureTime.getTime() - checkInTimeMinutes * 60 * 1000);
-        if (currentTime > arrivalTime) {
-            currentTime = arrivalTime;
-        }
-
         const hours = currentTime.getHours().toString().padStart(2, '0');
         const minutes = currentTime.getMinutes().toString().padStart(2, '0');
         departureInput.value = `${hours}:${minutes}`;
-
         recalculatePhaseTimes('departure', currentTime);
     });
 
     decreaseDepartureBtn.addEventListener('click', () => {
         let currentTime = departureInput.value ? new Date(`${dateInput.value}T${departureInput.value}:00`) : new Date(defaultDepartureTime);
         currentTime.setMinutes(currentTime.getMinutes() - 5);
-
         const hours = currentTime.getHours().toString().padStart(2, '0');
         const minutes = currentTime.getMinutes().toString().padStart(2, '0');
         departureInput.value = `${hours}:${minutes}`;
-
         recalculatePhaseTimes('departure', currentTime);
     });
 
@@ -1111,29 +1088,24 @@ document.addEventListener("DOMContentLoaded", function () {
         const [hours, minutes] = wakeInput.value.split(':');
         const newTime = new Date(dateInput.value);
         newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-
         recalculatePhaseTimes('wake', newTime);
     });
 
     increaseWakeBtn.addEventListener('click', () => {
         let currentTime = wakeInput.value ? new Date(`${dateInput.value}T${wakeInput.value}:00`) : new Date(defaultWakeTime);
         currentTime.setMinutes(currentTime.getMinutes() + 5);
-
         const hours = currentTime.getHours().toString().padStart(2, '0');
         const minutes = currentTime.getMinutes().toString().padStart(2, '0');
         wakeInput.value = `${hours}:${minutes}`;
-
         recalculatePhaseTimes('wake', currentTime);
     });
 
     decreaseWakeBtn.addEventListener('click', () => {
         let currentTime = wakeInput.value ? new Date(`${dateInput.value}T${wakeInput.value}:00`) : new Date(defaultWakeTime);
         currentTime.setMinutes(currentTime.getMinutes() - 5);
-
         const hours = currentTime.getHours().toString().padStart(2, '0');
         const minutes = currentTime.getMinutes().toString().padStart(2, '0');
         wakeInput.value = `${hours}:${minutes}`;
-
         recalculatePhaseTimes('wake', currentTime);
     });
 
@@ -1181,44 +1153,25 @@ document.addEventListener("DOMContentLoaded", function () {
         const [hours, minutes] = roomExitInput.value.split(':');
         const newTime = new Date(dateInput.value);
         newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-
-        const departureTime = customDepartureTime || defaultDepartureTime;
-        if (newTime > departureTime) {
-            alert('Время выхода из номера не может быть позже, чем время выезда.');
-            const hours = departureTime.getHours().toString().padStart(2, '0');
-            const minutes = departureTime.getMinutes().toString().padStart(2, '0');
-            roomExitInput.value = `${hours}:${minutes}`;
-            newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-        }
-
         recalculatePhaseTimes('room-exit', newTime);
     });
 
     increaseRoomExitBtn.addEventListener('click', () => {
         let currentTime = roomExitInput.value ? new Date(`${dateInput.value}T${roomExitInput.value}:00`) : new Date(defaultRoomExitTime);
         currentTime.setMinutes(currentTime.getMinutes() + 5);
-
-        const departureTime = customDepartureTime || defaultDepartureTime;
-        if (currentTime > departureTime) {
-            currentTime = departureTime;
-        }
-
         const hours = currentTime.getHours().toString().padStart(2, '0');
         const minutes = currentTime.getMinutes().toString().padStart(2, '0');
         roomExitInput.value = `${hours}:${minutes}`;
-
         recalculatePhaseTimes('room-exit', currentTime);
     });
 
     decreaseRoomExitBtn.addEventListener('click', () => {
         let currentTime = roomExitInput.value ? new Date(`${dateInput.value}T${roomExitInput.value}:00`) : new Date(defaultRoomExitTime);
         currentTime.setMinutes(currentTime.getMinutes() - 5);
-
         const hours = currentTime.getHours().toString().padStart(2, '0');
         const minutes = currentTime.getMinutes().toString().padStart(2, '0');
         roomExitInput.value = `${hours}:${minutes}`;
-
-        recalculatePhaseTimes('room-exit', newTime);
+        recalculatePhaseTimes('room-exit', currentTime);
     });
 
     resetRoomExitBtn.addEventListener('click', () => {
