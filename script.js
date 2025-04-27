@@ -52,18 +52,8 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    function calculateDefaultTimes() {
-        if (!flightDepartureTime) return;
-        const arrivalTime = new Date(flightDepartureTime.getTime() - checkInTimeMinutes * 60 * 1000);
-        defaultDepartureTime = new Date(arrivalTime.getTime() - travelTimeMinutes * 60 * 1000);
-        const isHotelMode = document.getElementById('hotelButton').classList.contains('active');
-        defaultRoomExitTime = isHotelMode ? new Date(defaultDepartureTime.getTime() - HOTEL_EXIT_OFFSET) : null;
-        defaultWakeTime = isHotelMode
-            ? new Date(defaultRoomExitTime.getTime() - PREPARATION_TIME)
-            : new Date(defaultDepartureTime.getTime() - PREPARATION_TIME);
-    }
-
     function loadSavedData() {
+        // Очистка старых данных часового пояса
         localStorage.removeItem('autoTimezone');
         localStorage.removeItem('selectedTimezone');
 
@@ -155,10 +145,8 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem('flightDate', dateInput.value);
         customDepartureTime = null;
         customWakeTime = null;
-        customRoomExitTime = null;
         localStorage.removeItem('customDepartureTime');
         localStorage.removeItem('customWakeTime');
-        localStorage.removeItem('customRoomExitTime');
         if (flightPrefixSelect.value === 'EVENT') {
             updateFlightTimeFromEvent();
         } else if (flightNumberInput.value) {
@@ -181,10 +169,8 @@ document.addEventListener("DOMContentLoaded", function () {
         flightDepartureTime = null;
         customDepartureTime = null;
         customWakeTime = null;
-        customRoomExitTime = null;
         localStorage.removeItem('customDepartureTime');
         localStorage.removeItem('customWakeTime');
-        localStorage.removeItem('customRoomExitTime');
         updateTime();
 
         if (isEvent) {
@@ -225,10 +211,8 @@ document.addEventListener("DOMContentLoaded", function () {
     flightNumberInput.addEventListener('blur', () => {
         customDepartureTime = null;
         customWakeTime = null;
-        customRoomExitTime = null;
         localStorage.removeItem('customDepartureTime');
         localStorage.removeItem('customWakeTime');
-        localStorage.removeItem('customRoomExitTime');
         if (dateInput.value && flightPrefixSelect.value !== 'EVENT' && flightNumberInput.value) {
             handleFlightInfoUpdate();
         } else {
@@ -423,7 +407,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         console.log("Аэропорт прилета:", flight.leg.arrival.scheduled.airportCode || 'N/A');
         console.log("Время вылета:", formattedTime);
-        calculateDefaultTimes();
         updateTime();
     }
 
@@ -547,7 +530,6 @@ document.addEventListener("DOMContentLoaded", function () {
             departureAirportName.textContent = '-----';
             arrivalAirportCode.textContent = '---';
             arrivalAirportName.textContent = '-----';
-            calculateDefaultTimes();
             updateTime();
         } else {
             flightDepartureTime = null;
@@ -641,7 +623,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     }, 300);
                 }
             }
-            calculateDefaultTimes();
             updateTime();
         });
     });
@@ -714,9 +695,16 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        const arrivalTime = new Date(flightDepartureTime.getTime() - checkInTimeMinutes * 60 * 1000);
+        defaultDepartureTime = new Date(arrivalTime.getTime() - travelTimeMinutes * 60 * 1000);
         const departureTime = customDepartureTime ? new Date(customDepartureTime) : defaultDepartureTime;
         const isHotelMode = document.getElementById('hotelButton').classList.contains('active');
+        defaultRoomExitTime = isHotelMode ? new Date(departureTime.getTime() - HOTEL_EXIT_OFFSET) : null;
         const roomExitTime = isHotelMode ? (customRoomExitTime ? new Date(customRoomExitTime) : defaultRoomExitTime) : null;
+
+        defaultWakeTime = isHotelMode
+            ? new Date(roomExitTime.getTime() - PREPARATION_TIME)
+            : new Date(departureTime.getTime() - PREPARATION_TIME);
         const wakeTime = customWakeTime ? new Date(customWakeTime) : defaultWakeTime;
         const bedTime = new Date(wakeTime.getTime() - sleepHours * 60 * 60 * 1000);
 
@@ -914,11 +902,8 @@ document.addEventListener("DOMContentLoaded", function () {
             localStorage.setItem('travelTime', travelTimeMinutes);
             customDepartureTime = null;
             customWakeTime = null;
-            customRoomExitTime = null;
             localStorage.removeItem('customDepartureTime');
             localStorage.removeItem('customWakeTime');
-            localStorage.removeItem('customRoomExitTime');
-            calculateDefaultTimes();
             updateTime();
         });
     }
@@ -941,7 +926,6 @@ document.addEventListener("DOMContentLoaded", function () {
             localStorage.removeItem('customDepartureTime');
             localStorage.removeItem('customWakeTime');
             localStorage.removeItem('customRoomExitTime');
-            calculateDefaultTimes();
             resetAllPhases();
         });
     }
@@ -1009,13 +993,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function resetAllPhases() {
         if (!flightDepartureTime) return;
+        const arrivalTime = new Date(flightDepartureTime.getTime() - checkInTimeMinutes * 60 * 1000);
+        defaultDepartureTime = new Date(arrivalTime.getTime() - travelTimeMinutes * 60 * 1000);
         customDepartureTime = null;
-        customWakeTime = null;
-        customRoomExitTime = null;
         localStorage.removeItem('customDepartureTime');
-        localStorage.removeItem('customWakeTime');
+
+        const isHotelMode = document.getElementById('hotelButton').classList.contains('active');
+        const departureTime = defaultDepartureTime;
+        defaultRoomExitTime = isHotelMode ? new Date(departureTime.getTime() - HOTEL_EXIT_OFFSET) : null;
+        customRoomExitTime = null;
         localStorage.removeItem('customRoomExitTime');
-        calculateDefaultTimes();
+
+        defaultWakeTime = isHotelMode
+            ? new Date(defaultRoomExitTime.getTime() - PREPARATION_TIME)
+            : new Date(departureTime.getTime() - PREPARATION_TIME);
+        customWakeTime = null;
+        localStorage.removeItem('customWakeTime');
+
         updateTime();
     }
 
