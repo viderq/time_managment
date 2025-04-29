@@ -960,16 +960,26 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function recalculatePhaseTimes(changedPhase, newTime) {
+        const isHotelMode = document.getElementById('hotelButton').classList.contains('active');
+
         if (changedPhase === 'wake') {
             customWakeTime = new Date(newTime);
             localStorage.setItem('customWakeTime', customWakeTime.toISOString());
         } else if (changedPhase === 'departure') {
             customDepartureTime = new Date(newTime);
             localStorage.setItem('customDepartureTime', customDepartureTime.toISOString());
+            customRoomExitTime = null;
+            localStorage.removeItem('customRoomExitTime');
         } else if (changedPhase === 'room-exit') {
             customRoomExitTime = new Date(newTime);
             localStorage.setItem('customRoomExitTime', customRoomExitTime.toISOString());
+            defaultWakeTime = new Date(newTime.getTime() - PREPARATION_TIME);
+            if (!customWakeTime || customWakeTime.getTime() > defaultWakeTime.getTime()) {
+                customWakeTime = defaultWakeTime;
+                localStorage.setItem('customWakeTime', customWakeTime.toISOString());
+            }
         }
+
         updateTime();
     }
 
@@ -1017,24 +1027,43 @@ document.addEventListener("DOMContentLoaded", function () {
         const [hours, minutes] = departureInput.value.split(':');
         const newTime = new Date(dateInput.value);
         newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+        const arrivalTime = new Date(flightDepartureTime.getTime() - checkInTimeMinutes * 60 * 1000);
+        if (newTime > arrivalTime) {
+            alert('Время выезда не может быть позже, чем время прибытия в аэропорт.');
+            const hours = arrivalTime.getHours().toString().padStart(2, '0');
+            const minutes = arrivalTime.getMinutes().toString().padStart(2, '0');
+            departureInput.value = `${hours}:${minutes}`;
+            newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        }
+
         recalculatePhaseTimes('departure', newTime);
     });
 
     increaseDepartureBtn.addEventListener('click', () => {
         let currentTime = departureInput.value ? new Date(`${dateInput.value}T${departureInput.value}:00`) : new Date(defaultDepartureTime);
         currentTime.setMinutes(currentTime.getMinutes() + 5);
+
+        const arrivalTime = new Date(flightDepartureTime.getTime() - checkInTimeMinutes * 60 * 1000);
+        if (currentTime > arrivalTime) {
+            currentTime = arrivalTime;
+        }
+
         const hours = currentTime.getHours().toString().padStart(2, '0');
         const minutes = currentTime.getMinutes().toString().padStart(2, '0');
         departureInput.value = `${hours}:${minutes}`;
+
         recalculatePhaseTimes('departure', currentTime);
     });
 
     decreaseDepartureBtn.addEventListener('click', () => {
         let currentTime = departureInput.value ? new Date(`${dateInput.value}T${departureInput.value}:00`) : new Date(defaultDepartureTime);
         currentTime.setMinutes(currentTime.getMinutes() - 5);
+
         const hours = currentTime.getHours().toString().padStart(2, '0');
         const minutes = currentTime.getMinutes().toString().padStart(2, '0');
         departureInput.value = `${hours}:${minutes}`;
+
         recalculatePhaseTimes('departure', currentTime);
     });
 
@@ -1082,24 +1111,29 @@ document.addEventListener("DOMContentLoaded", function () {
         const [hours, minutes] = wakeInput.value.split(':');
         const newTime = new Date(dateInput.value);
         newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
         recalculatePhaseTimes('wake', newTime);
     });
 
     increaseWakeBtn.addEventListener('click', () => {
         let currentTime = wakeInput.value ? new Date(`${dateInput.value}T${wakeInput.value}:00`) : new Date(defaultWakeTime);
         currentTime.setMinutes(currentTime.getMinutes() + 5);
+
         const hours = currentTime.getHours().toString().padStart(2, '0');
         const minutes = currentTime.getMinutes().toString().padStart(2, '0');
         wakeInput.value = `${hours}:${minutes}`;
+
         recalculatePhaseTimes('wake', currentTime);
     });
 
     decreaseWakeBtn.addEventListener('click', () => {
         let currentTime = wakeInput.value ? new Date(`${dateInput.value}T${wakeInput.value}:00`) : new Date(defaultWakeTime);
         currentTime.setMinutes(currentTime.getMinutes() - 5);
+
         const hours = currentTime.getHours().toString().padStart(2, '0');
         const minutes = currentTime.getMinutes().toString().padStart(2, '0');
         wakeInput.value = `${hours}:${minutes}`;
+
         recalculatePhaseTimes('wake', currentTime);
     });
 
@@ -1146,25 +1180,44 @@ document.addEventListener("DOMContentLoaded", function () {
     roomExitInput.addEventListener('change', () => {
         const [hours, minutes] = roomExitInput.value.split(':');
         const newTime = new Date(dateInput.value);
-        newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        new imid.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+        const departureTime = customDepartureTime || defaultDepartureTime;
+        if (newTime > departureTime) {
+            alert('Время выхода из номера не может быть позже, чем время выезда.');
+            const hours = departureTime.getHours().toString().padStart(2, '0');
+            const minutes = departureTime.getMinutes().toString().padStart(2, '0');
+            roomExitInput.value = `${hours}:${minutes}`;
+            newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        }
+
         recalculatePhaseTimes('room-exit', newTime);
     });
 
     increaseRoomExitBtn.addEventListener('click', () => {
         let currentTime = roomExitInput.value ? new Date(`${dateInput.value}T${roomExitInput.value}:00`) : new Date(defaultRoomExitTime);
         currentTime.setMinutes(currentTime.getMinutes() + 5);
+
+        const departureTime = customDepartureTime || defaultDepartureTime;
+        if (currentTime > departureTime) {
+            currentTime = departureTime;
+        }
+
         const hours = currentTime.getHours().toString().padStart(2, '0');
         const minutes = currentTime.getMinutes().toString().padStart(2, '0');
         roomExitInput.value = `${hours}:${minutes}`;
+
         recalculatePhaseTimes('room-exit', currentTime);
     });
 
     decreaseRoomExitBtn.addEventListener('click', () => {
         let currentTime = roomExitInput.value ? new Date(`${dateInput.value}T${roomExitInput.value}:00`) : new Date(defaultRoomExitTime);
         currentTime.setMinutes(currentTime.getMinutes() - 5);
+
         const hours = currentTime.getHours().toString().padStart(2, '0');
         const minutes = currentTime.getMinutes().toString().padStart(2, '0');
         roomExitInput.value = `${hours}:${minutes}`;
+
         recalculatePhaseTimes('room-exit', currentTime);
     });
 
@@ -1195,5 +1248,95 @@ document.addEventListener("DOMContentLoaded", function () {
     window.addEventListener('resize', () => {
         adjustDateInputWidth();
         syncPhaseCardHeights();
+    });
+
+    // Управление пресетами
+    let currentPresetPhase = null; // Хранит тип фазы для пресета (departure, wake, room-exit)
+    let presetMinutes = 0; // Текущее время пресета в минутах
+
+    // Загрузка пресетов из localStorage
+    function loadPresets(phase) {
+        return JSON.parse(localStorage.getItem(`presets_${phase}`)) || [];
+    }
+
+    // Сохранение пресетов в localStorage
+    function savePreset(phase, name, minutes) {
+        const presets = loadPresets(phase);
+        presets.push({ name, minutes });
+        localStorage.setItem(`presets_${phase}`, JSON.stringify(presets));
+    }
+
+    // Обновление отображения времени пресета
+    function updatePresetTimeDisplay() {
+        const hours = Math.floor(presetMinutes / 60);
+        const minutes = presetMinutes % 60;
+        document.getElementById('preset-time-value').textContent = `${hours} ч ${minutes} мин`;
+    }
+
+    // Открытие модального окна создания пресета
+    function openPresetModal(phase) {
+        currentPresetPhase = phase;
+        presetMinutes = 0; // Сброс времени
+        updatePresetTimeDisplay();
+        document.getElementById('preset-name').value = ''; // Очистка поля названия
+        document.getElementById('preset-modal').classList.add('active');
+    }
+
+    // Обработчики для кнопок "Создать"
+    document.getElementById('create-departure-preset').addEventListener('click', () => {
+        openPresetModal('departure');
+    });
+
+    document.getElementById('create-wake-preset').addEventListener('click', () => {
+        openPresetModal('wake');
+    });
+
+    document.getElementById('create-room-exit-preset').addEventListener('click', () => {
+        openPresetModal('room-exit');
+    });
+
+    // Закрытие модального окна пресета
+    const presetModal = document.getElementById('preset-modal');
+    const closePresetModal = document.getElementById('close-preset-modal');
+
+    closePresetModal.addEventListener('click', () => {
+        presetModal.classList.remove('active');
+    });
+
+    presetModal.addEventListener('click', (e) => {
+        if (e.target === presetModal) {
+            presetModal.classList.remove('active');
+        }
+    });
+
+    // Управление счётчиком времени пресета
+    document.getElementById('increase-preset-time').addEventListener('click', () => {
+        if (presetMinutes < 60) { // Ограничение до 1 часа
+            presetMinutes += 5; // Шаг 5 минут
+            updatePresetTimeDisplay();
+        }
+    });
+
+    document.getElementById('decrease-preset-time').addEventListener('click', () => {
+        if (presetMinutes > 0) {
+            presetMinutes -= 5; // Шаг 5 минут
+            updatePresetTimeDisplay();
+        }
+    });
+
+    // Сохранение пресета
+    document.getElementById('save-preset').addEventListener('click', () => {
+        const presetName = document.getElementById('preset-name').value.trim();
+        if (!presetName) {
+            alert('Пожалуйста, введите название пресета.');
+            return;
+        }
+        if (!currentPresetPhase) {
+            alert('Ошибка: фаза не выбрана.');
+            return;
+        }
+        savePreset(currentPresetPhase, presetName, presetMinutes);
+        presetModal.classList.remove('active');
+        alert(`Пресет "${presetName}" сохранён для ${currentPresetPhase}.`);
     });
 });
