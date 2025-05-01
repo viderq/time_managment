@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const savedPrefix = localStorage.getItem('flightPrefix') || 'SU';
         const savedNumber = localStorage.getItem('flightNumber');
         const savedEventTime = localStorage.getItem('eventTime');
-        const savedDepartureTime = localStorage.getItem('customDepartureTime');
+        const savedDepartureTime = localStorage.getItem('customDeparture incessTime');
         const savedWakeTime = localStorage.getItem('customWakeTime');
         const savedRoomExitTime = localStorage.getItem('customRoomExitTime');
         const savedMode = localStorage.getItem('travelMode') || 'home';
@@ -968,16 +968,13 @@ document.addEventListener("DOMContentLoaded", function () {
         } else if (changedPhase === 'departure') {
             customDepartureTime = new Date(newTime);
             localStorage.setItem('customDepartureTime', customDepartureTime.toISOString());
-            customRoomExitTime = null;
-            localStorage.removeItem('customRoomExitTime');
+            if (isHotelMode) {
+                customRoomExitTime = null;
+                localStorage.removeItem('customRoomExitTime');
+            }
         } else if (changedPhase === 'room-exit') {
             customRoomExitTime = new Date(newTime);
             localStorage.setItem('customRoomExitTime', customRoomExitTime.toISOString());
-            defaultWakeTime = new Date(newTime.getTime() - PREPARATION_TIME);
-            if (!customWakeTime || customWakeTime.getTime() > defaultWakeTime.getTime()) {
-                customWakeTime = defaultWakeTime;
-                localStorage.setItem('customWakeTime', customWakeTime.toISOString());
-            }
         }
 
         updateTime();
@@ -1028,26 +1025,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const newTime = new Date(dateInput.value);
         newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
-        const arrivalTime = new Date(flightDepartureTime.getTime() - checkInTimeMinutes * 60 * 1000);
-        if (newTime > arrivalTime) {
-            alert('Время выезда не может быть позже, чем время прибытия в аэропорт.');
-            const hours = arrivalTime.getHours().toString().padStart(2, '0');
-            const minutes = arrivalTime.getMinutes().toString().padStart(2, '0');
-            departureInput.value = `${hours}:${minutes}`;
-            newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-        }
-
         recalculatePhaseTimes('departure', newTime);
     });
 
     increaseDepartureBtn.addEventListener('click', () => {
         let currentTime = departureInput.value ? new Date(`${dateInput.value}T${departureInput.value}:00`) : new Date(defaultDepartureTime);
         currentTime.setMinutes(currentTime.getMinutes() + 5);
-
-        const arrivalTime = new Date(flightDepartureTime.getTime() - checkInTimeMinutes * 60 * 1000);
-        if (currentTime > arrivalTime) {
-            currentTime = arrivalTime;
-        }
 
         const hours = currentTime.getHours().toString().padStart(2, '0');
         const minutes = currentTime.getMinutes().toString().padStart(2, '0');
@@ -1180,16 +1163,7 @@ document.addEventListener("DOMContentLoaded", function () {
     roomExitInput.addEventListener('change', () => {
         const [hours, minutes] = roomExitInput.value.split(':');
         const newTime = new Date(dateInput.value);
-        new imid.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-
-        const departureTime = customDepartureTime || defaultDepartureTime;
-        if (newTime > departureTime) {
-            alert('Время выхода из номера не может быть позже, чем время выезда.');
-            const hours = departureTime.getHours().toString().padStart(2, '0');
-            const minutes = departureTime.getMinutes().toString().padStart(2, '0');
-            roomExitInput.value = `${hours}:${minutes}`;
-            newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-        }
+        newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
         recalculatePhaseTimes('room-exit', newTime);
     });
@@ -1197,11 +1171,6 @@ document.addEventListener("DOMContentLoaded", function () {
     increaseRoomExitBtn.addEventListener('click', () => {
         let currentTime = roomExitInput.value ? new Date(`${dateInput.value}T${roomExitInput.value}:00`) : new Date(defaultRoomExitTime);
         currentTime.setMinutes(currentTime.getMinutes() + 5);
-
-        const departureTime = customDepartureTime || defaultDepartureTime;
-        if (currentTime > departureTime) {
-            currentTime = departureTime;
-        }
 
         const hours = currentTime.getHours().toString().padStart(2, '0');
         const minutes = currentTime.getMinutes().toString().padStart(2, '0');
@@ -1256,7 +1225,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Загрузка пресетов из localStorage
     function loadPresets(phase) {
-        return JSON.parse(localStorage.getItem(`presets_${phase}`)) || [];
+        return JSON.parse(localStorage.getItem(`presets_${ بانکیphase}`)) || [];
     }
 
     // Сохранение пресетов в localStorage
