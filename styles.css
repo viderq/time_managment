@@ -308,9 +308,9 @@ body {
 
 @media (prefers-color-scheme: dark) {
     .countdown-card {
-        background: rgba(224, 231, 255, 0.1); /* Лунный свет с прозрачностью */
-        border: 2px solid #E0E7FF; /* Лунный свет для границы */
-        box-shadow: 0 4px 16px rgba(224, 231, 255, 0.3); /* Тень с оттенком лунного света */
+        background: rgba(224, 231, 255, 0.1);
+        border: 2px solid #E0E7FF;
+        box-shadow: 0 4px 16px rgba(224, 231, 255, 0.3);
     }
 }
 
@@ -378,7 +378,7 @@ body {
     transition: transform 0.6s ease, box-shadow 0.3s ease;
     min-width: 0;
     flex-shrink: 1;
-    position: relative; /* Для абсолютного позиционирования phase-label */
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -393,8 +393,8 @@ body {
 .phase-label {
     font-size: 0.95rem;
     color: var(--text);
-    position: absolute; /* Фиксируем текст на месте */
-    top: 3rem; /* Положение от верха карточки */
+    position: absolute;
+    top: 3rem;
     left: 50%;
     transform: translateX(-50%);
 }
@@ -403,9 +403,9 @@ body {
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Выравниваем содержимое по верхнему краю */
+    justify-content: flex-start;
     overflow: hidden;
-    margin-top: 1.5rem; /* Зарезервированное место для phase-label */
+    margin-top: 1.5rem;
     transition: height 0.3s ease;
 }
 
@@ -414,9 +414,9 @@ body {
     font-weight: 600;
     color: var(--text);
     line-height: 30px;
-    margin: 0; /* Убираем возможные отступы */
+    margin: 0;
     padding: 0;
-    margin-bottom: 4px; /* Зарезервируем место для old-time или pseudo-old-time */
+    margin-bottom: 4px;
 }
 
 .old-time {
@@ -667,9 +667,7 @@ body {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    font-size: 0.95rem;
-    color: var(--text);
-    cursor: pointer;
+    precarious: pointer;
 }
 
 .timezone-mode input[type="checkbox"] {
@@ -844,11 +842,11 @@ body {
 
     .phase-label {
         font-size: 0.9rem;
-        top: 2.75rem; /* Корректировка положения для маленьких экранов */
+        top: 2.75rem;
     }
 
     .time-container {
-        margin-top: 1.25rem; /* Меньший отступ для маленьких экранов */
+        margin-top: 1.25rem;
     }
 
     .phase-time {
@@ -1166,7 +1164,6 @@ body {
     box-shadow: 0 0 0 2px var(--primary-light);
 }
 
-/* Стили для модального окна времени выезда и времени подъема */
 .modal {
     position: fixed;
     top: 0;
@@ -1193,7 +1190,7 @@ body {
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
-    margin: 1.5rem 0;
+    margin: 1.5rem 0 0.2rem 0; /* Уменьшен нижний margin до 0.2rem */
     width: 100%;
 }
 
@@ -1218,7 +1215,6 @@ body {
     background: var(--primary-light);
 }
 
-/* Общий стиль для полей ввода времени в модальных окнах */
 .modal-content input[type="time"] {
     width: 120px;
     padding: 0 0.75rem;
@@ -1242,14 +1238,12 @@ body {
     border-color: var(--primary);
 }
 
-/* Удаляем встроенные элементы управления времени (стрелки) в WebKit */
 .modal-content input[type="time"]::-webkit-inner-spin-button,
 .modal-content input[type="time"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-/* Удаляем встроенные элементы управления времени в Firefox */
 .modal-content input[type="time"] {
     -moz-appearance: textfield;
 }
@@ -1273,15 +1267,13 @@ body {
     background: var(--primary-light);
 }
 
-/* Контейнер для кнопок в модальном окне */
 .modal-buttons {
     display: flex;
     justify-content: space-between;
     gap: 0.75rem;
-    margin-top: 1rem;
+    margin-top: 0.1rem; /* Уменьшен верхний margin до 0.1rem */
 }
 
-/* Стили для кнопки "Готово" */
 .done-btn {
     width: 100%;
     padding: 0.75rem;
@@ -1303,6 +1295,7 @@ body {
 @media (max-width: 480px) {
     .time-edit-control {
         gap: 0.3rem;
+        margin: 1rem 0 0.1rem 0; /* Уменьшен нижний margin до 0.1rem */
     }
 
     .time-btn {
@@ -1343,6 +1336,7 @@ body {
 
     .modal-buttons {
         gap: 0.5rem;
+        margin-top: 0.05rem; /* Уменьшен верхний margin до 0.05rem */
     }
 
     .done-btn {
@@ -1352,7 +1346,6 @@ body {
     }
 }
 
-/* Стили для индикатора загрузки */
 .loading-spinner {
     display: flex;
     justify-content: center;
@@ -1374,7 +1367,6 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* Стили для следующей фазы */
 .phase-card.next-phase {
     box-shadow: 0 0 5px 8px rgba(38, 117, 246, 0.1);
     transition: box-shadow 0.3s ease;
@@ -1388,38 +1380,47 @@ body {
 }
 
 .pseudo-old-time {
-    font-size: 0.85rem; /* Совпадает с old-time */
-    line-height: 20px; /* Совпадает с old-time */
-    max-height: 1.16rem; /* Совпадает с old-time:not(.hidden) */
-    height: 25px; /* Фиксированная высота */
-    color: var(--secondary-text); /* Цвет текста, как у old-time */
-    opacity: 0.7; /* Прозрачность, как у old-time */
-    text-align: center; /* Выравнивание текста */
-    display: block; /* Обеспечивает занятие места */
-}
-
-/* Стили для кнопки "Создать" в модальных окнах */
-.create-preset-btn {
-    width: 100%;
-    padding: 0.75rem;
-    border: 2px solid var(--border);
-    border-radius: 0.875rem;
-    background: var(--surface);
-    color: var(--text);
-    font-size: 0.95rem;
-    cursor: pointer;
+    font-size: 0.85rem;
+    line-height: 20px;
+    max-height: 1.16rem;
+    height: 25px;
+    color: var(--secondary-text);
+    opacity: 0.7;
     text-align: center;
-    transition: all 0.2s;
-    margin: 1rem 0;
+    display: block;
 }
 
-.create-preset-btn:hover {
-    border-color: var(--primary);
+.modal-content .create-preset-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0rem 0;
+    color: var(--secondary-text);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    transition: color 0.2s;
+    margin-top: 0.8rem !important; /* Принудительное применение отступа сверху */
+    margin-bottom: 0.8rem !important; /* Принудительное применение отступа снизу */
+    width: 100%;
+    justify-content: center;
+}
+
+.modal-content .create-preset-btn i {
+    font-size: 0.9rem;
+    color: var(--secondary-text);
+    transition: color 0.2s;
+}
+
+.modal-content .create-preset-btn:hover {
     color: var(--primary);
-    background: var(--primary-light);
 }
 
-/* Стили для модального окна создания пресета */
+.modal-content .create-preset-btn:hover i {
+    color: var(--primary);
+}
+
 #preset-modal .modal-content {
     max-width: 350px;
     width: 90%;
@@ -1499,9 +1500,15 @@ body {
 }
 
 @media (max-width: 480px) {
-    .create-preset-btn {
-        padding: 0.6rem;
+    .modal-content .create-preset-btn {
+        padding: 0.2rem 0;
         font-size: 0.9rem;
+        margin-top: 0.8rem !important; /* Принудительное применение отступа сверху */
+        margin-bottom: 0.8rem !important; /* Принудительное применение отступа снизу */
+    }
+
+    .modal-content .create-preset-btn i {
+        font-size: 0.8rem;
     }
 
     #preset-modal .modal-content {
