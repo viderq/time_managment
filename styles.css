@@ -1195,7 +1195,7 @@ body {
 }
 
 .time-btn {
-    width: 50px;
+    width: 90px;
     height: 50px;
     border-radius: 0.875rem;
     border: 2px solid var(--border);
@@ -1210,6 +1210,8 @@ body {
 }
 
 .time-btn:active {
+    width: 70px;
+    height: 40px;
     border-color: var(--primary);
     color: var(--primary);
     background: var(--primary-light);
@@ -1299,7 +1301,7 @@ body {
     }
 
     .time-btn {
-        width: 40px;
+        width: 70px;
         height: 40px;
         font-size: 1.2rem;
         border-radius: 0.875rem;
@@ -1447,6 +1449,7 @@ body {
     border: 1px solid var(--border);
     border-radius: 0.875rem;
     background: var(--surface);
+    text-align: center;
     color: var(--text);
     font-size: 0.95rem;
     transition: border-color 0.2s, box-shadow 0.2s;
