@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const savedPrefix = localStorage.getItem('flightPrefix') || 'SU';
         const savedNumber = localStorage.getItem('flightNumber');
         const savedEventTime = localStorage.getItem('eventTime');
-        const savedDepartureTime = localStorage.getItem('customDeparture incessTime');
+        const savedDepartureTime = localStorage.getItem('customDepartureTime');
         const savedWakeTime = localStorage.getItem('customWakeTime');
         const savedRoomExitTime = localStorage.getItem('customRoomExitTime');
         const savedMode = localStorage.getItem('travelMode') || 'home';
