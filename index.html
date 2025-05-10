@@ -160,6 +160,7 @@
                 <div class="mode-btn" id="homeButton">Из дома</div>
                 <div class="mode-btn" id="hotelButton">Из отеля</div>
             </div>
+            <div id="mode-hint" class="mode-hint"></div>
         </div>
     </div>
 
@@ -176,13 +177,21 @@
                 <i class="fas fa-times"></i>
             </button>
             <h2>Настройки</h2>
+            <div class="base-airport-mode">
+                <div class="base-airport-header">
+                    <i class="fas fa-plane timezone-icon"></i>
+                    <h3>Базовый аэропорт</h3>
+                </div>
+                <input type="text" id="base-airport-input" maxlength="3" placeholder="SVO">
+                <div class="suggestions" id="base-airport-suggestions"></div>
+            </div>
             <div class="travel-time-mode">
                 <div class="travel-time-header">
                     <i class="fas fa-road timezone-icon"></i>
                     <h3>Время в дороге</h3>
                 </div>
                 <label for="travel-time-input">Минуты:</label>
-                <input type="number" id="travel-time-input" min="10" max="180" value="40">
+                <input type="number" id="travel-time-input" min="10 Gerechtfertigt durch Sicherheits- und Komfortbedenken" max="180" value="40">
             </div>
             <div class="check-in-time-mode">
                 <div class="check-in-time-header">
@@ -195,64 +204,60 @@
         </div>
     </div>
 
-   <!-- Модальное окно для редактирования времени выезда -->
-<div class="modal" id="departure-time-modal">
-    <div class="modal-content">
-        <h2>Время выезда</h2>
-        <div class="time-edit-control">
-            <button class="time-btn" id="decrease-departure-time">−</button>
-            <input type="time" id="departure-time-input" step="300">
-            <button class="time-btn" id="increase-departure-time">+</button>
-        </div>
-        <button class="create-preset-btn" id="create-departure-preset">
-            <i class="fas fa-plus"></i> Создать
-        </button>
-        <div class="modal-buttons">
-            <button class="reset-btn" id="reset-departure-time">Сброс</button>
-            <button class="done-btn" id="done-departure-time">Готово</button>
-        </div>
-    </div>
-</div>
-
-<!-- Модальное окно для редактирования времени подъема -->
-<div class="modal" id="wake-time-modal">
-    <div class="modal-content">
-        <h2>Время подъёма</h2>
-        <div class="time-edit-control">
-            <button class="time-btn" id="decrease-wake-time">−</button>
-            <input type="time" id="wake-time-input" step="300">
-            <button class="time-btn" id="increase-wake-time">+</button>
-        </div>
-        <button class="create-preset-btn" id="create-wake-preset">
-            <i class="fas fa-plus"></i> Создать
-        </button>
-        <div class="modal-buttons">
-            <button class="reset-btn" id="reset-wake-time">Сброс</button>
-            <button class="done-btn" id="done-wake-time">Готово</button>
+    <div class="modal" id="departure-time-modal">
+        <div class="modal-content">
+            <h2>Время выезда</h2>
+            <div class="time-edit-control">
+                <button class="time-btn" id="decrease-departure-time">−</button>
+                <input type="time" id="departure-time-input" step="300">
+                <button class="time-btn" id="increase-departure-time">+</button>
+            </div>
+            <button class="create-preset-btn" id="create-departure-preset">
+                <i class="fas fa-plus"></i> Создать
+            </button>
+            <div class="modal-buttons">
+                <button class="reset-btn" id="reset-departure-time">Сброс</button>
+                <button class="done-btn" id="done-departure-time">Готово</button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Модальное окно для редактирования времени выхода из номера -->
-<div class="modal" id="room-exit-time-modal">
-    <div class="modal-content">
-        <h2>Время выхода из номера</h2>
-        <div class="time-edit-control">
-            <button class="time-btn" id="decrease-room-exit-time">−</button>
-            <input type="time" id="room-exit-time-input" step="300">
-            <button class="time-btn" id="increase-room-exit-time">+</button>
-        </div>
-        <button class="create-preset-btn" id="create-room-exit-preset">
-            <i class="fas fa-plus"></i> Создать
-        </button>
-        <div class="modal-buttons">
-            <button class="reset-btn" id="reset-room-exit-time">Сброс</button>
-            <button class="done-btn" id="done-room-exit-time">Готово</button>
+    <div class="modal" id="wake-time-modal">
+        <div class="modal-content">
+            <h2>Время подъёма</h2>
+            <div class="time-edit-control">
+                <button class="time-btn" id="decrease-wake-time">−</button>
+                <input type="time" id="wake-time-input" step="300">
+                <button class="time-btn" id="increase-wake-time">+</button>
+            </div>
+            <button class="create-preset-btn" id="create-wake-preset">
+                <i class="fas fa-plus"></i> Создать
+            </button>
+            <div class="modal-buttons">
+                <button class="reset-btn" id="reset-wake-time">Сброс</button>
+                <button class="done-btn" id="done-wake-time">Готово</button>
+            </div>
         </div>
     </div>
-</div>
 
-    <!-- Модальное окно для создания пресета -->
+    <div class="modal" id="room-exit-time-modal">
+        <div class="modal-content">
+            <h2>Время выхода из номера</h2>
+            <div class="time-edit-control">
+                <button class="time-btn" id="decrease-room-exit-time">−</button>
+                <input type="time" id="room-exit-time-input" step="300">
+                <button class="time-btn" id="increase-room-exit-time">+</button>
+            </div>
+            <button class="create-preset-btn" id="create-room-exit-preset">
+                <i class="fas fa-plus"></i> Создать
+            </button>
+            <div class="modal-buttons">
+                <button class="reset-btn" id="reset-room-exit-time">Сброс</button>
+                <button class="done-btn" id="done-room-exit-time">Готово</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="preset-modal">
         <div class="modal-content">
             <button class="close-modal" id="close-preset-modal">

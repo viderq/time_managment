@@ -6,6 +6,274 @@ if ('serviceWorker' in navigator) {
     });
 }
 
+const airports = {
+    "MIR": "DTMB/MIR - MONASTIR/HABIB BOU",
+    "NBE": "DTNH/NBE - ENFIDHA / HAMMAMET",
+    "TUN": "DTTA/TUN - TUNIS/CARTHAGE",
+    "TLL": "EETN/TLL - TALLINN/LENNART ME",
+    "HEL": "EFHK/HEL - HELSINKI/VANTAA",
+    "ARN": "ESSA/ARN - STOCKHOLM/ARLANDA",
+    "RIX": "EVRA/RIX - RIGA",
+    "VNO": "EYVI/VNO - VILNIUS INTL",
+    "CAI": "HECA/CAI - CAIRO INTL",
+    "HRG": "HEGN/HRG - HURGHADA INTL",
+    "LXR": "HELX/LXR - LUXOR INTL",
+    "SSH": "HESH/SSH - SHARM EL SHEIKH IN",
+    "LCA": "LCLK/LCA - LARNAKA INTL",
+    "PFO": "LCPH/PFO - PAFOS INTL",
+    "TLV": "LLBG/TLV - TEL AVIV/BEN GURIO",
+    "ESB": "LTAC/ESB - ANKARA/ESENBOGA IN",
+    "ADA": "LTAF/ADA - ADANA",
+    "AYT": "LTAI/AYT - ANTALYA INTL",
+    "ISL": "LTBA/ISL - ISTANBUL/ATATURK I",
+    "ADB": "LTBJ/ADB - IZMIR/ADNAN MENDER",
+    "DLM": "LTBS/DLM - MUGLA/DALAMAN",
+    "BJV": "LTFE/BJV - MILAS/BODRUM",
+    "GZP": "LTFG/GZP - GAZIPASA/ALANYA",
+    "SAW": "LTFJ/SAW - ISTANBUL/SABIHA GO",
+    "IST": "LTFM/IST - ISTANBUL AIRPORT",
+    "KBL": "OAKB/KBL - HAMID KARZAI INTL/",
+    "BAH": "OBBI/BAH - BAHRAIN INTL",
+    "BUZ": "OIBB/BUZ - BUSHEHR",
+    "IFN": "OIFM/IFN - ESFAHAN/SHAHID BEH",
+    "IKA": "OIIE/IKA - TEHRAN/IMAM KHOMAI",
+    "THR": "OIII/THR - TEHRAN/MEHRABAD IN",
+    "SYZ": "OISS/SYZ - SHIRAZ/SHAHID DAST",
+    "AMM": "OJAI/AMM - AMMAN/QUEEN ALIA I",
+    "ADJ": "OJAM/ADJ - AMMAN MARKA INTL",
+    "AQJ": "OJAQ/AQJ - AQABA/KING HUSSEIN",
+    "BEY": "OLBA/BEY - BEIRUT/RAFIC HARIR",
+    "AUH": "OMAA/AUH - ABU DHABI INTL",
+    "AAN": "OMAL/AAN - AL AIN INTL",
+    "DXB": "OMDB/DXB - DUBAI INTL",
+    "DWC": "OMDW/DWC - DUBAI/AL MAKTOUM I",
+    "FJR": "OMFJ/FJR - FUJAIRAH INTL",
+    "RKT": "OMRK/RKT - RAS AL KHAIMAH INT",
+    "SHJ": "OMSJ/SHJ - SHARJAH INTL",
+    "MCT": "OOMS/MCT - MUSCAT INTL",
+    "KHI": "OPKC/KHI - KARACHI/JINNAH INT",
+    "LHE": "OPLA/LHE - LAHORE/ALLAMA IQBA",
+    "PEW": "OPPS/PEW - BACHA KHAN INTL",
+    "BGW": "ORBI/BGW - BAGHDAD INTL",
+    "BSR": "ORMM/BSR - BASRAH INTL",
+    "DIA": "OTBD/DIA - DOHA INTL",
+    "DOH": "OTHH/DOH - DOHA/HAMAD INTL",
+    "CJU": "RKPC/CJU - JEJU INTL",
+    "PUS": "RKPK/PUS - BUSAN/GIMHAE INTL",
+    "ICN": "RKSI/ICN - SEOUL/INCHEON INTL",
+    "GMP": "RKSS/GMP - SEOUL/GIMPO INTL",
+    "ALA": "UAAA/ALA - ALMATY",
+    "NQZ": "UACC/NQZ - NUR-SULTAN/N. NAZA",
+    "CIT": "UAII/CIT - SHYMKENT",
+    "HSA": "UAIT/HSA - TURKISTAN",
+    "KGF": "UAKK/KGF - KARAGANDA",
+    "BXY": "UAOL/BXY - KRAINIY",
+    "KZO": "UAOO/KZO - KYZYLORDA",
+    "URA": "UARR/URA - URALSK",
+    "SCO": "UATE/SCO - AKTAU",
+    "GUW": "UATG/GUW - ATYRAU",
+    "AKX": "UATT/AKX - AKTOBE/AKTOBE",
+    "KSN": "UAUU/KSN - KOSTANAY",
+    "GYD": "UBBB/GYD - BAKU/HEYDAR ALIYEV",
+    "GNJ": "UBBG/GNJ - GANJA",
+    "IKU": "UCFL/IKU - ISSYK-KUL",
+    "FRU": "UCFM/FRU - BISHKEK/MANAS",
+    "OSS": "UCFO/OSS - OSH",
+    "LWN": "UDSG/LWN - GYUMRI/SHIRAK",
+    "EVN": "UDYZ/EVN - YEREVAN/ZVARTNOTS",
+    "TLK": "UECT/TLK - TALAKAN",
+    "YKS": "UEEE/YKS - YAKUTSK",
+    "NER": "UELL/NER - NERYUNGRI CHULMAN",
+    "PYJ": "UERP/PYJ - POLYARNY",
+    "MJZ": "UERR/MJZ - MIRNY",
+    "BUS": "UGSB/BUS - BATUMI",
+    "TBS": "UGTB/TBS - TBILISI/TBILISI",
+    "BQS": "UHBB/BQS - BLAGOVESCHENSK/IGN",
+    "KHV": "UHHH/KHV - KHABAROVSK NOVY",
+    "XKD": "UHKD/XKD - KOMSOMOLSK NA AMUR",
+    "DYR": "UHMA/DYR - ANADYR/UGOLNY",
+    "GDX": "UHMM/GDX - MAGADAN/SOKOL",
+    "PKC": "UHPP/PKC - PETROPAVLOVSK-KAMC",
+    "UUS": "UHSS/UUS - YUZHNO-SAKHALINSK",
+    "VVO": "UHWW/VVO - VLADIVOSTOK",
+    "HTA": "UIAA/HTA - CHITA",
+    "BTK": "UIBB/BTK - BRATSK",
+    "IKT": "UIII/IKT - IRKUTSK",
+    "UUD": "UIUU/UUD - ULAN-UDE/MUKHINO",
+    "ARH": "ULAA/ARH - ARCHANGELSK",
+    "NNM": "ULAM/NNM - NARYAN MAR",
+    "LED": "ULLI/LED - SANKT-PETERBURG/PU",
+    "KVK": "ULMK/KVK - APATITY/KHIBINY",
+    "MMK": "ULMM/MMK - MURMANSK",
+    "PKV": "ULOO/PKV - PSKOV",
+    "PES": "ULPB/PES - PETROZAVODSK",
+    "CEE": "ULWC/CEE - CHEREPOVETS",
+    "KGD": "UMKK/KGD - KALININGRAD",
+    "MSQ": "UMMS/MSQ - MINSK-2",
+    "ABA": "UNAA/ABA - ABAKAN",
+    "BAX": "UNBB/BAX - BARNAUL/MIKHAYLOVK",
+    "RGK": "UNBG/RGK - GORNO-ALTAISK",
+    "KEJ": "UNEE/KEJ - KEMEROVO/ALEXEY LE",
+    "KJA": "UNKL/KJA - KRASNOYARSK",
+    "OVB": "UNNT/OVB - NOVOSIBIRSK/TOLMAC",
+    "OMS": "UNOO/OMS - OMSK TSENTRALNY",
+    "TOF": "UNTT/TOF - TOMSK",
+    "NOZ": "UNWW/NOZ - NOVOKUZNETSK",
+    "HTG": "UOHH/HTG - KHATANGA",
+    "IAA": "UOII/IAA - IGARKA",
+    "NSK": "UOOO/NSK - NORILSK ALYKEL",
+    "SIP": "URFF/SIP - SIMFEROPOL INTL",
+    "AAQ": "URKA/AAQ - ANAPA",
+    "GDZ": "URKG/GDZ - GELENDZHIK",
+    "KRR": "URKK/KRR - KRASNODAR PASHKOVS",
+    "GRV": "URMG/GRV - GROZNY/SEVERNY",
+    "MCX": "URML/MCX - MAKHACHKALA/UYTASH",
+    "MRV": "URMM/MRV - MINERALNYYE VODY",
+    "NAL": "URMN/NAL - NALCHIK",
+    "OGZ": "URMO/OGZ - VLADIKAVKAZ",
+    "IGT": "URMS/IGT - MAGAS",
+    "STW": "URMT/STW - STAVROPOL SHPAKOVS",
+    "ROV": "URRP/ROV - ROSTOV NA DONU/PLA",
+    "AER": "URSS/AER - SOCHI",
+    "ASF": "URWA/ASF - ASTRAKHAN",
+    "ESL": "URWI/ESL - ELISTA",
+    "VOG": "URWW/VOG - VOLGOGRAD",
+    "CEK": "USCC/CEK - CHELYABINSK BALAND",
+    "MQF": "USCM/MQF - MAGNITOGORSK",
+    "SBT": "USDA/SBT - SABETTA",
+    "SLY": "USDD/SLY - SALEKHARD",
+    "HMA": "USHH/HMA - KHANTY-MANSIYSK/KH",
+    "EYK": "USHQ/EYK - BELOYARSKIY",
+    "IJK": "USII/IJK - IZHEVSK",
+    "KVX": "USKK/KVX - KIROV",
+    "NYM": "USMM/NYM - NADYM",
+    "YMB": "USMQ/YMB - YAMBURG",
+    "NUX": "USMU/NUX - NOVY URENGOY",
+    "NJC": "USNN/NJC - NIZHNEVARTOVSK",
+    "PEE": "USPP/PEE - PERM/BOLSHOE SAVIN",
+    "KGP": "USRK/KGP - KOGALYM",
+    "NOJ": "USRO/NOJ - NOYABRSK",
+    "SGC": "USRR/SGC - SURGUT",
+    "SVX": "USSS/SVX - YEKATERINBURG/KOLT",
+    "RMZ": "USTJ/RMZ - TOBOLSK/REMEZOV",
+    "TJM": "USTR/TJM - TYUMEN/ROSHCHINO",
+    "KRO": "USUU/KRO - KURGAN",
+    "ASB": "UTAA/ASB - ASHGABAT",
+    "KRW": "UTAK/KRW - TURKMENBASHI",
+    "DYU": "UTDD/DYU - DUSHANBE",
+    "TJU": "UTDK/TJU - KULOB",
+    "LBD": "UTDL/LBD - KHUJAND",
+    "AZN": "UTFA/AZN - ANDIZHAN",
+    "FEG": "UTFF/FEG - FERGANA",
+    "NMA": "UTFN/NMA - NAMANGAN",
+    "NCU": "UTNN/NCU - NUKUS",
+    "UGC": "UTNU/UGC - URGENCH",
+    "NVI": "UTSA/NVI - NAVOI",
+    "BHK": "UTSB/BHK - BUKHARA",
+    "KSQ": "UTSK/KSQ - KARSHI",
+    "SKD": "UTSS/SKD - SAMARKAND",
+    "TAS": "UTTT/TAS - TASHKENT INTL/ISLA",
+    "BZK": "UUBP/BZK - BRYANSK",
+    "ZIA": "UUBW/ZIA - RAMENSKOYE",
+    "DME": "UUDD/DME - MOSCOW/DOMODEDOVO",
+    "IAR": "UUDL/IAR - YAROSLAVL / TUNOSH",
+    "SVO": "UUEE/SVO - MOSCOW/SHEREMETYEV",
+    "EGO": "UUOB/EGO - BELGOROD",
+    "URS": "UUOK/URS - KURSK VOSTOCHNY",
+    "LPK": "UUOL/LPK - LIPETSK",
+    "VOZ": "UUOO/VOZ - VORONEZH",
+    "VKO": "UUWW/VKO - MOSCOW/VNUKOVO",
+    "UCT": "UUYH/UCT - UKHTA",
+    "USK": "UUYS/USK - USINSK",
+    "VKT": "UUYW/VKT - VORKUTA",
+    "SCW": "UUYY/SCW - SYKTYVKAR",
+    "GOJ": "UWGG/GOJ - NIZHNY NOVGOROD/ST",
+    "KZN": "UWKD/KZN - KAZAN",
+    "NBC": "UWKE/NBC - NIZHNEKAMSK/BEGISH",
+    "JOK": "UWKJ/JOK - YOSHKAR-OLA",
+    "CSY": "UWKS/CSY - CHEBOKSARY",
+    "ULV": "UWLL/ULV - ULYANOVSK-BARATAEW",
+    "ULY": "UWLW/ULY - ULYANOVSK/VOSTOCHN",
+    "REN": "UWOO/REN - ORENBURG",
+    "OSW": "UWOR/OSW - ORSK",
+    "PEZ": "UWPP/PEZ - PENZA",
+    "SKX": "UWPS/SKX - SARANSK",
+    "GSV": "UWSG/GSV - SARATOV/GAGARIN",
+    "UFA": "UWUU/UFA - UFA",
+    "KUF": "UWWW/KUF - SAMARA/KURUMOCH",
+    "AMD": "VAAH/AMD - AHMEDABAD/VALLABH",
+    "BOM": "VABB/BOM - MUMBAI/CHHATRAPATI",
+    "CMB": "VCBI/CMB - KATUNAYAKE/BAN. IN",
+    "HRI": "VCRI/HRI - MATTALA RAJAPAKSA",
+    "PNH": "VDPP/PNH - PHNOM PENH",
+    "CCU": "VECC/CCU - KOLKATA INTL",
+    "DAC": "VGHS/DAC - DHAKA/HAZRAT SHAHJ",
+    "HKG": "VHHH/HKG - HONG KONG INTL",
+    "ATQ": "VIAR/ATQ - AMRITSAR/SRI GURU",
+    "DEL": "VIDP/DEL - DELHI/INDIRA GANDH",
+    "LKO": "VILK/LKO - CHAUDHARY CHARAN S",
+    "VTE": "VLVT/VTE - VIENTIANE WATTAY",
+    "MFM": "VMMC/MFM - MACAO INTL",
+    "BLR": "VOBL/BLR - BENGALURU/KEMPEGOW",
+    "GOI": "VOGO/GOI - GOA/DABOLIM NAVY",
+    "HYD": "VOHS/HYD - HYDERABAD/RAJIV GA",
+    "MAA": "VOMM/MAA - CHENNAI INTL",
+    "TRV": "VOTV/TRV - THIRUVANANTHAPURAM",
+    "MLE": "VRMM/MLE - MALE/VELANA INTL",
+    "BKK": "VTBS/BKK - BANGKOK/SUVARNABHU",
+    "UTP": "VTBU/UTP - RAYONG/U-TAPAO PAT",
+    "HKT": "VTSP/HKT - PHUKET INTL",
+    "CXR": "VVCR/CXR - KHANH HOA/CAM RANH",
+    "DAD": "VVDN/DAD - DANANG INTL",
+    "HAN": "VVNB/HAN - HANOI/NOIBAI INTL",
+    "SGN": "VVTS/SGN - HO CHI MINH/TAN SO",
+    "MDL": "VYMD/MDL - MANDALAY INTL",
+    "RGN": "VYYY/RGN - YANGON INTL",
+    "KUL": "WMKK/KUL - KUALA LUMPUR/SEPAN",
+    "SIN": "WSSS/SIN - SINGAPORE/CHANGI",
+    "PEK": "ZBAA/PEK - BEIJING/CAPITAL",
+    "PKX": "ZBAD/PKX - BEIJING/DAXING",
+    "HET": "ZBHH/HET - HOHHOT/BAITA",
+    "SJW": "ZBSJ/SJW - SHIJIAZHUANG/ZHENG",
+    "TSN": "ZBTJ/TSN - TIANJIN/BINHAI INT",
+    "TYN": "ZBYN/TYN - TAIYUAN/WUSU",
+    "CAN": "ZGGG/CAN - GUANGZHOU/BAIYUN",
+    "CSX": "ZGHA/CSX - CHANGSHA/HUANGHUA",
+    "SZX": "ZGSZ/SZX - SHENZHEN/BAOAN",
+    "CGO": "ZHCC/CGO - ZHENGZHOU/XINZHENG",
+    "WUH": "ZHHH/WUH - WUHAN/TIANHE",
+    "HAK": "ZJHK/HAK - HAIKOU/MEILAN",
+    "SYX": "ZJSY/SYX - SANYA/PHOENIX INTL",
+    "LHW": "ZLLL/LHW - LANZHOU/ZHONGCHUAN",
+    "XIY": "ZLXY/XIY - XI AN XIANYANG",
+    "UBN": "ZMCK/UBN - ULAANBAATAR/CHINGG",
+    "XMN": "ZSAM/XMN - XIAMEN/GAOQI",
+    "HGH": "ZSHC/HGH - HANGZHOU/XIAOSHAN",
+    "TNA": "ZSJN/TNA - JINAN/YAOQIANG",
+    "NKG": "ZSNJ/NKG - NANJING/LUKOU",
+    "HFE": "ZSOF/HFE - HEFEI/XINQIAO",
+    "PVG": "ZSPD/PVG - SHANGHAI/PUDONG",
+    "TAO": "ZSQD/TAO - QINGDAO/JIAODONG",
+    "SHA": "ZSSS/SHA - SHANGHAI/HONGQIAO",
+    "CKG": "ZUCK/CKG - CHONGQING/JIANGBEI",
+    "CTU": "ZUUU/CTU - CHENGDU/SHUANGLIU",
+    "URC": "ZWWW/URC - URUMQI/DIWOPU",
+    "DLC": "ZYTL/DLC - DALIAN/ZHOUSHUIZI",
+    "SHE": "ZYTX/SHE - SHENYANG/TAOXIAN",
+    "GOX": "VOGA/GOX - MOPA",
+    "KLF": "UUBC/KLF - KALUGA",
+    "CGQ": "ZYCC/CGQ - CHANGCHUN LONGJIA",
+    "TFU ": "ZUTF/TFU  - TIANFU ",
+    "KYZ": "UNKY/KYZ - KYZYL",
+    "BAT": "UMBB/BAT - BREST",
+    "BVJ": "USDB/BVJ - BOVANENKOVO",
+    "DJE": "DTTJ/DJE - DJERBA",
+    "JAI": "VIJP/JAI - JAIPUR INTL",
+    "NIL": "UIIR/NIL - VOSTOCHNY",
+    "UKK": "UASK/UKK - UST-KAMENOGORSK",
+    "KHN": "ZSCN/KHN - NANGHANG CHANGBEI IN"
+};
+
 document.addEventListener("DOMContentLoaded", function () {
     const phaseGrid = document.querySelector(".phase-grid");
     const phaseCards = document.querySelectorAll(".phase-card:not(#room-exit)");
@@ -17,6 +285,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const departureAirportName = document.querySelector('.airport:nth-child(1) .airport-name');
     const arrivalAirportCode = document.querySelector('.airport:nth-child(2) .airport-code');
     const arrivalAirportName = document.querySelector('.airport:nth-child(2) .airport-name');
+    const baseAirportInput = document.getElementById('base-airport-input');
+    const suggestionsContainer = document.getElementById('base-airport-suggestions');
+    const modeHint = document.getElementById('mode-hint')
+    const homeButton = document.getElementById('homeButton'); // Добавлено
+    const hotelButton = document.getElementById('hotelButton'); // Добавлено
 
     let sleepHours = parseFloat(localStorage.getItem('sleepHours')) || 8.0;
     let travelTimeMinutes = parseInt(localStorage.getItem('travelTime')) || 40;
@@ -32,6 +305,151 @@ document.addEventListener("DOMContentLoaded", function () {
     const PREPARATION_TIME = (1 * 60 + 20) * 60 * 1000;
     const CACHE_DURATION = 20 * 60 * 1000;
     const MOSCOW_OFFSET = 3 * 60 * 60 * 1000;
+
+    function setupBaseAirportAutocomplete() {
+        function showSuggestions(query) {
+            suggestionsContainer.innerHTML = '';
+            suggestionsContainer.classList.remove('active');
+
+            if (query.length < 1) return;
+
+            const filteredAirports = Object.keys(airports).filter(code =>
+                code.toLowerCase().includes(query.toLowerCase()) ||
+                airports[code].toLowerCase().includes(query.toLowerCase())
+            );
+
+            if (filteredAirports.length === 0) return;
+
+            filteredAirports.forEach(code => {
+                const suggestionItem = document.createElement('div');
+                suggestionItem.className = 'suggestion-item';
+                suggestionItem.textContent = `${code} - ${airports[code]}`;
+                suggestionItem.addEventListener('click', () => {
+                    baseAirportInput.value = code;
+                    localStorage.setItem('baseAirport', code);
+                    suggestionsContainer.innerHTML = '';
+                    suggestionsContainer.classList.remove('active');
+                    if (flightPrefixSelect.value === 'EVENT') {
+                        departureAirportCode.textContent = code;
+                        departureAirportName.textContent = airports[code].split(' - ')[1];
+                    }
+                    setTravelMode(); // Вызываем для обновления режима
+                    updateModeHint();
+                });
+                suggestionsContainer.appendChild(suggestionItem);
+            });
+
+            suggestionsContainer.classList.add('active');
+        }
+
+        baseAirportInput.addEventListener('input', () => {
+            const query = baseAirportInput.value.trim();
+            showSuggestions(query);
+        });
+
+        baseAirportInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                suggestionsContainer.classList.remove('active');
+            }, 200);
+        });
+
+        baseAirportInput.addEventListener('change', () => {
+            const code = baseAirportInput.value.toUpperCase().trim();
+            if (airports[code]) {
+                localStorage.setItem('baseAirport', code);
+                if (flightPrefixSelect.value === 'EVENT') {
+                    departureAirportCode.textContent = code;
+                    departureAirportName.textContent = airports[code].split(' - ')[1];
+                }
+            } else {
+                baseAirportInput.value = '';
+                localStorage.removeItem('baseAirport');
+                if (flightPrefixSelect.value === 'EVENT') {
+                    departureAirportCode.textContent = '---';
+                    departureAirportName.textContent = '-----';
+                }
+            }
+            setTravelMode(); // Вызываем для обновления режима
+            updateModeHint();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!baseAirportInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                suggestionsContainer.classList.remove('active');
+            }
+        });
+    }
+
+    setupBaseAirportAutocomplete();
+
+function setTravelMode() {
+    const baseAirport = localStorage.getItem('baseAirport');
+    const departureAirport = departureAirportCode.textContent.trim();
+    const phaseGrid = document.querySelector('.phase-grid');
+    const roomExitCard = document.getElementById('room-exit');
+    const departureTimeElement = document.getElementById('departuretime');
+    const departureIcon = departureTimeElement ? departureTimeElement.parentElement.querySelector('.phase-icon') : null;
+
+    if (!baseAirport || departureAirport === '---') {
+        return; // Не меняем режим, если данных недостаточно
+    }
+
+    let mode;
+    if (baseAirport === departureAirport) {
+        mode = 'home';
+    } else {
+        mode = 'hotel';
+    }
+
+    localStorage.setItem('travelMode', mode);
+
+    if (mode === 'hotel') {
+        hotelButton.classList.add('active');
+        homeButton.classList.remove('active');
+        phaseGrid.classList.add('expanded');
+        roomExitCard.classList.remove('hidden');
+        if (departureIcon) {
+            departureIcon.classList.remove('fas', 'fa-car');
+            departureIcon.classList.add('fa-solid', 'fa-van-shuttle');
+        }
+    } else {
+        homeButton.classList.add('active');
+        hotelButton.classList.remove('active');
+        phaseGrid.classList.remove('expanded');
+        roomExitCard.classList.add('hidden');
+        if (departureIcon) {
+            departureIcon.classList.remove('fa-solid', 'fa-van-shuttle');
+            departureIcon.classList.add('fas', 'fa-car');
+        }
+    }
+    updateTime();
+}
+
+    function updateModeHint() {
+    const modeHint = document.getElementById('mode-hint');
+    if (!modeHint) {
+        console.warn('Элемент с ID "mode-hint" не найден в DOM');
+        return;
+    }
+
+    const baseAirport = localStorage.getItem('baseAirport');
+    const departureAirport = departureAirportCode.textContent.trim();
+    const isHotelMode = document.getElementById('hotelButton').classList.contains('active');
+
+    modeHint.classList.remove('active');
+    modeHint.textContent = '';
+
+    if (baseAirport && departureAirport !== '---') {
+        if (baseAirport === departureAirport && isHotelMode) {
+            modeHint.textContent = 'Похоже, вы дома';
+            modeHint.classList.add('active');
+        } else if (baseAirport !== departureAirport && !isHotelMode) {
+            modeHint.textContent = 'Похоже, вы в отеле';
+            modeHint.classList.add('active');
+        }
+    }
+}
+
 
     function syncPhaseCardHeights() {
         const phaseCards = document.querySelectorAll('.phase-card');
@@ -53,7 +471,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function loadSavedData() {
-        // Очистка старых данных часового пояса
         localStorage.removeItem('autoTimezone');
         localStorage.removeItem('selectedTimezone');
 
@@ -64,33 +481,41 @@ document.addEventListener("DOMContentLoaded", function () {
         const savedDepartureTime = localStorage.getItem('customDepartureTime');
         const savedWakeTime = localStorage.getItem('customWakeTime');
         const savedRoomExitTime = localStorage.getItem('customRoomExitTime');
-        const savedMode = localStorage.getItem('travelMode') || 'home';
+        const savedBaseAirport = localStorage.getItem('baseAirport');
+        let savedMode = localStorage.getItem('travelMode') || 'home';
         checkInTimeMinutes = parseInt(localStorage.getItem('checkInTime')) || 120;
 
-        const homeButton = document.getElementById('homeButton');
-        const hotelButton = document.getElementById('hotelButton');
-        const roomExitCard = document.getElementById('room-exit');
-        const phaseGrid = document.querySelector('.phase-grid');
-        const departureIcon = document.querySelector('#departuretime').parentElement.querySelector('.phase-icon');
-
-        if (savedMode === 'hotel') {
-            hotelButton.classList.add('active');
-            homeButton.classList.remove('active');
-            phaseGrid.classList.add('expanded');
-            roomExitCard.classList.remove('hidden');
-            if (departureIcon) {
-                departureIcon.classList.remove('fas', 'fa-car');
-                departureIcon.classList.add('fa-solid', 'fa-van-shuttle');
+        if (savedBaseAirport && savedNumber && savedPrefix !== 'EVENT') {
+            flightPrefixSelect.value = savedPrefix;
+            toggleEventMode(savedPrefix === 'EVENT');
+            if (savedNumber) {
+                flightNumberInput.value = savedNumber;
+            }
+            if (savedDate) {
+                dateInput.value = savedDate;
+                handleFlightInfoUpdate().then(() => {
+                    setTravelMode();
+                    updateModeHint();
+                });
+            } else {
+                setTravelMode();
+                updateModeHint();
+            }
+        } else if (savedBaseAirport && savedPrefix === 'EVENT' && savedEventTime) {
+            flightPrefixSelect.value = savedPrefix;
+            toggleEventMode(true);
+            if (savedDate) {
+                dateInput.value = savedDate;
+                updateFlightTimeFromEvent();
+                setTravelMode();
+                updateModeHint();
+            } else {
+                setTravelMode();
+                updateModeHint();
             }
         } else {
-            homeButton.classList.add('active');
-            hotelButton.classList.remove('active');
-            phaseGrid.classList.remove('expanded');
-            roomExitCard.classList.add('hidden');
-            if (departureIcon) {
-                departureIcon.classList.remove('fa-solid', 'fa-van-shuttle');
-                departureIcon.classList.add('fas', 'fa-car');
-            }
+            setTravelMode();
+            updateModeHint();
         }
 
         if (savedDate) {
@@ -108,6 +533,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (savedNumber) {
             flightNumberInput.value = savedNumber;
+        }
+
+        if (savedBaseAirport && airports[savedBaseAirport]) {
+            baseAirportInput.value = savedBaseAirport;
+            if (flightPrefixSelect.value === 'EVENT') {
+                departureAirportCode.textContent = savedBaseAirport;
+                departureAirportName.textContent = airports[savedBaseAirport].split(' - ')[1];
+            }
         }
 
         if (savedEventTime && savedPrefix === 'EVENT') {
@@ -133,9 +566,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (savedDate && savedNumber && savedPrefix !== 'EVENT') {
-            handleFlightInfoUpdate();
+            handleFlightInfoUpdate().then(() => {
+                setTravelMode();
+                updateModeHint();
+            });
         } else if (savedDate && savedEventTime && savedPrefix === 'EVENT') {
             updateFlightTimeFromEvent();
+            setTravelMode();
+            updateModeHint();
         }
     }
 
@@ -158,46 +596,48 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     flightPrefixSelect.addEventListener('change', () => {
-        localStorage.setItem('flightPrefix', flightPrefixSelect.value);
-        const isEvent = flightPrefixSelect.value === 'EVENT';
-        toggleEventMode(isEvent);
+    localStorage.setItem('flightPrefix', flightPrefixSelect.value);
+    const isEvent = flightPrefixSelect.value === 'EVENT';
+    toggleEventMode(isEvent);
 
-        departureAirportCode.textContent = '---';
-        departureAirportName.textContent = '-----';
-        arrivalAirportCode.textContent = '---';
-        arrivalAirportName.textContent = '-----';
-        flightDepartureTime = null;
-        customDepartureTime = null;
-        customWakeTime = null;
-        localStorage.removeItem('customDepartureTime');
-        localStorage.removeItem('customWakeTime');
-        updateTime();
+    departureAirportCode.textContent = '---';
+    departureAirportName.textContent = '-----';
+    arrivalAirportCode.textContent = '---';
+    arrivalAirportName.textContent = '-----';
+    flightDepartureTime = null;
+    customDepartureTime = null;
+    customWakeTime = null;
+    localStorage.removeItem('customDepartureTime');
+    localStorage.removeItem('customWakeTime');
+    updateTime();
 
-        if (isEvent) {
-            const savedEventTime = localStorage.getItem('eventTime');
-            const timeInput = document.createElement('input');
-            timeInput.type = 'time';
-            timeInput.className = 'flight-time-display input-mode';
-            if (savedEventTime) {
-                timeInput.value = savedEventTime;
-            }
-            flightTimeDisplay.replaceWith(timeInput);
-            timeInput.addEventListener('change', updateFlightTimeFromEvent);
-            if (savedEventTime && dateInput.value) {
-                updateFlightTimeFromEvent();
-            }
-        } else {
-            const currentElement = document.querySelector('.flight-time-display');
-            const newFlightTimeDisplay = document.createElement('div');
-            newFlightTimeDisplay.className = 'flight-time-display';
-            newFlightTimeDisplay.id = 'flight-time-display';
-            newFlightTimeDisplay.textContent = 'нет данных';
-            newFlightTimeDisplay.classList.add('no-data');
-            currentElement.replaceWith(newFlightTimeDisplay);
-            flightDepartureTime = null;
-            updateTime();
+    if (isEvent) {
+        const savedEventTime = localStorage.getItem('eventTime');
+        const timeInput = document.createElement('input');
+        timeInput.type = 'time';
+        timeInput.className = 'flight-time-display input-mode';
+        if (savedEventTime) {
+            timeInput.value = savedEventTime;
         }
-    });
+        flightTimeDisplay.replaceWith(timeInput);
+        timeInput.addEventListener('change', updateFlightTimeFromEvent);
+        if (savedEventTime && dateInput.value) {
+            updateFlightTimeFromEvent();
+        }
+    } else {
+        const currentElement = document.querySelector('.flight-time-display');
+        const newFlightTimeDisplay = document.createElement('div');
+        newFlightTimeDisplay.className = 'flight-time-display';
+        newFlightTimeDisplay.id = 'flight-time-display';
+        newFlightTimeDisplay.textContent = 'нет данных';
+        newFlightTimeDisplay.classList.add('no-data');
+        currentElement.replaceWith(newFlightTimeDisplay);
+        flightDepartureTime = null;
+        updateTime();
+    }
+    setTravelMode();
+    updateModeHint();
+});
 
     flightNumberInput.addEventListener('input', function(e) {
         this.value = this.value.replace(/[^0-9]/g, '');
@@ -209,17 +649,22 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     flightNumberInput.addEventListener('blur', () => {
-        customDepartureTime = null;
-        customWakeTime = null;
-        localStorage.removeItem('customDepartureTime');
-        localStorage.removeItem('customWakeTime');
-        if (dateInput.value && flightPrefixSelect.value !== 'EVENT' && flightNumberInput.value) {
-            handleFlightInfoUpdate();
-        } else {
-            flightDepartureTime = null;
-            updateTime();
-        }
-    });
+    customDepartureTime = null;
+    customWakeTime = null;
+    localStorage.removeItem('customDepartureTime');
+    localStorage.removeItem('customWakeTime');
+    if (dateInput.value && flightPrefixSelect.value !== 'EVENT' && flightNumberInput.value) {
+        handleFlightInfoUpdate().then(() => {
+            setTravelMode();
+            updateModeHint();
+        });
+    } else {
+        flightDepartureTime = null;
+        updateTime();
+        setTravelMode();
+        updateModeHint();
+    }
+});
 
     function managePlaceholders() {
         if (!dateInput.value) {
@@ -254,17 +699,19 @@ document.addEventListener("DOMContentLoaded", function () {
                     return response.json();
                 })
                 .then(data => {
-                    if (!data || data.error) {
-                        throw new Error(data?.error || "Неизвестная ошибка API");
+                    if (!data || !data.data || !data.data.routes || data.error) {
+                        console.error("Недостаточно данных или ошибка API:", data?.error || "Неизвестная ошибка");
+                        resolve(null);
+                    } else {
+                        console.log("Полученные данные:", data);
+                        const cacheKey = `flightData_${flightNumber}_${date}`;
+                        const cacheData = {
+                            data: data,
+                            timestamp: Date.now()
+                        };
+                        localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+                        resolve(data);
                     }
-                    console.log("Полученные данные:", data);
-                    const cacheKey = `flightData_${flightNumber}_${date}`;
-                    const cacheData = {
-                        data: data,
-                        timestamp: Date.now()
-                    };
-                    localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-                    resolve(data);
                 })
                 .catch(error => {
                     console.error("Ошибка при запросе:", error);
@@ -318,6 +765,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const now = new Date();
         const moscowTime = new Date(now.getTime() + (now.getTimezoneOffset() * 60 * 1000) + MOSCOW_OFFSET);
 
+        // Проверка валидности flightData
         if (!flightData || !flightData.data || !flightData.data.routes || flightData.data.routes.length === 0) {
             departureAirportCode.textContent = '---';
             departureAirportName.textContent = '-----';
@@ -334,13 +782,63 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         const flight = flightData.data.routes[0];
-        const departureTimeStr = flight.leg.departure.times.estimatedBlockOff?.local ||
-                                flight.leg.departure.times.scheduledDeparture.local;
+        let leg;
+
+        // Определяем, является ли рейс MultiLeg или Direct
+        if (flight.routeType === 'MultiLeg' && flight.legs && flight.legs.length > 0) {
+            leg = flight.legs[0]; // Берем первый сегмент для MultiLeg
+        } else if (flight.routeType === 'Direct' && flight.leg) {
+            leg = flight.leg; // Используем leg для Direct
+        } else {
+            departureAirportCode.textContent = '---';
+            departureAirportName.textContent = '-----';
+            arrivalAirportCode.textContent = '---';
+            arrivalAirportName.textContent = '-----';
+            flightDepartureTime = null;
+            newFlightTimeDisplay.textContent = 'нет данных';
+            triggerShakeAndVibrate();
+            console.log("Ошибка: Недостаточно данных о рейсе");
+            currentElement.replaceWith(newFlightTimeDisplay);
+            updateTime();
+            return;
+        }
+
+        // Проверка наличия departure и times
+        if (!leg.departure || !leg.departure.times) {
+            departureAirportCode.textContent = '---';
+            departureAirportName.textContent = '-----';
+            arrivalAirportCode.textContent = '---';
+            arrivalAirportName.textContent = '-----';
+            flightDepartureTime = null;
+            newFlightTimeDisplay.textContent = 'нет данных';
+            triggerShakeAndVibrate();
+            console.log("Ошибка: Данные о вылете отсутствуют");
+            currentElement.replaceWith(newFlightTimeDisplay);
+            updateTime();
+            return;
+        }
+
+        const departureTimeStr = leg.departure.times.estimatedBlockOff?.local ||
+                                leg.departure.times.scheduledDeparture?.local;
 
         console.log("Время вылета из API (departureTimeStr):", departureTimeStr);
 
         const flightDate = new Date(dateInput.value);
         let departureDateTime;
+
+        if (!departureTimeStr) {
+            console.error("Время вылета не указано в данных API");
+            flightDepartureTime = null;
+            newFlightTimeDisplay.textContent = 'Ошибка времени';
+            currentElement.replaceWith(newFlightTimeDisplay);
+            departureAirportCode.textContent = '---';
+            departureAirportName.textContent = '-----';
+            arrivalAirportCode.textContent = '---';
+            arrivalAirportName.textContent = '-----';
+            triggerShakeAndVibrate();
+            updateTime();
+            return;
+        }
 
         if (departureTimeStr.includes('T')) {
             departureDateTime = new Date(departureTimeStr);
@@ -400,12 +898,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }, 0);
         };
 
-        applyFadeAnimation(departureAirportCode, flight.leg.departure.scheduled.airportCode || 'N/A');
-        applyFadeAnimation(departureAirportName, flight.leg.departure.scheduled.airport || 'Неизвестно');
-        applyFadeAnimation(arrivalAirportCode, flight.leg.arrival.scheduled.airportCode || 'N/A');
-        applyFadeAnimation(arrivalAirportName, flight.leg.arrival.scheduled.airport || 'Неизвестно');
+        applyFadeAnimation(departureAirportCode, leg.departure.scheduled.airportCode || 'N/A');
+        applyFadeAnimation(departureAirportName, leg.departure.scheduled.airport || 'Неизвестно');
+        applyFadeAnimation(arrivalAirportCode, leg.arrival.scheduled.airportCode || 'N/A');
+        applyFadeAnimation(arrivalAirportName, leg.arrival.scheduled.airport || 'Неизвестно');
 
-        console.log("Аэропорт прилета:", flight.leg.arrival.scheduled.airportCode || 'N/A');
+        console.log("Аэропорт прилета:", leg.arrival.scheduled.airportCode || 'N/A');
         console.log("Время вылета:", formattedTime);
         updateTime();
     }
@@ -443,15 +941,21 @@ document.addEventListener("DOMContentLoaded", function () {
             let flightData = null;
 
             if (cachedData) {
-                const parsedData = JSON.parse(cachedData);
-                const currentTime = Date.now();
-                const timeSinceLastFetch = currentTime - parsedData.timestamp;
+                try {
+                    const parsedData = JSON.parse(cachedData);
+                    const currentTime = Date.now();
+                    const timeSinceLastFetch = currentTime - parsedData.timestamp;
 
-                if (timeSinceLastFetch < CACHE_DURATION) {
-                    console.log("Используем кэшированные данные для", flightNumber, date);
-                    flightData = parsedData.data;
-                } else {
-                    console.log("Кэш устарел, делаем новый запрос для", flightNumber, date);
+                    if (timeSinceLastFetch < CACHE_DURATION && parsedData.data && parsedData.data.routes) {
+                        console.log("Используем кэшированные данные для", flightNumber, date);
+                        flightData = parsedData.data;
+                    } else {
+                        console.log("Кэш устарел, делаем новый запрос для", flightNumber, date);
+                        flightData = await fetchFlightInfo(flightNumber, date);
+                    }
+                } catch (e) {
+                    console.error("Ошибка при разборе кэшированных данных:", e);
+                    localStorage.removeItem(cacheKey);
                     flightData = await fetchFlightInfo(flightNumber, date);
                 }
             } else {
@@ -475,21 +979,33 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function toggleEventMode(isEvent) {
-        if (isEvent) {
-            flightNumberInput.style.display = 'none';
-            flightPrefixSelect.classList.add('expanded');
+    const savedBaseAirport = localStorage.getItem('baseAirport');
+    if (isEvent) {
+        flightNumberInput.style.display = 'none';
+        flightPrefixSelect.classList.add('expanded');
+        if (savedBaseAirport && airports[savedBaseAirport]) {
+            departureAirportCode.textContent = savedBaseAirport;
+            departureAirportName.textContent = airports[savedBaseAirport].split(' - ')[1];
         } else {
-            flightNumberInput.style.display = 'block';
-            flightPrefixSelect.classList.remove('expanded');
-            const currentElement = document.querySelector('.flight-time-display');
-            const newFlightTimeDisplay = document.createElement('div');
-            newFlightTimeDisplay.className = 'flight-time-display';
-            newFlightTimeDisplay.id = 'flight-time-display';
-            newFlightTimeDisplay.textContent = 'нет данных';
-            newFlightTimeDisplay.classList.add('no-data');
-            currentElement.replaceWith(newFlightTimeDisplay);
+            departureAirportCode.textContent = '---';
+            departureAirportName.textContent = '-----';
         }
+    } else {
+        flightNumberInput.style.display = 'block';
+        flightPrefixSelect.classList.remove('expanded');
+        const currentElement = document.querySelector('.flight-time-display');
+        const newFlightTimeDisplay = document.createElement('div');
+        newFlightTimeDisplay.className = 'flight-time-display';
+        newFlightTimeDisplay.id = 'flight-time-display';
+        newFlightTimeDisplay.textContent = 'нет данных';
+        newFlightTimeDisplay.classList.add('no-data');
+        currentElement.replaceWith(newFlightTimeDisplay);
+        departureAirportCode.textContent = '---';
+        departureAirportName.textContent = '-----';
     }
+    setTravelMode();
+    updateModeHint();
+}
 
     function updateFlightTimeFromEvent() {
         const timeInput = document.querySelector('.flight-time-display.input-mode');
@@ -570,62 +1086,63 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
+    btn.addEventListener('click', function () {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
 
-            const phaseGrid = document.querySelector('.phase-grid');
-            const roomExitCard = document.getElementById('room-exit');
-            const departureTimeElement = document.getElementById('departuretime');
-            const departureIcon = departureTimeElement ? departureTimeElement.parentElement.querySelector('.phase-icon') : null;
+        const phaseGrid = document.querySelector('.phase-grid');
+        const roomExitCard = document.getElementById('room-exit');
+        const departureTimeElement = document.getElementById('departuretime');
+        const departureIcon = departureTimeElement ? departureTimeElement.parentElement.querySelector('.phase-icon') : null;
 
-            const mode = this.textContent.trim() === 'Из отеля' ? 'hotel' : 'home';
-            localStorage.setItem('travelMode', mode);
+        const mode = this.textContent.trim() === 'Из отеля' ? 'hotel' : 'home';
+        localStorage.setItem('travelMode', mode);
 
-            if (this.textContent.trim() === 'Из отеля') {
-                phaseGrid.classList.add('expanded');
-                roomExitCard.classList.remove('hidden');
-                roomExitCard.classList.add('appearing');
+        if (this.textContent.trim() === 'Из отеля') {
+            phaseGrid.classList.add('expanded');
+            roomExitCard.classList.remove('hidden');
+            roomExitCard.classList.add('appearing');
+            setTimeout(() => {
+                roomExitCard.classList.remove('appearing');
+            }, 300);
+
+            if (departureIcon) {
+                departureIcon.classList.add('icon-disappear');
                 setTimeout(() => {
-                    roomExitCard.classList.remove('appearing');
-                }, 300);
-
-                if (departureIcon) {
-                    departureIcon.classList.add('icon-disappear');
+                    departureIcon.classList.remove('fas', 'fa-car');
+                    departureIcon.classList.add('fa-solid', 'fa-van-shuttle');
+                    departureIcon.classList.remove('icon-disappear');
+                    departureIcon.classList.add('icon-appear');
                     setTimeout(() => {
-                        departureIcon.classList.remove('fas', 'fa-car');
-                        departureIcon.classList.add('fa-solid', 'fa-van-shuttle');
-                        departureIcon.classList.remove('icon-disappear');
-                        departureIcon.classList.add('icon-appear');
-                        setTimeout(() => {
-                            departureIcon.classList.remove('icon-appear');
-                        }, 300);
+                        departureIcon.classList.remove('icon-appear');
                     }, 300);
-                }
-            } else {
-                roomExitCard.classList.add('disappearing');
-                setTimeout(() => {
-                    phaseGrid.classList.remove('expanded');
-                    roomExitCard.classList.add('hidden');
-                    roomExitCard.classList.remove('disappearing');
                 }, 300);
-
-                if (departureIcon) {
-                    departureIcon.classList.add('icon-disappear');
-                    setTimeout(() => {
-                        departureIcon.classList.remove('fa-solid', 'fa-van-shuttle');
-                        departureIcon.classList.add('fas', 'fa-car');
-                        departureIcon.classList.remove('icon-disappear');
-                        departureIcon.classList.add('icon-appear');
-                        setTimeout(() => {
-                            departureIcon.classList.remove('icon-appear');
-                        }, 300);
-                    }, 300);
-                }
             }
-            updateTime();
-        });
+        } else {
+            roomExitCard.classList.add('disappearing');
+            setTimeout(() => {
+                phaseGrid.classList.remove('expanded');
+                roomExitCard.classList.add('hidden');
+                roomExitCard.classList.remove('disappearing');
+            }, 300);
+
+            if (departureIcon) {
+                departureIcon.classList.add('icon-disappear');
+                setTimeout(() => {
+                    departureIcon.classList.remove('fa-solid', 'fa-van-shuttle');
+                    departureIcon.classList.add('fas', 'fa-car');
+                    departureIcon.classList.remove('icon-disappear');
+                    departureIcon.classList.add('icon-appear');
+                    setTimeout(() => {
+                        departureIcon.classList.remove('icon-appear');
+                    }, 300);
+                }, 300);
+            }
+        }
+        updateTime();
+        updateModeHint();
     });
+});
 
     function formatTimeDiff(timeDiff) {
         if (timeDiff <= 0) return "00:00";
@@ -1219,39 +1736,33 @@ document.addEventListener("DOMContentLoaded", function () {
         syncPhaseCardHeights();
     });
 
-    // Управление пресетами
-    let currentPresetPhase = null; // Хранит тип фазы для пресета (departure, wake, room-exit)
-    let presetMinutes = 0; // Текущее время пресета в минутах
+    let currentPresetPhase = null;
+    let presetMinutes = 0;
 
-    // Загрузка пресетов из localStorage
     function loadPresets(phase) {
-        return JSON.parse(localStorage.getItem(`presets_${ بانکیphase}`)) || [];
+        return JSON.parse(localStorage.getItem(`presets_${phase}`)) || [];
     }
 
-    // Сохранение пресетов в localStorage
     function savePreset(phase, name, minutes) {
         const presets = loadPresets(phase);
         presets.push({ name, minutes });
         localStorage.setItem(`presets_${phase}`, JSON.stringify(presets));
     }
 
-    // Обновление отображения времени пресета
     function updatePresetTimeDisplay() {
         const hours = Math.floor(presetMinutes / 60);
         const minutes = presetMinutes % 60;
         document.getElementById('preset-time-value').textContent = `${hours} ч ${minutes} мин`;
     }
 
-    // Открытие модального окна создания пресета
     function openPresetModal(phase) {
         currentPresetPhase = phase;
-        presetMinutes = 0; // Сброс времени
+        presetMinutes = 0;
         updatePresetTimeDisplay();
-        document.getElementById('preset-name').value = ''; // Очистка поля названия
+        document.getElementById('preset-name').value = '';
         document.getElementById('preset-modal').classList.add('active');
     }
 
-    // Обработчики для кнопок "Создать"
     document.getElementById('create-departure-preset').addEventListener('click', () => {
         openPresetModal('departure');
     });
@@ -1264,7 +1775,6 @@ document.addEventListener("DOMContentLoaded", function () {
         openPresetModal('room-exit');
     });
 
-    // Закрытие модального окна пресета
     const presetModal = document.getElementById('preset-modal');
     const closePresetModal = document.getElementById('close-preset-modal');
 
@@ -1278,22 +1788,20 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Управление счётчиком времени пресета
     document.getElementById('increase-preset-time').addEventListener('click', () => {
-        if (presetMinutes < 60) { // Ограничение до 1 часа
-            presetMinutes += 5; // Шаг 5 минут
+        if (presetMinutes < 60) {
+            presetMinutes += 5;
             updatePresetTimeDisplay();
         }
     });
 
     document.getElementById('decrease-preset-time').addEventListener('click', () => {
         if (presetMinutes > 0) {
-            presetMinutes -= 5; // Шаг 5 минут
+            presetMinutes -= 5;
             updatePresetTimeDisplay();
         }
     });
 
-    // Сохранение пресета
     document.getElementById('save-preset').addEventListener('click', () => {
         const presetName = document.getElementById('preset-name').value.trim();
         if (!presetName) {
