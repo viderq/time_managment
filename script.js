@@ -459,6 +459,7 @@ function setTravelMode() {
             departureIcon.classList.add('fas', 'fa-car');
         }
     }
+
     updateTime();
 }
 
