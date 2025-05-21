@@ -382,6 +382,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
     setupBaseAirportAutocomplete();
 
+    function applySavedTravelMode(mode) {
+    const phaseGrid = document.querySelector('.phase-grid');
+    const roomExitCard = document.getElementById('room-exit');
+    const departureTimeElement = document.getElementById('departuretime');
+    const departureIcon = departureTimeElement ? departureTimeElement.parentElement.querySelector('.phase-icon') : null;
+
+    const homeButton = document.getElementById('homeButton');
+    const hotelButton = document.getElementById('hotelButton');
+
+    localStorage.setItem('travelMode', mode);
+
+    homeButton.classList.remove('active');
+    hotelButton.classList.remove('active');
+
+    if (mode === 'hotel') {
+        hotelButton.classList.add('active');
+        phaseGrid.classList.add('expanded');
+        roomExitCard.classList.remove('hidden');
+        if (departureIcon) {
+            departureIcon.classList.remove('fas', 'fa-car');
+            departureIcon.classList.add('fa-solid', 'fa-van-shuttle');
+        }
+    } else {
+        homeButton.classList.add('active');
+        phaseGrid.classList.remove('expanded');
+        roomExitCard.classList.add('hidden');
+        if (departureIcon) {
+            departureIcon.classList.remove('fa-solid', 'fa-van-shuttle');
+            departureIcon.classList.add('fas', 'fa-car');
+        }
+    }
+
+    updateTime();
+    updateModeHint();
+}
+
+
 function setTravelMode() {
     const baseAirport = localStorage.getItem('baseAirport');
     const departureAirport = departureAirportCode.textContent.trim();
@@ -494,12 +531,12 @@ function setTravelMode() {
             if (savedDate) {
                 dateInput.value = savedDate;
                 handleFlightInfoUpdate().then(() => {
-                    setTravelMode();
-                    updateModeHint();
+                    applySavedTravelMode(savedMode);
+                    applySavedTravelMode(savedMode);
                 });
             } else {
-                setTravelMode();
-                updateModeHint();
+                applySavedTravelMode(savedMode);
+                applySavedTravelMode(savedMode);
             }
         } else if (savedBaseAirport && savedPrefix === 'EVENT' && savedEventTime) {
             flightPrefixSelect.value = savedPrefix;
@@ -507,15 +544,15 @@ function setTravelMode() {
             if (savedDate) {
                 dateInput.value = savedDate;
                 updateFlightTimeFromEvent();
-                setTravelMode();
-                updateModeHint();
+                applySavedTravelMode(savedMode);
+                applySavedTravelMode(savedMode);
             } else {
-                setTravelMode();
-                updateModeHint();
+                applySavedTravelMode(savedMode);
+                applySavedTravelMode(savedMode);
             }
         } else {
-            setTravelMode();
-            updateModeHint();
+            applySavedTravelMode(savedMode);
+            applySavedTravelMode(savedMode);
         }
 
         if (savedDate) {
@@ -567,13 +604,13 @@ function setTravelMode() {
 
         if (savedDate && savedNumber && savedPrefix !== 'EVENT') {
             handleFlightInfoUpdate().then(() => {
-                setTravelMode();
-                updateModeHint();
+                applySavedTravelMode(savedMode);
+                applySavedTravelMode(savedMode);
             });
         } else if (savedDate && savedEventTime && savedPrefix === 'EVENT') {
             updateFlightTimeFromEvent();
-            setTravelMode();
-            updateModeHint();
+            applySavedTravelMode(savedMode);
+            applySavedTravelMode(savedMode);
         }
     }
 
@@ -801,6 +838,14 @@ function setTravelMode() {
             currentElement.replaceWith(newFlightTimeDisplay);
             updateTime();
             return;
+        }
+
+        const baseAirport = localStorage.getItem('baseAirport');
+        const departureAirport = leg.departure?.scheduled?.airportCode?.trim();
+
+        if (baseAirport && departureAirport) {
+        const newMode = (baseAirport === departureAirport) ? 'home' : 'hotel';
+        applySavedTravelMode(newMode);
         }
 
         // Проверка наличия departure и times
@@ -1087,7 +1132,12 @@ function setTravelMode() {
 
     document.querySelectorAll('.mode-btn').forEach(btn => {
     btn.addEventListener('click', function () {
-        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        const isHotel = this.id === 'hotelButton';
+        const homeButton = document.getElementById('homeButton');
+        const hotelButton = document.getElementById('hotelButton');
+
+        homeButton.classList.remove('active');
+        hotelButton.classList.remove('active');
         this.classList.add('active');
 
         const phaseGrid = document.querySelector('.phase-grid');
@@ -1095,16 +1145,14 @@ function setTravelMode() {
         const departureTimeElement = document.getElementById('departuretime');
         const departureIcon = departureTimeElement ? departureTimeElement.parentElement.querySelector('.phase-icon') : null;
 
-        const mode = this.textContent.trim() === 'Из отеля' ? 'hotel' : 'home';
+        const mode = isHotel ? 'hotel' : 'home';
         localStorage.setItem('travelMode', mode);
 
-        if (this.textContent.trim() === 'Из отеля') {
+        if (isHotel) {
             phaseGrid.classList.add('expanded');
             roomExitCard.classList.remove('hidden');
             roomExitCard.classList.add('appearing');
-            setTimeout(() => {
-                roomExitCard.classList.remove('appearing');
-            }, 300);
+            setTimeout(() => roomExitCard.classList.remove('appearing'), 300);
 
             if (departureIcon) {
                 departureIcon.classList.add('icon-disappear');
@@ -1113,9 +1161,7 @@ function setTravelMode() {
                     departureIcon.classList.add('fa-solid', 'fa-van-shuttle');
                     departureIcon.classList.remove('icon-disappear');
                     departureIcon.classList.add('icon-appear');
-                    setTimeout(() => {
-                        departureIcon.classList.remove('icon-appear');
-                    }, 300);
+                    setTimeout(() => departureIcon.classList.remove('icon-appear'), 300);
                 }, 300);
             }
         } else {
@@ -1133,16 +1179,16 @@ function setTravelMode() {
                     departureIcon.classList.add('fas', 'fa-car');
                     departureIcon.classList.remove('icon-disappear');
                     departureIcon.classList.add('icon-appear');
-                    setTimeout(() => {
-                        departureIcon.classList.remove('icon-appear');
-                    }, 300);
+                    setTimeout(() => departureIcon.classList.remove('icon-appear'), 300);
                 }, 300);
             }
         }
+
         updateTime();
         updateModeHint();
     });
 });
+
 
     function formatTimeDiff(timeDiff) {
         if (timeDiff <= 0) return "00:00";
