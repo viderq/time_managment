@@ -382,7 +382,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     setupBaseAirportAutocomplete();
 
-    const updateTime = () => {
+    function updateTime() {
         const options = {
             hour: 'numeric',
             minute: 'numeric',
