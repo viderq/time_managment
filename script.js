@@ -382,6 +382,221 @@ document.addEventListener("DOMContentLoaded", function () {
 
     setupBaseAirportAutocomplete();
 
+    const updateTime = () => {
+        const options = {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: false
+        };
+
+        let localTime = new Date();
+        const localTimezoneOffset = localTime.getTimezoneOffset();
+        const utcTime = localTime.getTime() + (localTimezoneOffset * 60 * 1000);
+        const moscowTime = new Date(utcTime + MOSCOW_OFFSET);
+
+        document.getElementById('current-time').textContent = localTime.toLocaleTimeString('ru-RU', options);
+        document.getElementById('destination-time').textContent = moscowTime.toLocaleTimeString('ru-RU', options);
+
+        const flightCountdownCard = document.getElementById('flight-countdown');
+        const departureCountdownCard = document.getElementById('departure-countdown');
+        const roomExitCountdownCard = document.getElementById('room-exit-countdown');
+        const wakeCountdownCard = document.getElementById('departure-countdown-card');
+        const bedtimeCountdownCard = document.getElementById('bedtime-countdown');
+
+        const wasHidden = {
+            flight: flightCountdownCard.classList.contains('hidden'),
+            departure: departureCountdownCard.classList.contains('hidden'),
+            roomExit: roomExitCountdownCard.classList.contains('hidden'),
+            wake: wakeCountdownCard.classList.contains('hidden'),
+            bedtime: bedtimeCountdownCard.classList.contains('hidden')
+        };
+
+        flightCountdownCard.classList.add('hidden');
+        departureCountdownCard.classList.add('hidden');
+        roomExitCountdownCard.classList.add('hidden');
+        wakeCountdownCard.classList.add('hidden');
+        bedtimeCountdownCard.classList.add('hidden');
+
+        document.querySelectorAll('.phase-card').forEach(card => card.classList.remove('next-phase'));
+
+        if (!flightDepartureTime) {
+            document.getElementById('departure-countdown-time-departure').textContent = "00:00";
+            document.getElementById('room-exit-countdown-time').textContent = "00:00";
+            document.getElementById('departure-countdown-time').textContent = "00:00";
+            document.getElementById('flight-countdown-time').textContent = "00:00";
+            document.getElementById('bedtime-countdown-time').textContent = "00:00";
+            document.getElementById('bedtime').textContent = "--:--";
+            document.getElementById('waketime').textContent = "--:--";
+            document.getElementById('old-waketime').textContent = "";
+            document.getElementById('old-waketime').classList.add('hidden');
+            document.getElementById('departuretime').textContent = "--:--";
+            document.getElementById('old-departuretime').textContent = "";
+            document.getElementById('old-departuretime').classList.add('hidden');
+            document.getElementById('roomExitTime').textContent = "--:--";
+            document.getElementById('old-roomExitTime').textContent = "";
+            document.getElementById('old-roomExitTime').classList.add('hidden');
+            document.querySelectorAll('.phase-card').forEach(card => card.classList.remove('time-shifted'));
+            document.querySelectorAll('.pseudo-old-time').forEach(pseudo => {
+                pseudo.style.display = 'none';
+            });
+            syncPhaseCardHeights();
+            return;
+        }
+
+        const arrivalTime = new Date(flightDepartureTime.getTime() - checkInTimeMinutes * 60 * 1000);
+        defaultDepartureTime = new Date(arrivalTime.getTime() - travelTimeMinutes * 60 * 1000);
+        const departureTime = customDepartureTime ? new Date(customDepartureTime) : defaultDepartureTime;
+        const isHotelMode = document.getElementById('hotelButton').classList.contains('active');
+        defaultRoomExitTime = isHotelMode ? new Date(departureTime.getTime() - HOTEL_EXIT_OFFSET) : null;
+        const roomExitTime = isHotelMode ? (customRoomExitTime ? new Date(customRoomExitTime) : defaultRoomExitTime) : null;
+
+        defaultWakeTime = isHotelMode
+            ? new Date(roomExitTime.getTime() - PREPARATION_TIME)
+            : new Date(departureTime.getTime() - PREPARATION_TIME);
+        const wakeTime = customWakeTime ? new Date(customWakeTime) : defaultWakeTime;
+        const bedTime = new Date(wakeTime.getTime() - sleepHours * 60 * 60 * 1000);
+
+        const flightTimeDiff = flightDepartureTime - localTime;
+        const departureTimeDiff = departureTime - localTime;
+        const wakeTimeDiff = wakeTime - localTime;
+        const roomExitTimeDiff = isHotelMode ? roomExitTime - localTime : Infinity;
+        const bedTimeDiff = bedTime - localTime;
+
+        document.getElementById('flight-countdown-time').textContent = formatTimeDiff(flightTimeDiff);
+        document.getElementById('departure-countdown-time-departure').textContent = formatTimeDiff(departureTimeDiff);
+        document.getElementById('departure-countdown-time').textContent = formatTimeDiff(wakeTimeDiff);
+        document.getElementById('bedtime-countdown-time').textContent = formatTimeDiff(bedTimeDiff);
+        if (isHotelMode) {
+            document.getElementById('room-exit-countdown-time').textContent = formatTimeDiff(roomExitTimeDiff);
+            document.getElementById('roomExitTime').textContent = roomExitTime.toLocaleTimeString('ru-RU', options);
+            const roomExitTimeElement = document.getElementById('roomExitTime');
+            const oldRoomExitTimeElement = document.getElementById('old-roomExitTime');
+            if (customRoomExitTime && defaultRoomExitTime && customRoomExitTime.getTime() !== defaultRoomExitTime.getTime()) {
+                oldRoomExitTimeElement.textContent = defaultRoomExitTime.toLocaleTimeString('ru-RU', options);
+                oldRoomExitTimeElement.classList.remove('hidden');
+            } else {
+                oldRoomExitTimeElement.textContent = "";
+                oldRoomExitTimeElement.classList.add('hidden');
+            }
+        } else {
+            document.getElementById('room-exit-countdown-time').textContent = "00:00";
+            document.getElementById('roomExitTime').textContent = "--:--";
+            document.getElementById('old-roomExitTime').textContent = "";
+            document.getElementById('old-roomExitTime').classList.add('hidden');
+        }
+
+        document.getElementById('bedtime').textContent = bedTime.toLocaleTimeString('ru-RU', options);
+
+        const waketimeElement = document.getElementById('waketime');
+        const oldWaketimeElement = document.getElementById('old-waketime');
+        waketimeElement.textContent = wakeTime.toLocaleTimeString('ru-RU', options);
+        if (customWakeTime && defaultWakeTime && customWakeTime.getTime() !== defaultWakeTime.getTime()) {
+            oldWaketimeElement.textContent = defaultWakeTime.toLocaleTimeString('ru-RU', options);
+            oldWaketimeElement.classList.remove('hidden');
+        } else {
+            oldWaketimeElement.textContent = "";
+            oldWaketimeElement.classList.add('hidden');
+        }
+
+        const departuretimeElement = document.getElementById('departuretime');
+        const oldDeparturetimeElement = document.getElementById('old-departuretime');
+        departuretimeElement.textContent = departureTime.toLocaleTimeString('ru-RU', options);
+        if (customDepartureTime && defaultDepartureTime && customDepartureTime.getTime() !== defaultDepartureTime.getTime()) {
+            oldDeparturetimeElement.textContent = defaultDepartureTime.toLocaleTimeString('ru-RU', options);
+            oldDeparturetimeElement.classList.remove('hidden');
+        } else {
+            oldDeparturetimeElement.textContent = "";
+            oldDeparturetimeElement.classList.add('hidden');
+        }
+
+        const hasOldTime = !oldWaketimeElement.classList.contains('hidden') ||
+                           !oldDeparturetimeElement.classList.contains('hidden') ||
+                           !document.getElementById('old-roomExitTime').classList.contains('hidden');
+
+        document.querySelectorAll('.phase-card').forEach(card => {
+            const oldTimeElement = card.querySelector('.old-time');
+            const pseudoOldTimeElement = card.querySelector('.pseudo-old-time');
+            if (hasOldTime) {
+                if (!oldTimeElement || oldTimeElement.classList.contains('hidden')) {
+                    pseudoOldTimeElement.style.display = 'block';
+                    pseudoOldTimeElement.textContent = "--";
+                } else {
+                    pseudoOldTimeElement.style.display = 'none';
+                    pseudoOldTimeElement.textContent = "";
+                }
+            } else {
+                pseudoOldTimeElement.style.display = 'none';
+                pseudoOldTimeElement.textContent = "";
+            }
+        });
+
+        const wakeCard = document.querySelector('#waketime').parentElement;
+        const departureCard = document.querySelector('#departuretime').parentElement;
+        const roomExitCard = document.querySelector('#roomExitTime').parentElement;
+        if (hasOldTime) {
+            wakeCard.classList.add('time-shifted');
+            departureCard.classList.add('time-shifted');
+            if (isHotelMode) {
+                roomExitCard.classList.add('time-shifted');
+            }
+        } else {
+            wakeCard.classList.remove('time-shifted');
+            departureCard.classList.remove('time-shifted');
+            roomExitCard.classList.remove('time-shifted');
+        }
+
+        const phases = [
+            { id: 'bedtime', time: bedTime, diff: bedTimeDiff, card: bedtimeCountdownCard, phaseCardId: 'bedtime' },
+            { id: 'wake', time: wakeTime, diff: wakeTimeDiff, card: wakeCountdownCard, phaseCardId: 'waketime' }
+        ];
+
+        if (isHotelMode) {
+            phases.push({ id: 'room-exit', time: roomExitTime, diff: roomExitTimeDiff, card: roomExitCountdownCard, phaseCardId: 'roomExitTime' });
+        }
+
+        phases.push(
+            { id: 'departure', time: departureTime, diff: departureTimeDiff, card: departureCountdownCard, phaseCardId: 'departuretime' },
+            { id: 'flight', time: flightDepartureTime, diff: flightTimeDiff, card: flightCountdownCard, phaseCardId: null }
+        );
+
+        phases.sort((a, b) => a.time - b.time);
+
+        const futurePhases = phases.filter(phase => phase.diff > 0);
+        if (futurePhases.length > 0) {
+            phases.forEach(phase => {
+                if (phase.card.classList.contains('appearing')) {
+                    phase.card.classList.remove('appearing');
+                }
+                phase.card.classList.add('hidden');
+            });
+
+            const nearestPhase = futurePhases[0];
+            if (wasHidden[nearestPhase.id]) {
+                nearestPhase.card.classList.add('appearing');
+                setTimeout(() => {
+                    nearestPhase.card.classList.remove('appearing');
+                }, 300);
+            }
+            nearestPhase.card.classList.remove('hidden');
+
+            if (nearestPhase.phaseCardId) {
+                const phaseElement = document.querySelector(`#${nearestPhase.phaseCardId}`);
+                if (phaseElement) {
+                    const phaseCard = phaseElement.closest('.phase-card');
+                    if (phaseCard) {
+                        phaseCard.classList.add('next-phase');
+                    } else {
+                        console.error(`Parent .phase-card not found for #${nearestPhase.phaseCardId}`);
+                    }
+                } else {
+                    console.error(`Element #${nearestPhase.phaseCardId} not found`);
+                }
+            }
+        }
+
+        syncPhaseCardHeights();
+    };
+
     function applySavedTravelMode(mode) {
     const phaseGrid = document.querySelector('.phase-grid');
     const roomExitCard = document.getElementById('room-exit');
@@ -1198,220 +1413,7 @@ function setTravelMode() {
         return `${hours} ч ${minutes.toString().padStart(2, '0')} мин`;
     }
 
-    const updateTime = () => {
-        const options = {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: false
-        };
 
-        let localTime = new Date();
-        const localTimezoneOffset = localTime.getTimezoneOffset();
-        const utcTime = localTime.getTime() + (localTimezoneOffset * 60 * 1000);
-        const moscowTime = new Date(utcTime + MOSCOW_OFFSET);
-
-        document.getElementById('current-time').textContent = localTime.toLocaleTimeString('ru-RU', options);
-        document.getElementById('destination-time').textContent = moscowTime.toLocaleTimeString('ru-RU', options);
-
-        const flightCountdownCard = document.getElementById('flight-countdown');
-        const departureCountdownCard = document.getElementById('departure-countdown');
-        const roomExitCountdownCard = document.getElementById('room-exit-countdown');
-        const wakeCountdownCard = document.getElementById('departure-countdown-card');
-        const bedtimeCountdownCard = document.getElementById('bedtime-countdown');
-
-        const wasHidden = {
-            flight: flightCountdownCard.classList.contains('hidden'),
-            departure: departureCountdownCard.classList.contains('hidden'),
-            roomExit: roomExitCountdownCard.classList.contains('hidden'),
-            wake: wakeCountdownCard.classList.contains('hidden'),
-            bedtime: bedtimeCountdownCard.classList.contains('hidden')
-        };
-
-        flightCountdownCard.classList.add('hidden');
-        departureCountdownCard.classList.add('hidden');
-        roomExitCountdownCard.classList.add('hidden');
-        wakeCountdownCard.classList.add('hidden');
-        bedtimeCountdownCard.classList.add('hidden');
-
-        document.querySelectorAll('.phase-card').forEach(card => card.classList.remove('next-phase'));
-
-        if (!flightDepartureTime) {
-            document.getElementById('departure-countdown-time-departure').textContent = "00:00";
-            document.getElementById('room-exit-countdown-time').textContent = "00:00";
-            document.getElementById('departure-countdown-time').textContent = "00:00";
-            document.getElementById('flight-countdown-time').textContent = "00:00";
-            document.getElementById('bedtime-countdown-time').textContent = "00:00";
-            document.getElementById('bedtime').textContent = "--:--";
-            document.getElementById('waketime').textContent = "--:--";
-            document.getElementById('old-waketime').textContent = "";
-            document.getElementById('old-waketime').classList.add('hidden');
-            document.getElementById('departuretime').textContent = "--:--";
-            document.getElementById('old-departuretime').textContent = "";
-            document.getElementById('old-departuretime').classList.add('hidden');
-            document.getElementById('roomExitTime').textContent = "--:--";
-            document.getElementById('old-roomExitTime').textContent = "";
-            document.getElementById('old-roomExitTime').classList.add('hidden');
-            document.querySelectorAll('.phase-card').forEach(card => card.classList.remove('time-shifted'));
-            document.querySelectorAll('.pseudo-old-time').forEach(pseudo => {
-                pseudo.style.display = 'none';
-            });
-            syncPhaseCardHeights();
-            return;
-        }
-
-        const arrivalTime = new Date(flightDepartureTime.getTime() - checkInTimeMinutes * 60 * 1000);
-        defaultDepartureTime = new Date(arrivalTime.getTime() - travelTimeMinutes * 60 * 1000);
-        const departureTime = customDepartureTime ? new Date(customDepartureTime) : defaultDepartureTime;
-        const isHotelMode = document.getElementById('hotelButton').classList.contains('active');
-        defaultRoomExitTime = isHotelMode ? new Date(departureTime.getTime() - HOTEL_EXIT_OFFSET) : null;
-        const roomExitTime = isHotelMode ? (customRoomExitTime ? new Date(customRoomExitTime) : defaultRoomExitTime) : null;
-
-        defaultWakeTime = isHotelMode
-            ? new Date(roomExitTime.getTime() - PREPARATION_TIME)
-            : new Date(departureTime.getTime() - PREPARATION_TIME);
-        const wakeTime = customWakeTime ? new Date(customWakeTime) : defaultWakeTime;
-        const bedTime = new Date(wakeTime.getTime() - sleepHours * 60 * 60 * 1000);
-
-        const flightTimeDiff = flightDepartureTime - localTime;
-        const departureTimeDiff = departureTime - localTime;
-        const wakeTimeDiff = wakeTime - localTime;
-        const roomExitTimeDiff = isHotelMode ? roomExitTime - localTime : Infinity;
-        const bedTimeDiff = bedTime - localTime;
-
-        document.getElementById('flight-countdown-time').textContent = formatTimeDiff(flightTimeDiff);
-        document.getElementById('departure-countdown-time-departure').textContent = formatTimeDiff(departureTimeDiff);
-        document.getElementById('departure-countdown-time').textContent = formatTimeDiff(wakeTimeDiff);
-        document.getElementById('bedtime-countdown-time').textContent = formatTimeDiff(bedTimeDiff);
-        if (isHotelMode) {
-            document.getElementById('room-exit-countdown-time').textContent = formatTimeDiff(roomExitTimeDiff);
-            document.getElementById('roomExitTime').textContent = roomExitTime.toLocaleTimeString('ru-RU', options);
-            const roomExitTimeElement = document.getElementById('roomExitTime');
-            const oldRoomExitTimeElement = document.getElementById('old-roomExitTime');
-            if (customRoomExitTime && defaultRoomExitTime && customRoomExitTime.getTime() !== defaultRoomExitTime.getTime()) {
-                oldRoomExitTimeElement.textContent = defaultRoomExitTime.toLocaleTimeString('ru-RU', options);
-                oldRoomExitTimeElement.classList.remove('hidden');
-            } else {
-                oldRoomExitTimeElement.textContent = "";
-                oldRoomExitTimeElement.classList.add('hidden');
-            }
-        } else {
-            document.getElementById('room-exit-countdown-time').textContent = "00:00";
-            document.getElementById('roomExitTime').textContent = "--:--";
-            document.getElementById('old-roomExitTime').textContent = "";
-            document.getElementById('old-roomExitTime').classList.add('hidden');
-        }
-
-        document.getElementById('bedtime').textContent = bedTime.toLocaleTimeString('ru-RU', options);
-
-        const waketimeElement = document.getElementById('waketime');
-        const oldWaketimeElement = document.getElementById('old-waketime');
-        waketimeElement.textContent = wakeTime.toLocaleTimeString('ru-RU', options);
-        if (customWakeTime && defaultWakeTime && customWakeTime.getTime() !== defaultWakeTime.getTime()) {
-            oldWaketimeElement.textContent = defaultWakeTime.toLocaleTimeString('ru-RU', options);
-            oldWaketimeElement.classList.remove('hidden');
-        } else {
-            oldWaketimeElement.textContent = "";
-            oldWaketimeElement.classList.add('hidden');
-        }
-
-        const departuretimeElement = document.getElementById('departuretime');
-        const oldDeparturetimeElement = document.getElementById('old-departuretime');
-        departuretimeElement.textContent = departureTime.toLocaleTimeString('ru-RU', options);
-        if (customDepartureTime && defaultDepartureTime && customDepartureTime.getTime() !== defaultDepartureTime.getTime()) {
-            oldDeparturetimeElement.textContent = defaultDepartureTime.toLocaleTimeString('ru-RU', options);
-            oldDeparturetimeElement.classList.remove('hidden');
-        } else {
-            oldDeparturetimeElement.textContent = "";
-            oldDeparturetimeElement.classList.add('hidden');
-        }
-
-        const hasOldTime = !oldWaketimeElement.classList.contains('hidden') ||
-                           !oldDeparturetimeElement.classList.contains('hidden') ||
-                           !document.getElementById('old-roomExitTime').classList.contains('hidden');
-
-        document.querySelectorAll('.phase-card').forEach(card => {
-            const oldTimeElement = card.querySelector('.old-time');
-            const pseudoOldTimeElement = card.querySelector('.pseudo-old-time');
-            if (hasOldTime) {
-                if (!oldTimeElement || oldTimeElement.classList.contains('hidden')) {
-                    pseudoOldTimeElement.style.display = 'block';
-                    pseudoOldTimeElement.textContent = "--";
-                } else {
-                    pseudoOldTimeElement.style.display = 'none';
-                    pseudoOldTimeElement.textContent = "";
-                }
-            } else {
-                pseudoOldTimeElement.style.display = 'none';
-                pseudoOldTimeElement.textContent = "";
-            }
-        });
-
-        const wakeCard = document.querySelector('#waketime').parentElement;
-        const departureCard = document.querySelector('#departuretime').parentElement;
-        const roomExitCard = document.querySelector('#roomExitTime').parentElement;
-        if (hasOldTime) {
-            wakeCard.classList.add('time-shifted');
-            departureCard.classList.add('time-shifted');
-            if (isHotelMode) {
-                roomExitCard.classList.add('time-shifted');
-            }
-        } else {
-            wakeCard.classList.remove('time-shifted');
-            departureCard.classList.remove('time-shifted');
-            roomExitCard.classList.remove('time-shifted');
-        }
-
-        const phases = [
-            { id: 'bedtime', time: bedTime, diff: bedTimeDiff, card: bedtimeCountdownCard, phaseCardId: 'bedtime' },
-            { id: 'wake', time: wakeTime, diff: wakeTimeDiff, card: wakeCountdownCard, phaseCardId: 'waketime' }
-        ];
-
-        if (isHotelMode) {
-            phases.push({ id: 'room-exit', time: roomExitTime, diff: roomExitTimeDiff, card: roomExitCountdownCard, phaseCardId: 'roomExitTime' });
-        }
-
-        phases.push(
-            { id: 'departure', time: departureTime, diff: departureTimeDiff, card: departureCountdownCard, phaseCardId: 'departuretime' },
-            { id: 'flight', time: flightDepartureTime, diff: flightTimeDiff, card: flightCountdownCard, phaseCardId: null }
-        );
-
-        phases.sort((a, b) => a.time - b.time);
-
-        const futurePhases = phases.filter(phase => phase.diff > 0);
-        if (futurePhases.length > 0) {
-            phases.forEach(phase => {
-                if (phase.card.classList.contains('appearing')) {
-                    phase.card.classList.remove('appearing');
-                }
-                phase.card.classList.add('hidden');
-            });
-
-            const nearestPhase = futurePhases[0];
-            if (wasHidden[nearestPhase.id]) {
-                nearestPhase.card.classList.add('appearing');
-                setTimeout(() => {
-                    nearestPhase.card.classList.remove('appearing');
-                }, 300);
-            }
-            nearestPhase.card.classList.remove('hidden');
-
-            if (nearestPhase.phaseCardId) {
-                const phaseElement = document.querySelector(`#${nearestPhase.phaseCardId}`);
-                if (phaseElement) {
-                    const phaseCard = phaseElement.closest('.phase-card');
-                    if (phaseCard) {
-                        phaseCard.classList.add('next-phase');
-                    } else {
-                        console.error(`Parent .phase-card not found for #${nearestPhase.phaseCardId}`);
-                    }
-                } else {
-                    console.error(`Element #${nearestPhase.phaseCardId} not found`);
-                }
-            }
-        }
-
-        syncPhaseCardHeights();
-    };
 
     setInterval(updateTime, 1000);
     updateTime();
