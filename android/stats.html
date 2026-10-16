@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Вылет — скачивания</title>
+    <link rel="icon" type="image/png" href="../logo_64.png">
+    <style>
+        :root { --bg: #F8FAFC; --surface: #FFFFFF; --text: #1E293B; --muted: #64748B; --border: #E2E8F0; --accent: #1A5BA8; }
+        @media (prefers-color-scheme: dark) {
+            :root { --bg: #000000; --surface: #1C1C1C; --text: #EDEDED; --muted: #999999; --border: #333333; --accent: #D4AF37; color-scheme: dark; }
+        }
+        body { margin: 0; padding: 2rem 1rem; background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; }
+        main { max-width: 26rem; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
+        h1 { margin: 0; font-size: 1.5rem; }
+        .total { font-size: 3rem; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+        table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; overflow: hidden; }
+        td { padding: .75rem 1rem; border-top: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+        tr:first-child td { border-top: 0; }
+        td:last-child { text-align: right; font-weight: 600; }
+        .muted { color: var(--muted); font-size: .875rem; }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Скачивания «Вылет»</h1>
+    <div><div class="total" id="total">…</div><div class="muted">всего скачиваний APK со страницы и из обновлений в приложении</div></div>
+    <table id="list"></table>
+    <p class="muted" id="note">Счётчик GitHub Releases, обновляется с задержкой в несколько минут.</p>
+</main>
+<script>
+    // download_count считает GitHub по каждому файлу релиза; без токена API даёт 60 запросов в час с одного IP — для просмотра хватает
+    fetch('https://api.github.com/repos/viderq/time_managment/releases')
+        .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(releases => {
+            let total = 0;
+            const rows = releases.map(rel => {
+                const n = rel.assets.filter(a => a.name.endsWith('.apk')).reduce((s, a) => s + a.download_count, 0);
+                total += n;
+                const date = new Date(rel.published_at).toLocaleDateString('ru-RU');
+                return `<tr><td>${rel.tag_name} <span class="muted">· ${date}</span></td><td>${n}</td></tr>`;
+            });
+            document.getElementById('total').textContent = total;
+            document.getElementById('list').innerHTML = rows.join('') || '<tr><td>Релизов пока нет</td><td></td></tr>';
+        })
+        .catch(e => { document.getElementById('total').textContent = '—'; document.getElementById('note').textContent = 'Не удалось получить данные GitHub: ' + e.message; });
+</script>
+</body>
+</html>

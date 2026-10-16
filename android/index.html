@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вылет для Android</title>
+    <meta name="description" content="Вылет — план до рейса с отсчётом на заблокированном экране. Скачать APK для Android.">
+    <link rel="icon" type="image/png" href="../logo_64.png">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=lock_clock,schedule,warning&display=block">
+    <style>
+        :root {
+            --bg: #F8FAFC; --surface: #FFFFFF; --text: #1E293B; --muted: #64748B;
+            --border: #E2E8F0; --accent: #1A5BA8; --on-accent: #FFFFFF;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root { --bg: #000000; --surface: #1C1C1C; --text: #EDEDED; --muted: #999999;
+                    --border: #333333; --accent: #D4AF37; --on-accent: #000000; color-scheme: dark; }
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            padding: 2rem 1rem; background: var(--bg); color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif; line-height: 1.5;
+        }
+        main { width: 100%; max-width: 26rem; display: flex; flex-direction: column; gap: 1.5rem; text-align: center; }
+        .logo { width: 6rem; height: 6rem; margin: 0 auto; border-radius: 1.5rem; box-shadow: 0 6px 24px rgba(0,0,0,.15); }
+        h1 { margin: 0; font-size: 2rem; }
+        .tagline { margin: .25rem 0 0; color: var(--muted); text-wrap: balance; }
+        ul { margin: 0; padding: 1rem 1.25rem; list-style: none; text-align: left; display: flex; flex-direction: column; gap: .75rem;
+             background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; }
+        li { display: flex; gap: .75rem; }
+        li .material-symbols-rounded { flex: none; width: 1.5rem; color: var(--accent); }
+        .btn { display: block; padding: 1rem; border-radius: .75rem; background: var(--accent); color: var(--on-accent);
+               font-weight: 600; font-size: 1.1rem; text-decoration: none; }
+        .note { margin: 0; font-size: .875rem; color: var(--muted); text-wrap: balance; }
+        .note a { color: inherit; }
+    </style>
+</head>
+<body>
+<main>
+    <img class="logo" src="../logo_256.png" alt="">
+    <div>
+        <h1>Вылет</h1>
+        <p class="tagline">План до рейса: когда лечь, встать и выезжать — с отсчётом прямо на экране блокировки</p>
+    </div>
+    <ul>
+        <li><span class="material-symbols-rounded" aria-hidden="true">schedule</span><span>Этапы плана от времени вылета по табло: отбой, подъём, выход, выезд</span></li>
+        <li><span class="material-symbols-rounded" aria-hidden="true">lock_clock</span><span>Постоянное уведомление с остатком до ближайшего этапа на заблокированном экране</span></li>
+        <li><span class="material-symbols-rounded" aria-hidden="true">warning</span><span>Уведомление о задержке, если вылет по табло сдвинулся позже</span></li>
+    </ul>
+    <a class="btn" id="download" href="https://github.com/viderq/time_managment/releases/latest/download/vylet.apk">Скачать APK</a>
+    <p class="note" id="status">Скачивание начнётся автоматически. После загрузки откройте файл и разрешите установку из этого источника.</p>
+    <p class="note"><a href="../">← Веб-версия</a></p>
+</main>
+<script>
+    // ссылка и версия — из version.json (его же читает приложение); APK лежит в GitHub Releases, там же счётчик скачиваний (stats.html)
+    const btn = document.getElementById('download');
+    fetch('version.json', { cache: 'no-cache' })
+        .then(r => r.json())
+        .then(v => {
+            btn.href = v.url;
+            btn.textContent = 'Скачать APK · версия ' + v.versionName;
+        })
+        .catch(() => {})
+        .finally(() => setTimeout(() => { location.href = btn.href; }, 800));
+</script>
+</body>
+</html>

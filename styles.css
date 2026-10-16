@@ -1,0 +1,1757 @@
+
+:root {
+    --primary: #3B82F6;
+    --primary-light: RGBA(59, 130, 246, 0.2);
+    --surface: #FFFFFF;
+    --background: #F8FAFC;
+    --text: #1E293B;
+    --border: #E2E8F0;
+    --icon-color: #6B7280;
+    --secondary-text: #64748B;
+    --warning: #F97316;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --surface: #1C1C1C;
+        --background: #000000;
+        --text: #EDEDED;
+        --border: #333333;
+        --icon-color: #999999;
+        --secondary-text: #999999;
+        --warning: #FB923C;
+        --primary: #808080;
+        --primary-light: rgba(128, 128, 128, 0.2);
+        --accent: #D4AF37;
+        --accent-light: rgba(212, 175, 55, 0.2);
+    }
+}
+
+.flight-time-display {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    height: 46px;
+    font-size: 1.05rem;
+    background: var(--surface);
+    color: #000000;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-sizing: border-box;
+    transition: width 0.3s ease, max-width 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+    .flight-time-display {
+        color: #EDEDED;
+    }
+}
+
+.flight-time-display.no-data {
+    color: var(--warning);
+}
+
+.flight-time-display.manual-override {
+    color: #F97316;
+    border-color: #F97316;
+}
+
+.flight-time-display.server-updated {
+    color: #22C55E;
+    border-color: #22C55E;
+}
+
+.flight-time-display:not(.no-data):not(.input-mode):not(.loading-spinner) {
+    cursor: pointer;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+.airport-code.shake,
+.airport-name.shake {
+    animation: shake 0.3s ease-in-out;
+}
+
+@keyframes appear {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes disappear {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0.8); opacity: 0; }
+}
+
+.icon-appear {
+    animation: appear 0.3s ease-in-out;
+}
+
+.icon-disappear {
+    animation: disappear 0.3s ease-in-out;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    touch-action: pan-x pan-y;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    background: var(--background);
+    color: var(--text);
+    min-height: 100vh;
+    position: relative;
+    margin: 0 auto;
+    max-width: 800px;
+    padding: 1.5rem;
+    box-sizing: border-box;
+}
+
+.dashboard {
+    display: grid;
+    gap: 1.5rem;
+    padding-bottom: 4rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.dashboard::-webkit-scrollbar {
+    display: none;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0.5rem 1rem;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.time-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex-shrink: 1;
+}
+
+.current-time {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text);
+}
+
+.destination-label {
+    font-size: 0.875rem;
+    color: var(--secondary-text);
+    margin-top: 0.1rem;
+    opacity: 0.9;
+}
+
+.input-group {
+    background: var(--surface);
+    padding: 1.5rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    width: 100%;
+}
+
+.flight-inputs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+}
+
+.date-input {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.65rem;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    height: 46px;
+    font-size: 0.9rem;
+    background: var(--surface);
+    color: var(--text);
+    transition: border-color 0.2s, width 0.3s ease, max-width 0.3s ease;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.date-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.flight-time-inputs {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: nowrap;
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+    transition: width 0.3s ease, max-width 0.3s ease;
+}
+
+.flight-time-display:empty::before {
+    content: attr(placeholder);
+    color: var(--secondary-text);
+    opacity: 0.7;
+}
+
+.flight-time-display.input-mode {
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    height: 46px;
+    font-size: 1.05rem;
+    background: var(--surface);
+    color: var(--text);
+    text-align: center;
+    outline: none;
+    width: 50%;
+    max-width: 180px;
+    box-sizing: border-box;
+    flex-shrink: 1;
+}
+
+.flight-time-display.input-mode:focus {
+    border-color: var(--primary);
+}
+
+.date-input::placeholder {
+    color: var(--secondary-text);
+    opacity: 0.7;
+}
+
+.airports {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.airport {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-radius: 1rem;
+    transition: transform 0.2s;
+    min-width: 0;
+    flex-shrink: 1;
+}
+
+.airport-icon {
+    font-size: 1.4rem;
+    color: var(--icon-color);
+}
+
+.airport-info {
+    line-height: 1.4;
+    text-align: center;
+}
+
+.airport-code {
+    font-weight: 700;
+    font-size: 1.1em;
+}
+
+.airport-name {
+    font-size: 0.85em;
+    color: var(--secondary-text);
+}
+
+.countdown-container {
+    display: grid;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.countdown-card {
+    background: rgba(59, 130, 246, 0.1);
+    padding: 1.5rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-height: 80px;
+    text-align: center;
+    width: 100%;
+    border: 2px solid var(--primary);
+}
+
+@media (prefers-color-scheme: dark) {
+    .countdown-card {
+        background: rgba(224, 231, 255, 0.1);
+        border: 2px solid #E0E7FF;
+        box-shadow: 0 4px 16px rgba(224, 231, 255, 0.3);
+    }
+}
+
+.countdown-icon {
+    font-size: 1.8rem;
+    color: var(--icon-color);
+}
+
+.countdown-content {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+}
+
+.countdown-title {
+    font-size: 0.95rem;
+    color: var(--secondary-text);
+}
+
+.countdown-time {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+@keyframes shrinkAndExpand {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.phase-card.appearing,
+.countdown-card.appearing {
+    animation: appear 0.3s ease-in-out;
+}
+
+.phase-card.disappearing,
+.countdown-card.disappearing {
+    animation: disappear 0.3s ease-in-out;
+}
+
+.phase-card.hidden,
+.countdown-card.hidden {
+    display: none;
+}
+
+.phase-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    transition: grid-template-columns 0.6s ease-in-out;
+    width: 100%;
+}
+
+.phase-grid.expanded {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.phase-card {
+    background: var(--surface);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: transform 0.6s ease, box-shadow 0.3s ease;
+    min-width: 0;
+    flex-shrink: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.phase-icon {
+    font-size: 1.5rem;
+    color: var(--icon-color);
+    margin-bottom: 0.75rem;
+}
+
+.phase-label {
+    font-size: 0.95rem;
+    color: var(--text);
+    position: absolute;
+    top: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.time-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow: hidden;
+    margin-top: 1.5rem;
+    transition: height 0.3s ease;
+}
+
+.phase-time {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 30px;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 4px;
+}
+
+.old-time {
+    font-size: 0.85rem;
+    color: var(--secondary-text);
+    text-decoration: line-through;
+    opacity: 0.7;
+    line-height: 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.old-time:not(.hidden) {
+    max-height: 25px;
+    opacity: 0.7;
+}
+
+.old-time.hidden {
+    max-height: 0;
+    opacity: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.sleep-label {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.1rem;
+}
+
+.sleep-control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 0 0 0;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+
+.sleep-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    min-width: 120px;
+    text-align: center;
+    color: var(--text);
+    flex: 1;
+    line-height: 50px;
+}
+
+.sleep-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: transparent;
+    color: var(--icon-color);
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.sleep-btn:active {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+.mode-selector {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.85rem;
+    margin-top: 0.5rem;
+    width: 100%;
+    padding: 1.5rem;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+
+.mode-btn {
+    padding: 0.8rem;
+    border: 2px solid var(--border);
+    border-radius: 1rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-align: center;
+    white-space: nowrap;
+    background: var(--surface);
+    color: var(--text);
+    transition: all 0.2s;
+    min-width: 0;
+    flex-shrink: 1;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mode-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.settings-footer {
+    position: absolute;
+    bottom: 1rem;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    text-align: center;
+    padding: 0rem;
+    display: flex;
+    justify-content: center;
+    z-index: 500;
+}
+
+.settings-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 2rem 1rem;
+    white-space: nowrap;
+    color: var(--secondary-text);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.settings-trigger:hover {
+    color: var(--primary);
+}
+
+.settings-icon {
+    font-size: 0.9rem;
+    color: var(--secondary-text);
+    margin-right: 2px;
+    transition: color 0.2s;
+}
+
+.settings-trigger:hover .settings-icon {
+    color: var(--primary);
+}
+
+.settings-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.settings-modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    background: var(--surface);
+    padding: 1.5rem;
+    border-radius: 1.25rem;
+    max-width: 350px;
+    width: 90%;
+    position: relative;
+    text-align: left;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    animation: modalFadeIn 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+@keyframes modalFadeIn {
+    0% { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.modal-content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.close-modal {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    color: var(--icon-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.2s;
+}
+
+.close-modal:hover {
+    color: var(--primary);
+}
+
+.timezone-mode {
+    margin-bottom: 1.5rem;
+    padding: 0.75rem;
+    border-radius: 0.875rem;
+    background: var(--background);
+    transition: background 0.2s;
+}
+
+.timezone-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.timezone-icon {
+    font-size: 1.2rem;
+    color: var(--icon-color);
+}
+
+.timezone-mode h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.timezone-mode label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.timezone-mode input[type="checkbox"] {
+    width: 1.2rem;
+    height: 1.2rem;
+    accent-color: var(--primary);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.timezone-mode input[type="checkbox"]:hover {
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.modal-content label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.modal-content select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    background: var(--background);
+    color: var(--text);
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23999999" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+}
+
+.modal-content select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.modal-content select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 0.75rem;
+    }
+
+    .header {
+        padding: 0.5rem 0.1rem;
+        max-width: 250px;
+        margin: 0 auto;
+        margin-bottom: 0.7rem;
+    }
+
+    .current-time {
+        font-size: 2rem;
+    }
+
+    .destination-label {
+        font-size: 0.8rem;
+        margin-top: 0.05rem;
+    }
+
+    .input-group {
+        padding: 0.75rem;
+        margin-top: -1rem;
+    }
+
+    .flight-inputs {
+        gap: 0.5rem;
+        width: 100%;
+        max-width: 100%;
+        padding: 0 0.5rem;
+        box-sizing: border-box;
+    }
+
+    .date-input {
+        padding: 0.5rem;
+        font-size: 1.05rem;
+        height: 40px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    .flight-time-inputs {
+        gap: 0.3rem;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .flight-time-display {
+        padding: 0.5rem;
+        font-size: 1rem;
+        height: 40px;
+        width: 50%;
+        max-width: 50%;
+        box-sizing: border-box;
+        flex-shrink: 1;
+    }
+
+    .flight-time-display.input-mode {
+        padding: 0;
+        font-size: 1rem;
+        height: 40px;
+        width: 30%;
+        max-width: 150px;
+    }
+
+    .airports {
+        gap: 0.75rem;
+    }
+
+    .airport {
+        padding: 0.5rem 0;
+        gap: 0.5rem;
+    }
+
+    .airport-icon {
+        font-size: 1.5rem;
+    }
+
+    .airport-code {
+        font-size: 1rem;
+    }
+
+    .airport-name {
+        font-size: 0.85rem;
+    }
+
+    .countdown-card {
+        padding: 0.75rem;
+        gap: 0.5rem;
+    }
+
+    .countdown-icon {
+        font-size: 1.5rem;
+    }
+
+    .countdown-time {
+        font-size: 1.3rem;
+    }
+
+    .countdown-title {
+        font-size: 0.85rem;
+    }
+
+    .phase-grid {
+        gap: 0.5rem;
+    }
+
+    .phase-card {
+        padding: 0.75rem;
+    }
+
+    .phase-icon {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .phase-label {
+        font-size: 0.9rem;
+        top: 2.75rem;
+    }
+
+    .time-container {
+        margin-top: 1.25rem;
+    }
+
+    .phase-time {
+        font-size: 1.1rem;
+        line-height: 28px;
+    }
+
+    .old-time {
+        font-size: 0.8rem;
+        line-height: 18px;
+    }
+
+    .old-time:not(.hidden) {
+        max-height: 21px;
+    }
+
+    .sleep-label {
+        font-size: 1rem;
+        margin-bottom: 0.1rem;
+        margin-top: 0.3rem;
+        padding: 0px;
+    }
+
+    .sleep-control {
+        gap: 0.5rem;
+        padding: 0.75rem 0 0 0;
+        padding-left: 0rem;
+        padding-right: 0rem;
+        justify-content: space-between;
+    }
+
+    .sleep-value {
+        font-size: 1.2rem;
+        min-width: 100px;
+        flex: 1;
+        text-align: center;
+        line-height: 40px;
+    }
+
+    .sleep-btn {
+        width: 80px;
+        height: 40px;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        gap: 0rem;
+    }
+
+    .mode-selector {
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        padding: 0.75rem;
+        padding-left: 0rem;
+        padding-right: 0rem;
+    }
+
+    .mode-btn {
+        padding: 0.6rem;
+        font-size: 1rem;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .settings-footer {
+        padding: 0rem;
+    }
+
+    .settings-trigger {
+        font-size: 1rem;
+    }
+
+    .settings-icon {
+        font-size: 1rem;
+    }
+
+    .modal-content {
+        padding: 1rem;
+    }
+
+    .modal-content h2 {
+        font-size: 1.3rem;
+    }
+
+    .timezone-mode {
+        padding: 0.5rem;
+    }
+
+    .timezone-header {
+        gap: 0.4rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .timezone-icon {
+        font-size: 1rem;
+    }
+
+    .timezone-mode h3 {
+        font-size: 1rem;
+    }
+
+    .timezone-mode label {
+        font-size: 0.9rem;
+    }
+
+    .modal-content select {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 414px) {
+    .sleep-control {
+        gap: 0.3rem;
+    }
+
+    .sleep-value {
+        min-width: 60px;
+        font-size: 1.1rem;
+        padding: 0.3rem;
+    }
+}
+
+@keyframes fade {
+    0% { opacity: 0; transform: translateY(5px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.airport-code, .airport-name {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.airport-code.fade, .airport-name.fade {
+    animation: fade 0.3s ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+.flight-number-wrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    height: 46px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    width: 100%;
+    max-width: 300px;
+    box-sizing: border-box;
+    flex-shrink: 1;
+}
+
+.flight-number-wrapper:focus-within {
+    border-color: var(--primary);
+}
+
+.flight-prefix {
+    padding: 0.5rem 0.3rem;
+    border: none;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 1.05rem;
+    cursor: pointer;
+    outline: none;
+    border-right: 1px solid var(--border);
+    width: 65px;
+    text-align: center;
+    transition: width 0.3s ease;
+}
+
+.flight-prefix.expanded {
+    width: 100%;
+    border-right: none;
+}
+
+.flight-number {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0;
+    height: 100%;
+    font-size: 1.05rem;
+    background: var(--surface);
+    color: var(--text);
+    text-align: center;
+    outline: none;
+    min-width: 0;
+}
+
+.flight-number::placeholder {
+    color: var(--secondary-text);
+    opacity: 0.7;
+}
+
+@media (max-width: 480px) {
+    .flight-number-wrapper {
+        height: 40px;
+        width: 100%;
+        max-width: 180px;
+        flex-shrink: 1;
+    }
+
+    .flight-prefix {
+        padding: 0.3rem 0.2rem;
+        font-size: 1rem;
+        width: 60px;
+    }
+
+    .flight-prefix.expanded {
+        width: 100%;
+    }
+
+    .flight-number {
+        padding: 0.3rem;
+        font-size: 1rem;
+    }
+}
+
+.settings-group {
+    background: var(--surface);
+    padding: 1rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    width: 100%;
+}
+
+.travel-time-mode {
+    margin-bottom: 1.5rem;
+    padding: 0.75rem;
+    border-radius: 0.875rem;
+    background: var(--background);
+    transition: background 0.2s;
+}
+
+.travel-time-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.travel-time-mode h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.travel-time-mode label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    position: relative;
+    color: var(--text);
+}
+
+.travel-time-mode input[type="number"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.travel-time-mode input[type="number"]:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.check-in-time-mode {
+    margin-bottom: 1.5rem;
+    padding: 0.75rem;
+    border-radius: 0.875rem;
+    background: var(--background);
+    transition: background 0.2s;
+}
+
+.check-in-time-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.check-in-time-mode h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.check-in-time-mode label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    position: relative;
+    color: var(--text);
+}
+
+.check-in-time-mode input[type="number"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.check-in-time-mode input[type="number"]:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.base-airport-mode {
+    margin-bottom: 1.5rem;
+    padding: 0.75rem;
+    border-radius: 0.875rem;
+    background: var(--background);
+    transition: background 0.2s;
+}
+
+.base-airport-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.base-airport-mode h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.base-airport-mode label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    position: relative;
+    color: var(--text);
+}
+
+.base-airport-mode input[type="text"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    text-transform: uppercase;
+}
+
+.base-airport-mode input[type="text"]:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.suggestions {
+    position: absolute;
+    width: 100%;
+    max-width: 310px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 1000;
+    margin-top: 0.5rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+
+.suggestions.active {
+    display: block;
+}
+
+.suggestion-item {
+    padding: 0.75rem;
+    font-size: 0.95rem;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.suggestion-item:hover {
+    background: var(--primary-light);
+}
+
+@media (max-width: 480px) {
+    .base-airport-mode {
+        padding: 0.5rem;
+    }
+
+    .base-airport-header {
+        gap: 0.4rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .base-airport-mode h3 {
+        font-size: 1rem;
+    }
+
+    .base-airport-mode label {
+        font-size: 0.9rem;
+    }
+
+    .base-airport-mode input[type="text"] {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .suggestions {
+        max-width: 100%;
+        max-height: 120px;
+    }
+
+    .suggestion-item {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+.time-edit-control {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1.5rem 0 0.2rem 0;
+    width: 100%;
+}
+
+.time-btn {
+    width: 90px;
+    height: 50px;
+    border-radius: 0.875rem;
+    border: 2px solid var(--border);
+    background: transparent;
+    color: var(--icon-color);
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.time-btn:active {
+    width: 70px;
+    height: 40px;
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+.modal-content input[type="time"] {
+    width: 120px;
+    padding: 0 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 1.2rem;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    height: 50px;
+    line-height: 50px;
+    box-sizing: border-box;
+}
+
+.modal-content input[type="time"]:focus {
+    border-color: var(--primary);
+}
+
+.modal-content input[type="time"]::-webkit-inner-spin-button,
+.modal-content input[type="time"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.modal-content input[type="time"] {
+    -moz-appearance: textfield;
+}
+
+.reset-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--border);
+    border-radius: 0.875rem;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.reset-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.done-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--primary);
+    border-radius: 0.875rem;
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.done-btn:hover {
+    background: rgba(128, 128, 128, 0.9);
+    border-color: rgba(128, 128, 128, 0.9);
+}
+
+@media (max-width: 480px) {
+    .time-edit-control {
+        gap: 0.3rem;
+        margin: 1rem 0 0.1rem 0;
+    }
+
+    .time-btn {
+        width: 70px;
+        height: 40px;
+        font-size: 1.2rem;
+        border-radius: 0.875rem;
+    }
+
+    .modal-content input[type="time"] {
+        width: 100px;
+        font-size: 1.1rem;
+        border-radius: 0.875rem;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        height: 40px;
+        line-height: 40px;
+        padding: 0 0.75rem;
+        box-sizing: border-box;
+    }
+
+    .modal-content input[type="time"]::-webkit-inner-spin-button,
+    .modal-content input[type="time"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .modal-content input[type="time"] {
+        -moz-appearance: textfield;
+    }
+
+    .reset-btn {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+        border-radius: 0.875rem;
+    }
+
+    .modal-buttons {
+        gap: 0.5rem;
+        margin-top: 0.05rem;
+    }
+
+    .done-btn {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+        border-radius: 0.875rem;
+    }
+}
+
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.phase-card.next-phase {
+    box-shadow: 0 0 5px 8px rgba(38, 117, 246, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+    .phase-card.next-phase {
+        box-shadow: 0 0 10px 8px rgba(200, 200, 200, 0.4);
+        z-index: 0;
+    }
+}
+
+.pseudo-old-time {
+    font-size: 0.85rem;
+    line-height: 20px;
+    max-height: 1.16rem;
+    height: 25px;
+    color: var(--secondary-text);
+    opacity: 0.7;
+    text-align: center;
+    display: block;
+}
+
+.modal-content .create-preset-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0rem 0;
+    color: var(--secondary-text);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    transition: color 0.2s;
+    margin-top: 0.8rem !important;
+    margin-bottom: 0.8rem !important;
+    width: 100%;
+    justify-content: center;
+}
+
+.modal-content .create-preset-btn i {
+    font-size: 0.9rem;
+    color: var(--secondary-text);
+    transition: color 0.2s;
+}
+
+.modal-content .create-preset-btn:hover {
+    color: var(--primary);
+}
+
+.modal-content .create-preset-btn:hover i {
+    color: var(--primary);
+}
+
+#preset-modal .modal-content {
+    max-width: 350px;
+    width: 90%;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.preset-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.preset-form label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text);
+    text-align: left;
+}
+
+#preset-name {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    background: var(--surface);
+    text-align: center;
+    color: var(--text);
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#preset-name:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+#preset-name::placeholder {
+    color: var(--secondary-text);
+    opacity: 0.7;
+}
+
+.preset-time-control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.preset-time-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    min-width: 120px;
+    text-align: center;
+    color: var(--text);
+    flex: 1;
+    line-height: 50px;
+}
+
+.save-preset-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--primary);
+    border-radius: 0.875rem;
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.save-preset-btn:hover {
+    background: rgba(59, 130, 246, 0.9);
+    border-color: rgba(59, 130, 246, 0.9);
+}
+
+@media (max-width: 480px) {
+    .modal-content .create-preset-btn {
+        padding: 0.2rem 0;
+        font-size: 0.9rem;
+        margin-top: 0.8rem !important;
+        margin-bottom: 0.8rem !important;
+    }
+
+    .modal-content .create-preset-btn i {
+        font-size: 0.8rem;
+    }
+
+    #preset-modal .modal-content {
+        padding: 1rem;
+    }
+
+    .preset-form label {
+        font-size: 0.9rem;
+    }
+
+    #preset-name {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .preset-time-control {
+        gap: 0.3rem;
+    }
+
+    .preset-time-value {
+        font-size: 1.2rem;
+        min-width: 100px;
+        line-height: 40px;
+    }
+
+    .save-preset-btn {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+}
+
+.flight-time-history-list {
+    margin-top: 0.75rem;
+    max-height: 160px;
+    overflow-y: auto;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border);
+    background: var(--background);
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-time {
+    font-weight: 600;
+    color: var(--text);
+    min-width: 38px;
+}
+
+.history-source-server {
+    color: #22C55E;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.history-source-manual {
+    color: #F97316;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.history-saved-at {
+    color: var(--secondary-text);
+    font-size: 0.75rem;
+    margin-left: auto;
+}
+
+.history-empty {
+    padding: 0.75rem;
+    text-align: center;
+    color: var(--secondary-text);
+    font-size: 0.9rem;
+}
+
+.mode-hint {
+    color: orange;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+    text-align: center;
+    display: none;
+}
+.mode-hint.active {
+    display: block;
+}
+.suggestions {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
+    z-index: 1000;
+    display: none;
+}
+.suggestions.active {
+    display: block;
+}
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+}
+.suggestion-item:hover {
+    background-color: #f0f0f0;
+}
